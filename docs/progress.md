@@ -22,6 +22,11 @@
   - [x] Cliente Supabase server-side.
   - [x] Conexión local con RAES verificada.
 - [ ] Autenticación institucional y scopes.
+  - [x] Formato Bearer y hashing implementados.
+  - [x] Validación de scopes implementada.
+  - [x] Bootstrap de Institución A implementado.
+  - [ ] Bootstrap probado contra RAES.
+  - [ ] Endpoint autenticado `/auth/whoami` validado.
 - [ ] Idempotencia.
 - [ ] Conector Politécnico.
 - [ ] Sedes y programas.
