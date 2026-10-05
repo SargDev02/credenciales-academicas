@@ -31,7 +31,7 @@
 - [ ] Conector Politécnico.
 - [ ] Sedes y programas.
   - [x] Endpoints autenticados implementados.
-  - [ ] Sincronización real validada con Institución A.
+  - [x] Sincronización real validada con Institución A.
 - [ ] Resolución de personas.
   - [x] Resolución maestra por tipo + número de documento implementada.
   - [x] Fuente institucional por identificador de origen implementada.
