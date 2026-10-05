@@ -1,0 +1,27 @@
+{
+  "name": "@raes/connector-poli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "pretypecheck": "pnpm --filter @raes/contracts build",
+    "typecheck": "tsc --noEmit",
+    "pretest": "pnpm --filter @raes/contracts build",
+    "test": "tsx --test src/*.test.ts",
+    "presync": "pnpm --filter @raes/contracts build",
+    "sync": "tsx src/cli.ts",
+    "sync:base": "tsx src/cli.ts --only=base",
+    "sync:credentials": "tsx src/cli.ts --only=credentials"
+  },
+  "dependencies": {
+    "@raes/contracts": "workspace:*",
+    "@supabase/supabase-js": "^2.117.2",
+    "dotenv": "^17.2.3",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  }
+}
