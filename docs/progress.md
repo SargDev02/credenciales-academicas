@@ -33,6 +33,13 @@
   - [x] Protección transaccional y replay implementados en RAES.
   - [x] Idempotencia validada de extremo a extremo.
 - [ ] Conector Politécnico.
+  - [x] Lectura aislada de la base Institución A implementada.
+  - [x] Transformaciones a contratos RAES implementadas.
+  - [x] Sincronización de institución, sedes, programas y programa-sede implementada.
+  - [x] Sincronización de personas implementada.
+  - [x] Registro y estados de credenciales implementados.
+  - [x] Idempotencia del conector implementada sin escribir estado en la institución.
+  - [ ] Validación real contra Institución A pendiente.
 - [ ] Sedes y programas.
   - [x] Endpoints autenticados implementados.
   - [x] Sincronización real validada con Institución A.
