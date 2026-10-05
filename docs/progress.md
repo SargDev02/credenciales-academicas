@@ -20,7 +20,7 @@
 - [ ] RAES API.
   - [x] Servicio base y health checks.
   - [x] Cliente Supabase server-side.
-  - [ ] Conexión local con RAES verificada.
+  - [x] Conexión local con RAES verificada.
 - [ ] Autenticación institucional y scopes.
 - [ ] Idempotencia.
 - [ ] Conector Politécnico.
