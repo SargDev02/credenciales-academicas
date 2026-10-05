@@ -60,3 +60,27 @@ GET /api/v1/health/ready
 ```
 
 El endpoint `ready` utiliza la service role exclusivamente desde el servidor y no devuelve credenciales ni detalles sensibles del error.
+
+## Autenticación institucional
+
+La autenticación usa:
+
+```text
+Authorization: Bearer <client_id>.<client_secret>
+```
+
+Para preparar Institución A durante desarrollo:
+
+```bash
+pnpm --filter @raes/api bootstrap:institution-a
+```
+
+El secreto generado se muestra una sola vez y RAES almacena únicamente su hash.
+
+Prueba de identidad autenticada:
+
+```text
+GET /api/v1/auth/whoami
+```
+
+Consulta [docs/authentication.md](../../docs/authentication.md) para el diseño completo.
