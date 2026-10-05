@@ -1,0 +1,11 @@
+{
+  "name": "credenciales-academicas",
+  "private": true,
+  "description": "Monorepo de RAES, Credenly y conectores institucionales",
+  "scripts": {
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint",
+    "test": "pnpm -r --if-present test"
+  },
+  "engines": { "node": ">=20" }
+}
