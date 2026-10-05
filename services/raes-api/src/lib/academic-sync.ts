@@ -2,6 +2,7 @@ import type {
   Institucion,
   Persona,
   Programa,
+  ProgramaSede,
   Sede,
 } from "@raes/contracts";
 
@@ -26,6 +27,10 @@ type CampusRow = {
 type ProgramRow = {
   id: string;
   codigo_origen: string;
+};
+
+type ProgramCampusRow = {
+  id: string;
 };
 
 type PersonMasterRow = {
@@ -163,6 +168,76 @@ export async function syncProgram(
   }
 
   return data as ProgramRow;
+}
+
+export async function syncProgramCampus(
+  identity: InstitutionalIdentity,
+  input: ProgramaSede,
+): Promise<ProgramCampusRow> {
+  const supabase = getRaesSupabaseAdmin();
+
+  const [{ data: programData, error: programError }, { data: campusData, error: campusError }] =
+    await Promise.all([
+      supabase
+        .from("programas")
+        .select("id")
+        .eq("institucion_id", identity.institutionId)
+        .eq("codigo_origen", input.programaCodigoOrigen)
+        .maybeSingle(),
+      supabase
+        .from("sedes")
+        .select("id")
+        .eq("institucion_id", identity.institutionId)
+        .eq("codigo_origen", input.sedeCodigoOrigen)
+        .maybeSingle(),
+    ]);
+
+  if (programError) {
+    throwDatabaseError("resolver el programa de la relación", programError.code);
+  }
+
+  if (campusError) {
+    throwDatabaseError("resolver la sede de la relación", campusError.code);
+  }
+
+  if (!programData) {
+    throw new ApiError(
+      404,
+      "PROGRAM_NOT_FOUND",
+      "El programa reportado no existe para la institución autenticada",
+    );
+  }
+
+  if (!campusData) {
+    throw new ApiError(
+      404,
+      "CAMPUS_NOT_FOUND",
+      "La sede reportada no existe para la institución autenticada",
+    );
+  }
+
+  const { data, error } = await supabase
+    .from("programa_sede")
+    .upsert(
+      {
+        programa_id: programData.id,
+        sede_id: campusData.id,
+        jornada: input.jornada ?? null,
+        modalidad: input.modalidad ?? null,
+        estado: input.estado,
+      },
+      {
+        onConflict: "programa_id,sede_id",
+      },
+    )
+    .select("id")
+    .single();
+
+  if (error) {
+    throwDatabaseError("sincronizar la relación programa-sede", error.code);
+  }
+
+  return data as ProgramCampusRow;
 }
 
 export async function syncPerson(
