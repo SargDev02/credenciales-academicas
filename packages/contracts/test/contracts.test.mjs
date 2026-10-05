@@ -7,6 +7,7 @@ import {
   credencialNuevaSchema,
   personaSchema,
   programaSchema,
+  programaSedeSchema,
   revocacionCredencialSchema,
   sedeSchema,
 } from "../dist/index.js";
@@ -68,6 +69,19 @@ test("acepta sede y programa sin código SNIES obligatorio", () => {
       codigoSnies: null,
       nombre: "Ingeniería Informática",
       nivelFormacion: "UNIVERSITARIA",
+      modalidad: "PRESENCIAL",
+      estado: "ACTIVO",
+    }).success,
+    true,
+  );
+});
+
+test("acepta una relación programa-sede válida", () => {
+  assert.equal(
+    programaSedeSchema.safeParse({
+      programaCodigoOrigen: "SIM-POLI-INF",
+      sedeCodigoOrigen: "MED",
+      jornada: "DIURNA",
       modalidad: "PRESENCIAL",
       estado: "ACTIVO",
     }).success,
