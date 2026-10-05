@@ -31,7 +31,7 @@
   - [x] Headers X-Request-Id e Idempotency-Key implementados.
   - [x] Hash canónico SHA-256 implementado.
   - [x] Protección transaccional y replay implementados en RAES.
-  - [ ] Idempotencia validada de extremo a extremo.
+  - [x] Idempotencia validada de extremo a extremo.
 - [ ] Conector Politécnico.
 - [ ] Sedes y programas.
   - [x] Endpoints autenticados implementados.
@@ -44,7 +44,7 @@
   - [x] RPC transaccional de registro inicial aplicada en RAES.
   - [x] Endpoint POST /api/v1/credentials implementado.
   - [x] Versión 1 + evento REGISTRADA implementados.
-  - [ ] Registro real validado con una credencial de Institución A.
+  - [x] Registro real validado con una credencial de Institución A.
 - [ ] Correcciones.
 - [ ] Revocaciones/anulaciones.
 - [ ] Pruebas de integración.
