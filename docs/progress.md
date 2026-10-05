@@ -18,6 +18,9 @@
 
 ## Etapa 2 — Institución A -> RAES
 - [ ] RAES API.
+  - [x] Servicio base y health checks.
+  - [x] Cliente Supabase server-side.
+  - [x] Conexión local con RAES verificada.
 - [ ] Autenticación institucional y scopes.
 - [ ] Idempotencia.
 - [ ] Conector Politécnico.
