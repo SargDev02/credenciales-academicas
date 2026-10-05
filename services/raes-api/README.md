@@ -84,3 +84,17 @@ GET /api/v1/auth/whoami
 ```
 
 Consulta [docs/authentication.md](../../docs/authentication.md) para el diseño completo.
+
+
+## Ciclo de vida de credenciales
+
+Endpoints institucionales:
+
+```text
+POST /api/v1/credentials
+POST /api/v1/credentials/corrections
+POST /api/v1/credentials/revocations
+POST /api/v1/credentials/annulments
+```
+
+Todas las mutaciones requieren `X-Request-Id` e `Idempotency-Key`. Las correcciones y cambios de estado generan nuevas versiones y eventos; el historial previo no se sobrescribe.
