@@ -28,6 +28,10 @@
   - [x] Bootstrap probado contra RAES.
   - [x] Endpoint autenticado `/auth/whoami` validado.
 - [ ] Idempotencia.
+  - [x] Headers X-Request-Id e Idempotency-Key implementados.
+  - [x] Hash canónico SHA-256 implementado.
+  - [x] Protección transaccional y replay implementados en RAES.
+  - [x] Idempotencia validada de extremo a extremo.
 - [ ] Conector Politécnico.
 - [ ] Sedes y programas.
   - [x] Endpoints autenticados implementados.
@@ -37,6 +41,10 @@
   - [x] Fuente institucional por identificador de origen implementada.
   - [x] Resolución real validada con Institución A.
 - [ ] Registro/versionado de credenciales.
+  - [x] RPC transaccional de registro inicial aplicada en RAES.
+  - [x] Endpoint POST /api/v1/credentials implementado.
+  - [x] Versión 1 + evento REGISTRADA implementados.
+  - [x] Registro real validado con una credencial de Institución A.
 - [ ] Correcciones.
 - [ ] Revocaciones/anulaciones.
 - [ ] Pruebas de integración.
