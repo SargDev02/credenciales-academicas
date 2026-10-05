@@ -49,12 +49,12 @@
   - [x] Versionado completo con tipo y categoría.
   - [x] RPC transaccional de corrección aplicada en RAES.
   - [x] Endpoint de corrección implementado.
-  - [ ] Corrección real validada de extremo a extremo.
+  - [x] Corrección real validada de extremo a extremo.
 - [ ] Revocaciones/anulaciones.
   - [x] Metadatos de anulación agregados al esquema.
   - [x] RPC transaccional de estados terminales aplicada en RAES.
   - [x] Endpoints de revocación y anulación implementados.
-  - [ ] Revocación real validada.
+  - [x] Revocación real validada.
   - [ ] Anulación real validada.
 - [ ] Pruebas de integración.
 
