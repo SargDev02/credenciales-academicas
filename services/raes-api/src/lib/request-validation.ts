@@ -1,10 +1,10 @@
-import type { z } from "zod";
+import type { ZodType } from "zod";
 
 import { ApiError } from "./api-error";
 
 export async function parseJsonBody<T>(
   request: Request,
-  schema: z.ZodType<T>,
+  schema: ZodType<T>,
 ): Promise<T> {
   let body: unknown;
 
