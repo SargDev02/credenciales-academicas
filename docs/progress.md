@@ -14,7 +14,7 @@
 - [x] Variables de entorno documentadas sin secretos.
 - [x] Arquitectura documentada.
 - [x] ADRs iniciales.
-- [ ] Contratos Zod compartidos.
+- [x] Contratos Zod compartidos.
 
 ## Etapa 2 — Institución A -> RAES
 - [ ] RAES API.
