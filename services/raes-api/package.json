@@ -7,7 +7,9 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/**/*.test.ts",
+    "bootstrap:institution-a": "tsx scripts/bootstrap-institution-a.ts"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
@@ -21,6 +23,8 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.20.0",
     "typescript": "^5.9.3"
   }
 }
