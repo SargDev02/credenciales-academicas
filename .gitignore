@@ -12,3 +12,5 @@ coverage/
 .vercel/
 
 *.tsbuildinfo
+
+*.credentials.local
