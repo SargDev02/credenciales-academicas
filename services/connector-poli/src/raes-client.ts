@@ -138,8 +138,9 @@ export class RaesClient {
       response = await fetch(`${this.baseUrl}${path}`, {
         method,
         headers,
-        body:
-          body === undefined ? undefined : JSON.stringify(body),
+        ...(body === undefined
+          ? {}
+          : { body: JSON.stringify(body) }),
       });
     } catch (error) {
       throw new Error(
