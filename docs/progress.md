@@ -55,7 +55,7 @@
   - [x] RPC transaccional de estados terminales aplicada en RAES.
   - [x] Endpoints de revocación y anulación implementados.
   - [x] Revocación real validada.
-  - [ ] Anulación real validada.
+  - [x] Anulación real validada.
 - [ ] Pruebas de integración.
 
 ## Etapa 3 — Backend Credenly
