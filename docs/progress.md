@@ -96,13 +96,16 @@
 - [ ] Vinculación RAES.
   - [x] Esquema `vinculaciones_raes` verificado.
   - [x] Base de autenticación Credenly -> RAES implementada en RAES.
-  - [ ] Credencial de servicio de Credenly pendiente de aprovisionar y validar.
+  - [x] Credencial de servicio de Credenly aprovisionada y validada.
   - [x] Endpoint RAES de resolución implementado.
   - [ ] Integración desde Credenly pendiente de validar.
 - [ ] Consulta de credenciales solo vía RAES API.
   - [x] Regla de no persistir credenciales confirmada en el esquema.
   - [x] Endpoint RAES para consulta por persona implementado.
   - [x] Consumo autenticado desde cliente Credenly validado contra RAES.
+  - [x] Endpoint ciudadano `GET /api/v1/credentials` implementado sin persistencia académica.
+  - [x] Readiness de Credenly incluye conectividad con RAES.
+  - [ ] Validación local del backend Credenly actualizado pendiente.
 - [ ] Comparticiones y verificación pública.
 
 ## Etapa 4 — Institución B
