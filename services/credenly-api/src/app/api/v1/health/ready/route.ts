@@ -1,3 +1,4 @@
+import { getRaesClientIdentity } from "@/lib/raes-client";
 import { getCredenlySupabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
@@ -7,22 +8,46 @@ export async function GET() {
   try {
     const supabase = getCredenlySupabaseAdmin();
 
-    const { error } = await supabase
-      .from("perfiles")
-      .select("id", { head: true, count: "exact" })
-      .limit(1);
+    const [databaseResult, raesResult] = await Promise.allSettled([
+      supabase
+        .from("perfiles")
+        .select("id", { head: true, count: "exact" })
+        .limit(1),
+      getRaesClientIdentity(),
+    ]);
 
-    if (error) {
-      console.error("Credenly readiness check failed", {
-        code: error.code,
-      });
+    const databaseUp =
+      databaseResult.status === "fulfilled" &&
+      !databaseResult.value.error;
+    const raesUp = raesResult.status === "fulfilled";
+
+    if (!databaseUp || !raesUp) {
+      if (
+        databaseResult.status === "fulfilled" &&
+        databaseResult.value.error
+      ) {
+        console.error("Credenly database readiness failed", {
+          code: databaseResult.value.error.code,
+        });
+      }
+
+      if (raesResult.status === "rejected") {
+        console.error("Credenly RAES readiness failed", {
+          message:
+            raesResult.reason instanceof Error
+              ? raesResult.reason.message
+              : "unknown error",
+        });
+      }
 
       return Response.json(
         {
           status: "not_ready",
           service: "credenly-api",
           components: {
-            database: "down",
+            database: databaseUp ? "up" : "down",
+            auth: "configured",
+            raes: raesUp ? "up" : "down",
           },
         },
         { status: 503 },
@@ -35,6 +60,7 @@ export async function GET() {
       components: {
         database: "up",
         auth: "configured",
+        raes: "up",
       },
       timestamp: new Date().toISOString(),
     });
