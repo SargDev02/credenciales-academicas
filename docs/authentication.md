@@ -141,3 +141,16 @@ GET /api/v1/auth/whoami
 ```
 
 valida la integración institucional y devuelve únicamente su identidad y scopes.
+
+
+## Bootstrap del primer administrador
+
+Una instalación nueva de RAES no tiene administradores todavía. Para resolver ese único caso se incluye:
+
+```bash
+pnpm --filter @raes/api bootstrap:superadmin
+```
+
+El comando crea o reutiliza el usuario de Supabase Auth indicado localmente y genera el perfil `SUPERADMIN`. Si detecta que ya existe un SUPERADMIN activo, se detiene sin modificar privilegios.
+
+Este bootstrap no se usa para incorporar universidades. Las universidades se crean posteriormente desde la API administrativa / RAES Web.
