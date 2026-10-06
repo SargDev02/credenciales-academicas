@@ -70,7 +70,15 @@ export async function POST(request: Request) {
     const input = institutionCreateSchema.parse(body);
 
     const institution = await createInstitution(
-      input,
+      {
+        nit: input.nit,
+        nombre: input.nombre,
+        tipoInstitucion: input.tipoInstitucion,
+        estado: input.estado,
+        ...(input.codigoSnies !== undefined
+          ? { codigoSnies: input.codigoSnies }
+          : {}),
+      },
       admin.profile.id,
     );
 
