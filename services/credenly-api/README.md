@@ -130,3 +130,70 @@ Decisión inicial:
 Una verificación `APROBADA` habilita el flujo ya existente de vinculación con RAES.
 
 > Esta etapa es verificación documental basada en OCR. No debe presentarse como validación biométrica o prueba criptográfica de autenticidad del documento.
+
+
+## Comparticiones y verificación pública
+
+Credenly puede crear enlaces temporales para compartir una credencial sin almacenar una copia académica.
+
+Endpoints autenticados:
+
+```text
+GET  /api/v1/shares
+POST /api/v1/shares
+DELETE /api/v1/shares/:shareId
+Authorization: Bearer <supabase_access_token>
+```
+
+Creación:
+
+```json
+{
+  "raesCredencialId": "<uuid>",
+  "expiresInHours": 168,
+  "camposVisibles": [
+    "programa",
+    "sede",
+    "fechaGrado"
+  ]
+}
+```
+
+El token público:
+
+- se genera con entropía criptográfica;
+- se devuelve en texto plano una sola vez al crear la compartición;
+- Credenly conserva únicamente su SHA-256 y un prefijo identificador;
+- puede expirar o ser revocado.
+
+Endpoint público:
+
+```text
+GET /api/v1/public/shares/:token
+```
+
+La verificación pública consulta la credencial actual en RAES en cada acceso. Credenly no persiste el título, estado, programa ni otra copia de la credencial.
+
+Siempre se muestran los campos mínimos necesarios para verificar la credencial:
+
+- código RAES;
+- tipo y categoría;
+- estado actual;
+- versión actual;
+- institución;
+- título;
+- fecha de emisión;
+- fecha del estado terminal si aplica.
+
+Los campos opcionales controlados por `camposVisibles` son:
+
+- `programa`;
+- `sede`;
+- `descripcion`;
+- `fechaGrado`;
+- `numeroActa`;
+- `numeroFolio`;
+- `numeroLibro`;
+- `motivoEstado`.
+
+Cada acceso válido, expirado, revocado o con credencial no disponible se registra en `accesos_compartidos`. La IP, cuando está disponible detrás del proxy, se pseudonimiza mediante HMAC y no se almacena en texto plano.
