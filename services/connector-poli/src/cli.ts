@@ -43,6 +43,10 @@ function parseArgs(args: string[]): {
   let credentialCode: string | null = null;
 
   for (const arg of args) {
+    if (arg === "--") {
+      continue;
+    }
+
     if (arg.startsWith("--only=")) {
       const value = arg.slice("--only=".length);
 
