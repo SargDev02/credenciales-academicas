@@ -97,21 +97,25 @@ async function raesRequest<T>(
   const timeout = setTimeout(() => controller.abort(), 8_000);
 
   try {
+    const headers = new Headers(init.headers);
+    headers.set("Accept", "application/json");
+    headers.set(
+      "Authorization",
+      buildRaesAuthorization(
+        env.RAES_CREDENLY_CLIENT_ID,
+        env.RAES_CREDENLY_CLIENT_SECRET,
+      ),
+    );
+
+    if (init.body !== undefined && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
     const response = await fetch(
       `${env.RAES_API_BASE_URL.replace(/\/$/, "")}${path}`,
       {
         ...init,
-        headers: {
-          Accept: "application/json",
-          Authorization: buildRaesAuthorization(
-            env.RAES_CREDENLY_CLIENT_ID,
-            env.RAES_CREDENLY_CLIENT_SECRET,
-          ),
-          ...(init.body !== undefined
-            ? { "Content-Type": "application/json" }
-            : {}),
-          ...(init.headers ?? {}),
-        },
+        headers,
         cache: "no-store",
         signal: controller.signal,
       },
@@ -166,6 +170,20 @@ async function raesRequest<T>(
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export type RaesClientIdentity = {
+  id: string;
+  clientId: string;
+  nombre: string;
+  tipoCliente: string;
+  scopes: string[];
+};
+
+export async function getRaesClientIdentity(): Promise<RaesClientIdentity> {
+  return raesRequest<RaesClientIdentity>(
+    "/api/v1/auth/client-whoami",
+  );
 }
 
 export async function resolveRaesPerson(input: {
