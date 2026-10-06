@@ -1,9 +1,18 @@
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
 import { config } from "dotenv";
 import { z } from "zod";
 
-config({
-  path: process.env.CONNECTOR_ENV_FILE ?? "services/connector-poli/.env.local",
-});
+const defaultEnvPath = fileURLToPath(
+  new URL("../.env.local", import.meta.url),
+);
+
+const envPath = process.env.CONNECTOR_ENV_FILE
+  ? resolve(process.cwd(), process.env.CONNECTOR_ENV_FILE)
+  : defaultEnvPath;
+
+config({ path: envPath });
 
 const envSchema = z.object({
   POLI_SUPABASE_URL: z.string().url(),
