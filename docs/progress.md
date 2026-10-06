@@ -102,7 +102,7 @@
 - [ ] Consulta de credenciales solo vía RAES API.
   - [x] Regla de no persistir credenciales confirmada en el esquema.
   - [x] Endpoint RAES para consulta por persona implementado.
-  - [ ] Consumo desde Credenly pendiente de validar.
+  - [x] Consumo autenticado desde cliente Credenly validado contra RAES.
 - [ ] Comparticiones y verificación pública.
 
 ## Etapa 4 — Institución B
