@@ -27,6 +27,10 @@ export const scopeCatalog = [
     codigo: "credentials:read",
     descripcion: "Consultar credenciales autorizadas mediante RAES API",
   },
+  {
+    codigo: "persons:resolve",
+    descripcion: "Resolver una persona maestra por identidad verificada",
+  },
 ] as const;
 
 export type ScopeCode = (typeof scopeCatalog)[number]["codigo"];
@@ -38,4 +42,9 @@ export const institutionAScopes: ScopeCode[] = [
   "credentials:correct",
   "credentials:revoke",
   "credentials:annul",
+];
+
+export const credenlyScopes: ScopeCode[] = [
+  "persons:resolve",
+  "credentials:read",
 ];

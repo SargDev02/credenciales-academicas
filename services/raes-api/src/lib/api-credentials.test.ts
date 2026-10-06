@@ -2,11 +2,13 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  formatApiBearer,
   formatInstitutionBearer,
   generateClientId,
   generateClientSecret,
   getSecretLookupPrefix,
   hashClientSecret,
+  parseApiBearer,
   parseInstitutionBearer,
   verifyClientSecret,
 } from "./api-credentials";
@@ -55,4 +57,15 @@ test("el prefijo de búsqueda es estable y no contiene el secreto completo", () 
   assert.equal(prefix.length, 20);
   assert.equal(secret.startsWith(prefix), true);
   assert.notEqual(prefix, secret);
+});
+
+test("el formato Bearer genérico sirve también para clientes no institucionales", () => {
+  const clientId = generateClientId();
+  const secret = generateClientSecret();
+  const header = formatApiBearer(clientId, secret);
+
+  assert.deepEqual(parseApiBearer(header), {
+    clientId,
+    secret,
+  });
 });

@@ -12,7 +12,8 @@
     "pretypecheck": "pnpm --filter @raes/contracts build",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts",
-    "bootstrap:institution-a": "tsx scripts/bootstrap-institution-a.ts"
+    "bootstrap:institution-a": "tsx scripts/bootstrap-institution-a.ts",
+    "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
