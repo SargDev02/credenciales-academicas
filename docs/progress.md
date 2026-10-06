@@ -39,7 +39,8 @@
   - [x] Sincronización de personas implementada.
   - [x] Registro y estados de credenciales implementados.
   - [x] Idempotencia del conector implementada sin escribir estado en la institución.
-  - [ ] Validación real contra Institución A pendiente.
+  - [x] Datos base validados realmente contra Institución A.
+  - [ ] Credencial real validada mediante el conector.
 - [ ] Sedes y programas.
   - [x] Endpoints autenticados implementados.
   - [x] Sincronización real validada con Institución A.
