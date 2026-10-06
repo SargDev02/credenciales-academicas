@@ -32,7 +32,7 @@
   - [x] Hash canónico SHA-256 implementado.
   - [x] Protección transaccional y replay implementados en RAES.
   - [x] Idempotencia validada de extremo a extremo.
-- [ ] Conector Politécnico.
+- [x] Conector Politécnico.
   - [x] Lectura aislada de la base Institución A implementada.
   - [x] Transformaciones a contratos RAES implementadas.
   - [x] Sincronización de institución, sedes, programas y programa-sede implementada.
@@ -40,7 +40,7 @@
   - [x] Registro y estados de credenciales implementados.
   - [x] Idempotencia del conector implementada sin escribir estado en la institución.
   - [x] Datos base validados realmente contra Institución A.
-  - [ ] Credencial real validada mediante el conector.
+  - [x] Credencial real validada mediante el conector.
 - [ ] Sedes y programas.
   - [x] Endpoints autenticados implementados.
   - [x] Sincronización real validada con Institución A.
@@ -65,6 +65,8 @@
   - [x] Revocación real validada.
   - [x] Anulación real validada.
 - [ ] Pruebas de integración.
+  - [x] Sincronización base Institución A -> RAES validada.
+  - [x] Registro idempotente de credencial vía conector validado.
 
 ## Etapa 3 — Backend Credenly
 - [ ] Supabase Auth.
