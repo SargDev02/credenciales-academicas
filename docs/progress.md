@@ -114,6 +114,13 @@
   - [x] Consulta ciudadana validada con credenciales `ANULADA` y `REVOCADA`.
   - [x] Respuesta validada con `source: "RAES"` y `persistedByCredenly: false`.
 - [ ] Comparticiones y verificación pública.
+  - [x] Tokens aleatorios y hash SHA-256 implementados.
+  - [x] Creación, listado y revocación de comparticiones implementados.
+  - [x] Verificación pública consulta la credencial en vivo desde RAES.
+  - [x] Campos visibles opcionales con lista permitida implementados.
+  - [x] Registro de accesos con IP pseudonimizada implementado.
+  - [x] Credenly mantiene solo `raes_credencial_id`, sin snapshot académico.
+  - [ ] Typecheck, tests y validación real pendientes.
 
 ## Etapa 4 — Institución B
 - [ ] Conector UdeA.
