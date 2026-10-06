@@ -48,7 +48,7 @@ export function verifyClientSecret(
   );
 }
 
-export function parseInstitutionBearer(
+export function parseApiBearer(
   authorizationHeader: string | null,
 ): ParsedBearerCredentials | null {
   if (!authorizationHeader?.startsWith("Bearer ")) {
@@ -75,9 +75,12 @@ export function parseInstitutionBearer(
   return { clientId, secret };
 }
 
-export function formatInstitutionBearer(
+export function formatApiBearer(
   clientId: string,
   secret: string,
 ): string {
   return `Bearer ${clientId}.${secret}`;
 }
+
+export const parseInstitutionBearer = parseApiBearer;
+export const formatInstitutionBearer = formatApiBearer;
