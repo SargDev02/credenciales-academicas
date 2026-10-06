@@ -70,9 +70,18 @@
 
 ## Etapa 3 — Backend Credenly
 - [ ] Supabase Auth.
+  - [x] Servicio backend Credenly creado.
+  - [x] Validación server-side de access tokens implementada.
+  - [x] Endpoint `/auth/me` implementado.
+  - [ ] Flujo real de registro/login pendiente de validación.
 - [ ] OCR.
 - [ ] Vinculación RAES.
+  - [x] Esquema `vinculaciones_raes` verificado.
+  - [ ] Autenticación Credenly -> RAES pendiente.
+  - [ ] Resolución de persona RAES pendiente.
 - [ ] Consulta de credenciales solo vía RAES API.
+  - [x] Regla de no persistir credenciales confirmada en el esquema.
+  - [ ] Endpoint RAES para consulta ciudadana pendiente.
 - [ ] Comparticiones y verificación pública.
 
 ## Etapa 4 — Institución B
