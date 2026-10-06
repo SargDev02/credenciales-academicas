@@ -86,3 +86,47 @@ La base de Credenly ya contiene:
 - `accesos_compartidos`.
 
 La autenticación de servicio Credenly -> RAES ya está implementada. El siguiente paso es conectar el flujo de OCR/verificación de identidad con `POST /api/v1/raes/link` y validar la consulta ciudadana de credenciales de extremo a extremo.
+
+
+## OCR local sin servicios de pago
+
+La primera implementación de OCR utiliza `tesseract.js` en el backend de Credenly. No requiere Google Vision, AWS Textract, Azure Document Intelligence ni otro proveedor de pago.
+
+Endpoint:
+
+```text
+POST /api/v1/identity-verifications
+Authorization: Bearer <supabase_access_token>
+Content-Type: multipart/form-data
+campo: documento
+```
+
+Formatos iniciales:
+
+- JPEG;
+- PNG;
+- WEBP;
+- máximo 8 MB.
+
+El documento se procesa en memoria. Credenly no guarda la imagen en almacenamiento persistente durante este flujo; `imagen_path` permanece en `null` y se registra `imagen_eliminada_at` al finalizar el procesamiento.
+
+La verificación conserva:
+
+- tipo y número de documento extraídos;
+- nombres y apellidos extraídos;
+- texto OCR para trazabilidad;
+- confianza OCR normalizada entre 0 y 1;
+- proveedor `TESSERACT_LOCAL`;
+- estado;
+- motivo de revisión o fallo;
+- timestamps de procesamiento.
+
+Decisión inicial:
+
+- `APROBADA`: identidad completa y confianza OCR >= 0.90;
+- `REVISION`: identidad principal encontrada pero confianza menor o nombres incompletos;
+- `RECHAZADA`: no se logra identificar tipo y número de documento.
+
+Una verificación `APROBADA` habilita el flujo ya existente de vinculación con RAES.
+
+> Esta etapa es verificación documental basada en OCR. No debe presentarse como validación biométrica o prueba criptográfica de autenticidad del documento.
