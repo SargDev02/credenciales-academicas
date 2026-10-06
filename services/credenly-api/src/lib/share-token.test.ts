@@ -31,7 +31,7 @@ test("prefix permite identificar una compartición sin guardar el token", () => 
   const token = generateShareToken();
   const prefix = getShareTokenPrefix(token);
 
-  assert.equal(prefix.length, 20);
+  assert.equal(prefix.length, 16);
   assert.equal(token.startsWith(prefix), true);
 });
 
