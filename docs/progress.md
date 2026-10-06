@@ -74,7 +74,7 @@
   - [x] Validación server-side de access tokens implementada.
   - [x] Endpoint `/auth/me` implementado.
   - [x] Health/readiness y protección 401 validados localmente.
-  - [ ] Flujo real de registro/login pendiente de validación.
+  - [x] Flujo real de login con Supabase Auth validado.
 - [ ] OCR.
 - [ ] Vinculación RAES.
   - [x] Esquema `vinculaciones_raes` verificado.
