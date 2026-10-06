@@ -129,6 +129,13 @@ export async function createShare(
     .single();
 
   if (error || !data) {
+    if (error) {
+      console.error("Share creation failed", {
+        code: error.code,
+        message: error.message,
+      });
+    }
+
     throw new ShareError(
       500,
       "SHARE_CREATE_FAILED",
