@@ -31,33 +31,6 @@ export type ApiClientCreateInput = {
   scopes: ScopeCode[];
 };
 
-async function resolveScopes(scopes: ScopeCode[]) {
-  const supabase = getRaesSupabaseAdmin();
-
-  const { data, error } = await supabase
-    .from("scopes")
-    .select("id,codigo")
-    .in("codigo", scopes);
-
-  if (error) {
-    throw new Error(
-      `No fue posible consultar scopes: ${error.code}`,
-    );
-  }
-
-  const missing = scopes.filter(
-    (scope) => !data?.some((row) => row.codigo === scope),
-  );
-
-  if (missing.length > 0) {
-    throw new Error(
-      `Scopes no registrados en RAES: ${missing.join(", ")}`,
-    );
-  }
-
-  return data ?? [];
-}
-
 async function writeAudit(input: {
   actorId: string;
   accion: string;
@@ -165,46 +138,38 @@ export async function createInstitutionIntegration(
 ) {
   const supabase = getRaesSupabaseAdmin();
   const scopes = input.scopes ?? institutionAScopes;
-
-  const { data: institution, error: institutionError } = await supabase
-    .from("instituciones")
-    .select("id,nombre,estado")
-    .eq("id", input.institutionId)
-    .maybeSingle();
-
-  if (institutionError) {
-    throw new ProvisioningError(
-      500,
-      "INSTITUTION_LOOKUP_FAILED",
-      "No fue posible consultar la institución",
-    );
-  }
-
-  if (!institution) {
-    throw new ProvisioningError(
-      404,
-      "INSTITUTION_NOT_FOUND",
-      "La institución no existe",
-    );
-  }
-
-  const scopeRows = await resolveScopes(scopes);
   const clientId = generateClientId();
   const clientSecret = generateClientSecret();
 
-  const { data: integration, error: integrationError } =
-    await supabase
-      .from("integraciones_institucionales")
-      .insert({
-        institucion_id: input.institutionId,
-        nombre: input.nombre,
-        client_id: clientId,
-        estado: "SUSPENDIDA",
-      })
-      .select("id,institucion_id,nombre,client_id,estado,created_at")
-      .single();
+  const { data, error } = await supabase.rpc(
+    "aprovisionar_integracion_institucional",
+    {
+      p_institucion_id: input.institutionId,
+      p_nombre: input.nombre,
+      p_client_id: clientId,
+      p_key_prefix: getSecretLookupPrefix(clientSecret),
+      p_secret_hash: hashClientSecret(clientSecret),
+      p_scope_codes: scopes,
+    },
+  );
 
-  if (integrationError) {
+  if (error) {
+    if (error.message.includes("RAES_INSTITUTION_NOT_FOUND")) {
+      throw new ProvisioningError(
+        404,
+        "INSTITUTION_NOT_FOUND",
+        "La institución no existe",
+      );
+    }
+
+    if (error.message.includes("RAES_INVALID_SCOPES")) {
+      throw new ProvisioningError(
+        400,
+        "INVALID_SCOPES",
+        "Uno o más scopes no están registrados en RAES",
+      );
+    }
+
     throw new ProvisioningError(
       500,
       "INTEGRATION_CREATE_FAILED",
@@ -212,53 +177,13 @@ export async function createInstitutionIntegration(
     );
   }
 
-  const { error: secretError } = await supabase
-    .from("integracion_secretos")
-    .insert({
-      integracion_id: integration.id,
-      key_prefix: getSecretLookupPrefix(clientSecret),
-      secret_hash: hashClientSecret(clientSecret),
-      hash_algorithm: "SHA256",
-    });
+  const integration = Array.isArray(data) ? data[0] : null;
 
-  if (secretError) {
+  if (!integration) {
     throw new ProvisioningError(
       500,
-      "INTEGRATION_SECRET_FAILED",
-      "No fue posible crear el secreto de la integración",
-    );
-  }
-
-  const { error: scopeError } = await supabase
-    .from("integracion_scopes")
-    .insert(
-      scopeRows.map((scope) => ({
-        integracion_id: integration.id,
-        scope_id: scope.id,
-      })),
-    );
-
-  if (scopeError) {
-    throw new ProvisioningError(
-      500,
-      "INTEGRATION_SCOPE_FAILED",
-      "No fue posible asignar permisos a la integración",
-    );
-  }
-
-  const { data: activeIntegration, error: activateError } =
-    await supabase
-      .from("integraciones_institucionales")
-      .update({ estado: "ACTIVA" })
-      .eq("id", integration.id)
-      .select("id,institucion_id,nombre,client_id,estado,created_at")
-      .single();
-
-  if (activateError) {
-    throw new ProvisioningError(
-      500,
-      "INTEGRATION_ACTIVATION_FAILED",
-      "No fue posible activar la integración",
+      "INTEGRATION_CREATE_FAILED",
+      "RAES no devolvió la integración creada",
     );
   }
 
@@ -274,7 +199,7 @@ export async function createInstitutionIntegration(
   });
 
   return {
-    integration: activeIntegration,
+    integration,
     scopes,
     credentials: {
       clientId,
@@ -289,24 +214,38 @@ export async function createApiClient(
   actorId: string,
 ) {
   const supabase = getRaesSupabaseAdmin();
-  const scopeRows = await resolveScopes(input.scopes);
   const clientId = generateClientId();
   const clientSecret = generateClientSecret();
 
-  const { data: client, error: clientError } = await supabase
-    .from("clientes_api")
-    .insert({
-      nombre: input.nombre,
-      tipo_cliente: input.tipoCliente,
-      client_id: clientId,
-      estado: "SUSPENDIDO",
-    })
-    .select(
-      "id,nombre,tipo_cliente,client_id,estado,created_at,updated_at",
-    )
-    .single();
+  const { data, error } = await supabase.rpc(
+    "aprovisionar_cliente_api",
+    {
+      p_nombre: input.nombre,
+      p_tipo_cliente: input.tipoCliente,
+      p_client_id: clientId,
+      p_key_prefix: getSecretLookupPrefix(clientSecret),
+      p_secret_hash: hashClientSecret(clientSecret),
+      p_scope_codes: input.scopes,
+    },
+  );
 
-  if (clientError) {
+  if (error) {
+    if (error.message.includes("RAES_INVALID_SCOPES")) {
+      throw new ProvisioningError(
+        400,
+        "INVALID_SCOPES",
+        "Uno o más scopes no están registrados en RAES",
+      );
+    }
+
+    if (error.message.includes("RAES_INVALID_API_CLIENT_TYPE")) {
+      throw new ProvisioningError(
+        400,
+        "INVALID_API_CLIENT_TYPE",
+        "El tipo de cliente de API no es válido",
+      );
+    }
+
     throw new ProvisioningError(
       500,
       "API_CLIENT_CREATE_FAILED",
@@ -314,55 +253,13 @@ export async function createApiClient(
     );
   }
 
-  const { error: secretError } = await supabase
-    .from("cliente_api_secretos")
-    .insert({
-      cliente_api_id: client.id,
-      key_prefix: getSecretLookupPrefix(clientSecret),
-      secret_hash: hashClientSecret(clientSecret),
-      hash_algorithm: "SHA256",
-    });
+  const client = Array.isArray(data) ? data[0] : null;
 
-  if (secretError) {
+  if (!client) {
     throw new ProvisioningError(
       500,
-      "API_CLIENT_SECRET_FAILED",
-      "No fue posible crear el secreto del cliente",
-    );
-  }
-
-  const { error: scopeError } = await supabase
-    .from("cliente_api_scopes")
-    .insert(
-      scopeRows.map((scope) => ({
-        cliente_api_id: client.id,
-        scope_id: scope.id,
-      })),
-    );
-
-  if (scopeError) {
-    throw new ProvisioningError(
-      500,
-      "API_CLIENT_SCOPE_FAILED",
-      "No fue posible asignar permisos al cliente",
-    );
-  }
-
-  const { data: activeClient, error: activateError } =
-    await supabase
-      .from("clientes_api")
-      .update({ estado: "ACTIVO" })
-      .eq("id", client.id)
-      .select(
-        "id,nombre,tipo_cliente,client_id,estado,created_at,updated_at",
-      )
-      .single();
-
-  if (activateError) {
-    throw new ProvisioningError(
-      500,
-      "API_CLIENT_ACTIVATION_FAILED",
-      "No fue posible activar el cliente",
+      "API_CLIENT_CREATE_FAILED",
+      "RAES no devolvió el cliente de API creado",
     );
   }
 
@@ -378,7 +275,7 @@ export async function createApiClient(
   });
 
   return {
-    client: activeClient,
+    client,
     scopes: input.scopes,
     credentials: {
       clientId,
