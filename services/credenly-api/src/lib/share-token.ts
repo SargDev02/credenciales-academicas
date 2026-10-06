@@ -15,7 +15,7 @@ export function hashShareToken(token: string): string {
 }
 
 export function getShareTokenPrefix(token: string): string {
-  return token.slice(0, 20);
+  return token.slice(0, 16);
 }
 
 export function isValidShareTokenFormat(token: string): boolean {
