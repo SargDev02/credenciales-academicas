@@ -73,6 +73,7 @@
   - [x] Servicio backend Credenly creado.
   - [x] Validación server-side de access tokens implementada.
   - [x] Endpoint `/auth/me` implementado.
+  - [x] Health/readiness y protección 401 validados localmente.
   - [ ] Flujo real de registro/login pendiente de validación.
 - [ ] OCR.
 - [ ] Vinculación RAES.
