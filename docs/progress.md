@@ -68,6 +68,18 @@
   - [x] Sincronización base Institución A -> RAES validada.
   - [x] Registro idempotente de credencial vía conector validado.
 
+## Etapa 2.7 — Administración y consumidores RAES
+- [x] Modelo separado de clientes de API creado.
+- [x] Scope `persons:resolve` agregado.
+- [x] Autenticación de clientes no institucionales implementada.
+- [x] Endpoint de resolución de persona implementado.
+- [x] Consulta de credenciales por persona implementada sin persistencia en Credenly.
+- [x] Autenticación de administradores RAES implementada.
+- [x] API para registrar instituciones desde futura RAES Web implementada.
+- [x] API para generar integraciones institucionales desde futura RAES Web implementada.
+- [x] API para aprovisionar clientes como Credenly implementada.
+- [ ] Validación local y real pendiente.
+
 ## Etapa 3 — Backend Credenly
 - [ ] Supabase Auth.
   - [x] Servicio backend Credenly creado.
@@ -83,11 +95,14 @@
 - [ ] OCR.
 - [ ] Vinculación RAES.
   - [x] Esquema `vinculaciones_raes` verificado.
-  - [ ] Autenticación Credenly -> RAES pendiente.
-  - [ ] Resolución de persona RAES pendiente.
+  - [x] Base de autenticación Credenly -> RAES implementada en RAES.
+  - [ ] Credencial de servicio de Credenly pendiente de aprovisionar y validar.
+  - [x] Endpoint RAES de resolución implementado.
+  - [ ] Integración desde Credenly pendiente de validar.
 - [ ] Consulta de credenciales solo vía RAES API.
   - [x] Regla de no persistir credenciales confirmada en el esquema.
-  - [ ] Endpoint RAES para consulta ciudadana pendiente.
+  - [x] Endpoint RAES para consulta por persona implementado.
+  - [ ] Consumo desde Credenly pendiente de validar.
 - [ ] Comparticiones y verificación pública.
 
 ## Etapa 4 — Institución B
