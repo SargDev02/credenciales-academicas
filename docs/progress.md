@@ -75,6 +75,11 @@
   - [x] Endpoint `/auth/me` implementado.
   - [x] Health/readiness y protección 401 validados localmente.
   - [x] Flujo real de login con Supabase Auth validado.
+- [ ] Perfil ciudadano.
+  - [x] `/auth/me` validado con sesión real.
+  - [x] Creación y actualización de perfil validada.
+  - [x] Consulta de perfil validada.
+  - [x] Estado inicial `PENDIENTE_VERIFICACION` validado.
 - [ ] OCR.
 - [ ] Vinculación RAES.
   - [x] Esquema `vinculaciones_raes` verificado.
