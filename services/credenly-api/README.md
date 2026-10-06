@@ -30,6 +30,10 @@ Completa localmente:
 ```text
 CREDENLY_SUPABASE_URL
 CREDENLY_SUPABASE_SERVICE_ROLE_KEY
+
+RAES_API_BASE_URL=http://localhost:3001
+RAES_CREDENLY_CLIENT_ID
+RAES_CREDENLY_CLIENT_SECRET
 ```
 
 Nunca confirmes secretos reales en Git.
@@ -58,7 +62,18 @@ Authorization: Bearer <supabase_access_token>
 GET /api/v1/profile
 PUT /api/v1/profile
 Authorization: Bearer <supabase_access_token>
+
+GET  /api/v1/raes/link
+POST /api/v1/raes/link
+Authorization: Bearer <supabase_access_token>
+
+GET /api/v1/credentials
+Authorization: Bearer <supabase_access_token>
 ```
+
+`POST /api/v1/raes/link` no acepta número de documento directamente. Recibe el ID de una verificación de identidad que ya debe estar en estado `APROBADA`. Credenly toma la identidad extraída de esa verificación, resuelve la persona mediante RAES y confirma la vinculación de forma transaccional.
+
+`GET /api/v1/credentials` requiere una vinculación RAES en estado `VERIFICADA` y consulta las credenciales en vivo mediante RAES API. La respuesta declara `persistedByCredenly: false` para reforzar que Credenly no almacena copias académicas.
 
 ## Estado actual
 
@@ -70,4 +85,4 @@ La base de Credenly ya contiene:
 - `comparticiones`;
 - `accesos_compartidos`.
 
-La siguiente parte requiere una autenticación de servicio Credenly -> RAES para resolver identidad y consultar credenciales sin dar acceso directo a la base RAES.
+La autenticación de servicio Credenly -> RAES ya está implementada. El siguiente paso es conectar el flujo de OCR/verificación de identidad con `POST /api/v1/raes/link` y validar la consulta ciudadana de credenciales de extremo a extremo.
