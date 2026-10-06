@@ -78,7 +78,10 @@
 - [x] API para registrar instituciones desde futura RAES Web implementada.
 - [x] API para generar integraciones institucionales desde futura RAES Web implementada.
 - [x] API para aprovisionar clientes como Credenly implementada.
-- [ ] Validación local y real pendiente.
+- [x] Validación local y real completada.
+  - [x] Login administrativo real validado.
+  - [x] Cliente Credenly aprovisionado con `persons:resolve` y `credentials:read`.
+  - [x] Resolución de persona y consulta de credenciales verificadas contra RAES.
 
 ## Etapa 3 — Backend Credenly
 - [ ] Supabase Auth.
@@ -98,14 +101,18 @@
   - [x] Base de autenticación Credenly -> RAES implementada en RAES.
   - [x] Credencial de servicio de Credenly aprovisionada y validada.
   - [x] Endpoint RAES de resolución implementado.
-  - [ ] Integración desde Credenly pendiente de validar.
+  - [x] Integración desde Credenly validada de extremo a extremo.
+  - [x] Vinculación confirmada únicamente desde verificación de identidad `APROBADA`.
+  - [x] Perfil ciudadano activado al confirmar la vinculación.
 - [ ] Consulta de credenciales solo vía RAES API.
   - [x] Regla de no persistir credenciales confirmada en el esquema.
   - [x] Endpoint RAES para consulta por persona implementado.
   - [x] Consumo autenticado desde cliente Credenly validado contra RAES.
   - [x] Endpoint ciudadano `GET /api/v1/credentials` implementado sin persistencia académica.
   - [x] Readiness de Credenly incluye conectividad con RAES.
-  - [ ] Validación local del backend Credenly actualizado pendiente.
+  - [x] Readiness validado con base, Auth y RAES en estado `up`.
+  - [x] Consulta ciudadana validada con credenciales `ANULADA` y `REVOCADA`.
+  - [x] Respuesta validada con `source: "RAES"` y `persistedByCredenly: false`.
 - [ ] Comparticiones y verificación pública.
 
 ## Etapa 4 — Institución B
