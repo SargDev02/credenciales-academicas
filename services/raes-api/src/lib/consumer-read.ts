@@ -1,5 +1,47 @@
 import { getRaesSupabaseAdmin } from "./supabase-admin";
 
+type CredentialRow = {
+  id: string;
+  codigo_raes: string;
+  tipo: string;
+  categoria: string;
+  estado_actual: string;
+  version_actual: number;
+  fecha_registro_raes: string;
+  revocada_at: string | null;
+  motivo_revocacion: string | null;
+  anulada_at: string | null;
+  motivo_anulacion: string | null;
+  instituciones:
+    | { id: string; nombre: string; nit: string }
+    | { id: string; nombre: string; nit: string }[]
+    | null;
+  programas:
+    | { id: string; nombre: string; codigo_snies: string | null }
+    | { id: string; nombre: string; codigo_snies: string | null }[]
+    | null;
+  sedes:
+    | { id: string; nombre: string; municipio: string | null }
+    | { id: string; nombre: string; municipio: string | null }[]
+    | null;
+};
+
+type CredentialVersionRow = {
+  credencial_id: string;
+  numero_version: number;
+  tipo: string;
+  categoria: string;
+  titulo: string;
+  descripcion: string | null;
+  fecha_emision: string;
+  fecha_grado: string | null;
+  estado_reportado: string;
+  numero_acta: string | null;
+  numero_folio: string | null;
+  numero_libro: string | null;
+  created_at: string;
+};
+
 export class ConsumerReadError extends Error {
   constructor(
     public readonly status: 404 | 500,
@@ -104,8 +146,10 @@ export async function listCredentialsForPerson(
     );
   }
 
-  const credentialIds = (credentials ?? []).map(
-    (credential) => credential.id as string,
+  const credentialRows = (credentials ?? []) as unknown as CredentialRow[];
+
+  const credentialIds = credentialRows.map(
+    (credential) => credential.id,
   );
 
   if (credentialIds.length === 0) {
@@ -142,8 +186,10 @@ export async function listCredentialsForPerson(
     );
   }
 
-  return (credentials ?? []).map((credential) => {
-    const currentVersion = (versions ?? []).find(
+  const versionRows = (versions ?? []) as unknown as CredentialVersionRow[];
+
+  return credentialRows.map((credential) => {
+    const currentVersion = versionRows.find(
       (version) =>
         version.credencial_id === credential.id &&
         version.numero_version === credential.version_actual,
