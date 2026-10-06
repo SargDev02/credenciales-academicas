@@ -1,10 +1,12 @@
 import { z } from "zod";
 
 import {
+  AdminAuthError,
   adminAuthErrorResponse,
   authenticateAdmin,
 } from "@/lib/admin-auth";
 import {
+  ProvisioningError,
   createInstitution,
   listInstitutions,
   provisioningErrorResponse,
@@ -46,13 +48,12 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
-    const authResponse = adminAuthErrorResponse(error);
+    if (error instanceof AdminAuthError) {
+      return adminAuthErrorResponse(error);
+    }
 
-    if (
-      authResponse.status !== 500 ||
-      error instanceof Error && error.name === "AdminAuthError"
-    ) {
-      return authResponse;
+    if (error instanceof ProvisioningError) {
+      return provisioningErrorResponse(error);
     }
 
     return provisioningErrorResponse(error);
@@ -100,8 +101,12 @@ export async function POST(request: Request) {
       );
     }
 
-    if (error instanceof Error && error.name === "AdminAuthError") {
+    if (error instanceof AdminAuthError) {
       return adminAuthErrorResponse(error);
+    }
+
+    if (error instanceof ProvisioningError) {
+      return provisioningErrorResponse(error);
     }
 
     return provisioningErrorResponse(error);
