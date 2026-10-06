@@ -6,6 +6,7 @@ import {
   type RaesCredential,
 } from "./raes-client";
 import {
+  RaesLinkError,
   getLiveCredentialsForUser,
   getRaesLinkForUser,
 } from "./raes-link";
@@ -482,6 +483,26 @@ export function shareErrorResponse(error: unknown): Response {
         message: error.message,
       },
       { status: error.status },
+    );
+  }
+
+  if (error instanceof RaesLinkError) {
+    return Response.json(
+      {
+        error: error.code,
+        message: error.message,
+      },
+      { status: error.status },
+    );
+  }
+
+  if (error instanceof RaesClientError) {
+    return Response.json(
+      {
+        error: error.code,
+        message: error.message,
+      },
+      { status: error.status === 504 ? 504 : 502 },
     );
   }
 
