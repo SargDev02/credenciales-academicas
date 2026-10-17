@@ -84,19 +84,22 @@
   - [x] Resolución de persona y consulta de credenciales verificadas contra RAES.
 
 ## Etapa 3 — Backend Credenly
-- [ ] Supabase Auth.
+- [x] Supabase Auth.
   - [x] Servicio backend Credenly creado.
   - [x] Validación server-side de access tokens implementada.
   - [x] Endpoint `/auth/me` implementado.
   - [x] Health/readiness y protección 401 validados localmente.
   - [x] Flujo real de login con Supabase Auth validado.
-- [ ] Perfil ciudadano.
+- [x] Perfil ciudadano.
   - [x] `/auth/me` validado con sesión real.
   - [x] Creación y actualización de perfil validada.
   - [x] Consulta de perfil validada.
   - [x] Estado inicial `PENDIENTE_VERIFICACION` validado.
-- [ ] OCR.
-- [ ] Vinculación RAES.
+- [x] OCR.
+  - [x] OCR local con `TESSERACT_LOCAL` validado con imagen sintética.
+  - [x] Extracción de identidad y aprobación documental validadas.
+  - [x] Flujo OCR -> vinculación RAES validado.
+- [x] Vinculación RAES.
   - [x] Esquema `vinculaciones_raes` verificado.
   - [x] Base de autenticación Credenly -> RAES implementada en RAES.
   - [x] Credencial de servicio de Credenly aprovisionada y validada.
@@ -104,7 +107,7 @@
   - [x] Integración desde Credenly validada de extremo a extremo.
   - [x] Vinculación confirmada únicamente desde verificación de identidad `APROBADA`.
   - [x] Perfil ciudadano activado al confirmar la vinculación.
-- [ ] Consulta de credenciales solo vía RAES API.
+- [x] Consulta de credenciales solo vía RAES API.
   - [x] Regla de no persistir credenciales confirmada en el esquema.
   - [x] Endpoint RAES para consulta por persona implementado.
   - [x] Consumo autenticado desde cliente Credenly validado contra RAES.
@@ -113,7 +116,18 @@
   - [x] Readiness validado con base, Auth y RAES en estado `up`.
   - [x] Consulta ciudadana validada con credenciales `ANULADA` y `REVOCADA`.
   - [x] Respuesta validada con `source: "RAES"` y `persistedByCredenly: false`.
-- [ ] Comparticiones y verificación pública.
+- [x] Comparticiones y verificación pública.
+  - [x] Tokens aleatorios y hash SHA-256 implementados.
+  - [x] Creación, listado y revocación de comparticiones implementados.
+  - [x] Verificación pública consulta la credencial en vivo desde RAES.
+  - [x] Campos visibles opcionales con lista permitida implementados.
+  - [x] Registro de accesos con IP pseudonimizada implementado.
+  - [x] Credenly mantiene solo `raes_credencial_id`, sin snapshot académico.
+  - [x] Typecheck sin errores y 15/15 tests aprobados.
+  - [x] Compartición real validada con credencial RAES revocada.
+  - [x] Acceso público validado con `source: "RAES"` y `persistedByCredenly: false`.
+  - [x] Revocación validada con respuesta pública posterior `410 SHARE_REVOKED`.
+  - [x] Auditoría de accesos validada con resultados `OK` y `ENLACE_REVOCADO` e IP pseudonimizada.
 
 ## Etapa 4 — Institución B
 - [ ] Conector UdeA.
