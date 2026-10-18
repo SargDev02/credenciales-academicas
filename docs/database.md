@@ -23,3 +23,9 @@ La identidad de persona usa unicidad compuesta `(tipo_documento, numero_document
 Tablas: `perfiles`, `verificaciones_identidad`, `vinculaciones_raes`, `comparticiones`, `accesos_compartidos`.
 
 No existe una tabla de credenciales. `raes_persona_id` y `raes_credencial_id` son referencias externas, no foreign keys.
+
+La confirmación de vinculaciones solo puede ejecutarse desde `service_role`; sus
+permisos se revocan explícitamente a `PUBLIC`, `anon` y `authenticated`.
+Los ciudadanos pueden insertar su perfil con nombres y apellidos y editar esos
+dos campos bajo RLS; el estado de verificación y las fechas son controlados por
+el servidor. Las migraciones de permisos no cambian entidades ni unicidad.
