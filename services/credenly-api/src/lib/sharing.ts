@@ -57,7 +57,7 @@ type ShareRow = {
 
 export class ShareError extends Error {
   constructor(
-    public readonly status: 400 | 404 | 409 | 410 | 500 | 502 | 504,
+    public readonly status: 400 | 404 | 409 | 410 | 500 | 502 | 503 | 504,
     public readonly code: string,
     message: string,
   ) {
@@ -132,7 +132,6 @@ export async function createShare(
     if (error) {
       console.error("Share creation failed", {
         code: error.code,
-        message: error.message,
       });
     }
 
@@ -338,6 +337,7 @@ async function logShareAccess(
       resultado,
       code: error.code,
     });
+    throw new ShareError(503, "ACCESS_AUDIT_UNAVAILABLE", "No fue posible registrar el acceso; intenta nuevamente");
   }
 }
 
@@ -513,10 +513,7 @@ export function shareErrorResponse(error: unknown): Response {
     );
   }
 
-  console.error("Unexpected share error", {
-    message:
-      error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Unexpected share error");
 
   return Response.json(
     {
