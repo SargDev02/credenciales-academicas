@@ -178,6 +178,19 @@ Hallazgos previos y siguientes pasos:
 - Fases 2–5 pendientes: UdeA, integración multiinstitución, hardening integral
   y revisión final. Esta validación no equivale a certificación de todo el backend.
 
+Preparación de Fase 2:
+
+- Conector Politécnico, transformaciones, contratos, idempotencia y sincronización
+  inspeccionados. `connector-udea` solo contiene un README; aún no hay implementación.
+- Organización institucional confirmada desde la sesión web del usuario:
+  `sesolqvprebaoswferuw`; Institución A `fswppckzhvpcbybslnop`,
+  Institución B `taoapbewllieuephaxsy`. Universidad de Antioquia estaba pausada;
+  reanudación solicitada sobre el proyecto existente del plan gratuito.
+- Pendiente completar el arranque, inspeccionar el esquema de B y autenticar el
+  perfil CLI `instituciones`. La sesión de Chrome no autentica la CLI.
+- PR de revisión en borrador: https://github.com/SargDev02/credenciales-academicas/pull/14.
+  No se ha fusionado a `main` ni desarrollado interfaces.
+
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web.
 - [ ] Credenly Web.
