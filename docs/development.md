@@ -69,3 +69,21 @@ Las dos cuentas CLI se seleccionan explícitamente: `--profile supabase` para
 RAES/Credenly y `--profile /ruta/al/perfil/instituciones.toml` para las fuentes.
 Un perfil personalizado es un TOML con endpoints públicos y un nombre de almacén
 local; no contiene tokens. El login se guarda en el llavero del sistema.
+
+## Verificación multiinstitución con datos existentes
+
+Con RAES local en 3101, desde `services/raes-api`:
+
+```bash
+node --env-file=.env.local --import=tsx scripts/verify-multi-institution.ts
+```
+
+Lee las dos fuentes, verifica identidad/linaje y aislamiento en RAES, consulta la
+API como consumidor y ejecuta la lectura real del servicio Credenly con su vínculo
+existente. Solo imprime métricas. No inicia sesión como un ciudadano ni modifica
+su identidad; el recorrido de la ruta ciudadana se prueba con transporte simulado.
+
+`supabase/raes/tests/credential_lifecycle_existing_data.sql` prueba las RPC sobre
+una credencial vigente existente. Cada escenario se revierte por subtransacción y
+la transacción externa se revierte también. No ejecutar cambios manuales de estado
+para sustituir esta prueba: los estados terminales normales son irreversibles.

@@ -220,6 +220,30 @@ Pendiente para Fase 3: las fuentes contienen 12 identidades exclusivas de A y 17
 sin intersección; los escenarios compartidos requieren un conjunto de validación
 apropiado. No se alteraron documentos fuente para simular coincidencias.
 
+## Finalización backend — Fase 3: validación multiinstitución (2026-10-18)
+
+- [x] A/B reales: cada identidad fuente resuelve a una única persona maestra;
+  fuente institucional y credencial asociadas a la persona correcta.
+- [x] Aislamiento real: la otra institución recibe 404 para códigos ajenos.
+- [x] E: reejecución de credenciales UdeA conserva 17 credenciales, 19 versiones
+  y 19 eventos. Poli conserva sus fuentes al repetir sincronización base.
+- [x] F/G: RPC reales de corrección, revocación y anulación sobre una credencial
+  UdeA existente; versiones y eventos comprobados y cambios revertidos por
+  subtransacciones. No se crean credenciales de prueba persistentes.
+- [x] H: integración de servicio Credenly -> RAES real con su vinculación ciudadana
+  existente. Una prueba de ruta con transporte simulado verifica dos instituciones,
+  `source: RAES`, `persistedByCredenly: false` y ausencia de escrituras académicas.
+- [ ] C/D reales: ninguna identidad documental está presente en ambas fuentes.
+  No se cambian documentos ni se añaden datos a las instituciones para forzarlo.
+  Tampoco se presenta la prueba simulada de Credenly como integración real C/D.
+
+Verificador reproducible: `services/raes-api/scripts/verify-multi-institution.ts`.
+Resultado real: A 12 personas/12 credenciales fuente; B 17/17; lecturas cruzadas 404;
+servicio Credenly correcto, sin mutaciones académicas. Se detecta una discrepancia
+histórica de estado en la credencial Poli no adoptada; requiere decisión explícita
+antes de reconciliar datos ajenos al conector. Total de pruebas locales: 78.
+La Fase 3 permanece abierta por C/D y la revisión de esa credencial histórica.
+
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web.
 - [ ] Credenly Web.
