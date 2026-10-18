@@ -114,9 +114,9 @@ export async function listCredentialsForPerson(
     );
   }
 
-  const { data: credentials, error: credentialsError } =
-    await supabase
-      .from("credenciales")
+  const credentialRows: CredentialRow[] = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await supabase.from("credenciales")
       .select(
         [
           "id",
@@ -136,17 +136,13 @@ export async function listCredentialsForPerson(
         ].join(","),
       )
       .eq("persona_id", personId)
-      .order("fecha_registro_raes", { ascending: false });
-
-  if (credentialsError) {
-    throw new ConsumerReadError(
-      500,
-      "CREDENTIAL_LIST_FAILED",
-      "No fue posible consultar las credenciales en RAES",
-    );
+      .order("fecha_registro_raes", { ascending: false })
+      .order("id", { ascending: false })
+      .range(offset, offset + 999);
+    if (error || !data) throw new ConsumerReadError(500, "CREDENTIAL_LIST_FAILED", "No fue posible consultar las credenciales en RAES");
+    credentialRows.push(...data as unknown as CredentialRow[]);
+    if (data.length < 1000) break;
   }
-
-  const credentialRows = (credentials ?? []) as unknown as CredentialRow[];
 
   const credentialIds = credentialRows.map(
     (credential) => credential.id,
@@ -156,8 +152,12 @@ export async function listCredentialsForPerson(
     return [];
   }
 
-  const { data: versions, error: versionsError } = await supabase
-    .from("credencial_versiones")
+  const versionRows: CredentialVersionRow[] = [];
+  // Fetch only each current version in bounded batches; old history must not
+  // consume the PostgREST row limit or hide another credential's current version.
+  for (let offset = 0; offset < credentialRows.length; offset += 50) {
+    const batch = credentialRows.slice(offset, offset + 50);
+    const { data, error } = await supabase.from("credencial_versiones")
     .select(
       [
         "credencial_id",
@@ -175,18 +175,11 @@ export async function listCredentialsForPerson(
         "created_at",
       ].join(","),
     )
-    .in("credencial_id", credentialIds)
-    .order("numero_version", { ascending: false });
-
-  if (versionsError) {
-    throw new ConsumerReadError(
-      500,
-      "CREDENTIAL_VERSION_LIST_FAILED",
-      "No fue posible consultar las versiones actuales",
-    );
+      .in("credencial_id", batch.map(c => c.id))
+      .or(batch.map(c => `and(credencial_id.eq.${c.id},numero_version.eq.${c.version_actual})`).join(","));
+    if (error || !data) throw new ConsumerReadError(500, "CREDENTIAL_VERSION_LIST_FAILED", "No fue posible consultar las versiones actuales");
+    versionRows.push(...data as unknown as CredentialVersionRow[]);
   }
-
-  const versionRows = (versions ?? []) as unknown as CredentialVersionRow[];
 
   return credentialRows.map((credential) => {
     const currentVersion = versionRows.find(
@@ -195,9 +188,10 @@ export async function listCredentialsForPerson(
         version.numero_version === credential.version_actual,
     );
 
+    if (!currentVersion) throw new ConsumerReadError(500, "CREDENTIAL_CURRENT_VERSION_MISSING", "No fue posible obtener la versión vigente de una credencial");
     return {
       ...credential,
-      currentVersion: currentVersion ?? null,
+      currentVersion,
     };
   });
 }
