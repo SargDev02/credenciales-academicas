@@ -5,11 +5,13 @@ Proyecto de integración y verificación de credenciales académicas.
 ## Arquitectura
 
 ```text
-Institución A ─┐
-               ├──> RAES API ───> RAES DB
-Institución B ─┘                    │
-                                    ▼
-                                 Credenly
+Institución A DB -> connector-poli -> RAES API <- connector-udea <- Institución B DB
+                                      |
+                                      v
+                                   RAES DB
+
+Credenly API -> RAES API (consulta académica)
+Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 ```
 
 - **Instituciones**: originan la información académica.

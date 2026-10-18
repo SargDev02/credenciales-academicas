@@ -73,17 +73,11 @@ Si el mismo `identificadorOrigen` de una institución intenta cambiar a otro doc
 
 Los payloads representan la fotografía actual del registro de origen. Los campos opcionales omitidos se normalizan a `null` en RAES.
 
-## Fuera de alcance de esta subetapa
+## Extensiones implementadas
 
-Todavía no se implementan:
-
-- programa ↔ sede;
-- credenciales;
-- idempotencia HTTP de mutaciones;
-- historial de credenciales;
-- correcciones, revocaciones y anulaciones.
-
-Esos componentes se agregan después de validar esta sincronización base.
+Programa-sede, registro idempotente, versiones, correcciones, revocaciones y
+anulaciones ya forman parte del backend. Los conectores usan los contratos y rutas
+compartidos; la evidencia real y escenarios pendientes se mantienen en `progress.md`.
 
 ## Reconciliación de conectores
 

@@ -87,3 +87,20 @@ su identidad; el recorrido de la ruta ciudadana se prueba con transporte simulad
 una credencial vigente existente. Cada escenario se revierte por subtransacción y
 la transacción externa se revierte también. No ejecutar cambios manuales de estado
 para sustituir esta prueba: los estados terminales normales son irreversibles.
+
+## Verificación pública real
+
+Con RAES en 3101 y Credenly compilado en 3102, desde `services/credenly-api`:
+
+```bash
+RAES_API_BASE_URL=http://localhost:3101 node --env-file=.env.local --import=tsx scripts/verify-public-sharing.ts
+```
+
+Usa el ciudadano de prueba ya vinculado, crea una compartición por servicio interno,
+consulta la ruta HTTP pública y la revoca. Verifica 200 -> revocación -> 410,
+procedencia RAES, tokens hasheados y auditoría pseudonimizada. No inicia sesión
+como el ciudadano ni cambia datos académicos. Incluso si falla una aserción, el
+script revoca el enlace en `finally`. No imprime el token ni identidades.
+
+Las pruebas SQL de `supabase/credenly/tests` comprueban ejecución exclusiva del
+servidor para vinculación, permisos de columnas del perfil y RLS de propiedad.

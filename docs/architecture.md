@@ -3,11 +3,13 @@
 ## Vista general
 
 ```text
-Base Institución A -> Conector A ┐
-                                 ├-> RAES API -> RAES DB
-Base Institución B -> Conector B ┘                │
-                                                   v
-                                               Credenly
+Institución A DB -> connector-poli -> RAES API <- connector-udea <- Institución B DB
+                                      |
+                                      v
+                                   RAES DB
+
+Credenly API -> RAES API (consulta académica)
+Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 ```
 
 Las bases institucionales representan sistemas académicos naturales y no conocen RAES.
