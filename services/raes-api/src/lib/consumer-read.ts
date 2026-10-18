@@ -215,9 +215,7 @@ export function consumerReadErrorResponse(
     );
   }
 
-  console.error("Unexpected RAES consumer read error", {
-    message: error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Unexpected RAES consumer read error");
 
   return Response.json(
     {

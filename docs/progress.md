@@ -133,6 +133,46 @@
 - [ ] Conector UdeA.
 - [ ] Pruebas multiinstitución.
 
+## Finalización backend — Fase 1: auditoría de clientes API (2026-10-18)
+
+- [x] Repositorio verificado: `main` limpio en `024420e`, actualizado sin cambios;
+  trabajo en `feat/backend-completion`, sin merge a `main`.
+- [x] Esquema real de `auditoria`, constraint, RLS y uso administrativo inspeccionados.
+- [x] Migración nueva `20261018163434_api_client_audit.sql` aplicada en RAES y
+  registrada en `supabase_migrations.schema_migrations`; históricos preservados.
+- [x] `CLIENTE_API` admitido conservando `ADMIN`, `INTEGRACION`, `SISTEMA`.
+- [x] Consultas de resolución y credenciales auditadas con cliente, operación,
+  recurso, resultado, endpoint fijo y fecha; sin PII adicional ni secretos.
+- [x] Scope insuficiente auditado con actor autenticado; entradas inválidas 400;
+  errores internos sanitizados; fallo de auditoría devuelve 503 sin datos.
+- [x] 22 pruebas nuevas de rutas/auth/lectura/auditoría con transporte PostgREST
+  simulado; 62/62 pruebas del monorepo pasan (RAES 34, Credenly 15,
+  contratos 8, conector Politécnico 5).
+- [x] `pnpm typecheck`, `pnpm test`, `pnpm -r --if-present build` pasan.
+  `pnpm lint` termina bien pero no ejecuta linters: faltan scripts por paquete.
+- [x] Integración real: autenticación 200, resolución 200, consulta 200,
+  UUID inválido 400, JSON inválido 400, sin autorización 401; cuatro registros
+  de auditoría verificados sin modificar datos académicos.
+- [x] Prueba SQL transaccional de actores y RLS ejecutada contra RAES;
+  `anon` y `authenticated` no pueden leer ni insertar auditoría.
+
+Hallazgos previos y siguientes pasos:
+
+- El plugin Supabase conectado muestra otra cuenta. La CLI existente accede a
+  RAES/Credenly; las instituciones están en una cuenta distinta. Se requiere
+  autenticar un perfil separado `instituciones` antes de inspeccionar UdeA.
+- CLI 2.121.0 falló en la comprobación de conexión con rol temporal. Se verificó
+  el esquema y se aplicó la migración mediante Management API usando CLI
+  2.81.3, vinculado en una carpeta temporal fuera del repositorio. DDL e historial
+  de esta migración se registraron en una misma transacción SQL.
+- Security Advisor detecta exposición previa de las RPC `SECURITY DEFINER`
+  `aprovisionar_cliente_api` y `aprovisionar_integracion_institucional` a `anon`
+  y `authenticated`. Corregir grants en una migración y commit separados.
+- Protección de contraseñas filtradas deshabilitada en Supabase Auth. Pendiente
+  evaluar opciones gratuitas antes de producción; no se habilitan servicios pagos.
+- Fases 2–5 pendientes: UdeA, integración multiinstitución, hardening integral
+  y revisión final. Esta validación no equivale a certificación de todo el backend.
+
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web.
 - [ ] Credenly Web.
