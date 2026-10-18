@@ -74,14 +74,34 @@ test("cambios de estado terminal se reportan sin destruir historial", async () =
   assert.deepEqual(summary.terminalStateConflicts, ["TEST-001"]);
   assert.equal(raes.events.length, 2);
 });
-test("no adopta credenciales de otras operaciones", async () => {
-  const raes = new FakeRaes(); const s = snapshot(); await synchronize(s, raes, options);
-  raes.rows.get("TEST-001")!.creationKey = "manual-creation";
-  s.credentials[0]!.titulo = "Cambio externo";
-  const summary = await synchronize(s, raes, options);
-  assert.deepEqual(summary.existingCredentialsNotAdopted, ["TEST-001"]);
-  assert.equal(raes.history.length, 1);
-});
+for (const creationKey of ["manual-creation", null]) {
+  for (const terminal of ["VIGENTE", "REVOCADA", "ANULADA"] as const) {
+    test(`no adopta ni modifica un alta ajena (${creationKey ?? "sin operación propia"}, ${terminal})`, async () => {
+      const raes = new FakeRaes(); const s = snapshot();
+      // Seed a pre-existing record without claiming ownership for this connector.
+      await raes.createCredential({
+        codigoOrigen: s.credentials[0]!.codigo, personaIdentificadorOrigen: "student",
+        tipo: "DIPLOMA", categoria: "TITULO", titulo: "Título histórico",
+        fechaEmision: "2025-01-01",
+      }, { idempotencyKey: "external-operation" });
+      const existing = raes.rows.get("TEST-001")!;
+      existing.creationKey = creationKey; existing.state = terminal; existing.version = 3;
+      const before = structuredClone({ rows: raes.rows, history: raes.history, events: raes.events });
+      s.credentials[0]!.titulo = "Cambio desde fuente no administrada";
+      s.credentials[0]!.estado = terminal === "VIGENTE" ? "REVOCADO" : "VIGENTE";
+      for (let run = 0; run < 2; run++) {
+        const summary = await synchronize(s, raes, { mode: "credentials", credentialCode: null });
+        assert.deepEqual(summary.existingCredentialsNotAdopted, ["TEST-001"]);
+        assert.equal(summary.credentialsCreatedOrReplayed, 0);
+        assert.equal(summary.credentialsCorrected, 0);
+        assert.equal(summary.credentialsRevoked, 0);
+        assert.equal(summary.credentialsAnnulled, 0);
+        assert.deepEqual({ rows: raes.rows, history: raes.history, events: raes.events }, before);
+        assert.equal(raes.writes, 0);
+      }
+    });
+  }
+}
 test("matrícula de otra persona falla antes de escribir en RAES", async () => {
   const raes = new FakeRaes(); const s = snapshot(); s.enrollments[0]!.estudiante_id = "other";
   await assert.rejects(synchronize(s, raes, options)); assert.equal(raes.writes, 0);
