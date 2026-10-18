@@ -1,9 +1,12 @@
 # Progreso
 
 Estado al 2026-10-18: auditoría de clientes y ambos conectores implementados y
-validados; hardening aplicado y revisión técnica realizada. El cierre integral del
-backend permanece pendiente de los casos C/D reales y de resolver la credencial
-histórica no adoptada. No se han iniciado interfaces ni despliegues frontend.
+validados; hardening aplicado y revisión técnica realizada. C/D en RAES y la
+lectura del cliente real Credenly ya pasan con el fixture compartido aprobado.
+La credencial legacy se preserva por decisión explícita. Falta la prueba HTTP
+ciudadana con la identidad compartida, pendiente de autorización para una cuenta
+sintética temporal en Credenly; el cierre funcional aún no se marca. No se han
+iniciado interfaces ni despliegues frontend.
 
 ## Etapa 0 — Infraestructura de datos
 - [x] Institución A.
@@ -240,16 +243,19 @@ apropiado. No se alteraron documentos fuente para simular coincidencias.
 - [x] H: integración de servicio Credenly -> RAES real con su vinculación ciudadana
   existente. Una prueba de ruta con transporte simulado verifica dos instituciones,
   `source: RAES`, `persistedByCredenly: false` y ausencia de escrituras académicas.
-- [ ] C/D reales: ninguna identidad documental está presente en ambas fuentes.
-  No se cambian documentos ni se añaden datos a las instituciones para forzarlo.
-  Tampoco se presenta la prueba simulada de Credenly como integración real C/D.
+- [x] C/D en RAES: fixture compartido autorizado posteriormente; una persona
+  maestra, dos fuentes y dos credenciales institucionales con procedencia correcta.
+  El cliente real Credenly las recupera por RAES HTTP. Ver evidencia de cierre
+  debajo; la ruta ciudadana compartida sigue pendiente de autorización separada.
 
 Verificador reproducible: `services/raes-api/scripts/verify-multi-institution.ts`.
 Resultado real: A 12 personas/12 credenciales fuente; B 17/17; lecturas cruzadas 404;
 servicio Credenly correcto, sin mutaciones académicas. Se detecta una discrepancia
 histórica de estado en la credencial Poli no adoptada; requiere decisión explícita
 antes de reconciliar datos ajenos al conector. Total de pruebas locales: 78.
-La Fase 3 permanece abierta por C/D y la revisión de esa credencial histórica.
+Esta fue la validación inicial previa al fixture compartido aprobado. La revisión
+legacy quedó resuelta conservándolo deliberadamente; el único criterio pendiente
+de esta fase es la lectura HTTP ciudadana compartida descrita más abajo.
 
 ## Finalización backend — Fase 4: hardening (2026-10-18)
 
@@ -284,12 +290,12 @@ La Fase 3 permanece abierta por C/D y la revisión de esa credencial histórica.
 | Comprobación | Resultado |
 | --- | --- |
 | `pnpm typecheck` | Pasa en todos los paquetes aplicables |
-| `pnpm test` | 112/112: RAES 59, Credenly 29, motor 11, contratos 8, Poli 5 |
+| `pnpm test` | 117/117: RAES 59, Credenly 29, motor 16, contratos 8, Poli 5 |
 | `pnpm lint` | Termina bien; ningún paquete declara linter, limitación previa |
 | `pnpm -r --if-present build` | Contratos y ambos backends compilan |
 | Readiness HTTP real | RAES 200; Credenly 200 con base y RAES disponibles |
 | Auditoría de clientes real | Auth/lecturas 200; UUID/JSON 400; sin Auth 401; eventos verificados |
-| Integración multiinstitución real | 29 personas/fuentes; sin duplicados; aislamiento 404 |
+| Integración multiinstitución real | 30 personas/31 fuentes; una identidad compartida; sin duplicados; aislamiento 404 |
 | Ciclo de vida real SQL | Corrección, revocación, anulación e historial pasan con rollback |
 | Compartición pública real | 200, revocación y posterior 410; auditoría y hash comprobados |
 | Security Advisor RAES/Credenly | Solo permanece protección de contraseñas filtradas deshabilitada |
@@ -303,31 +309,103 @@ están registradas en sus respectivas bases; los históricos no se editaron.
 
 ### Pendientes y decisiones antes de producción
 
-1. **Casos C/D reales**: las fuentes no comparten documentos. Falta un conjunto
-   aprobado que cubra una persona maestra con dos fuentes y credenciales de ambas
-   instituciones. No se alteraron datos fuente ni se inventaron coincidencias.
-2. **Credencial histórica Poli**: `SIM-POLI-2025-0001` tiene estado RAES distinto
-   de la fuente y un alta ajena al conector. Requiere revisión/decisión explícita;
-   no se adopta ni cambia una credencial terminal automáticamente.
-3. **Prueba de identidad**: Tesseract extrae texto y la confianza OCR actual permite
+1. **Prueba de identidad**: Tesseract extrae texto y la confianza OCR actual permite
    aprobación documental; no prueba autenticidad del documento ni titularidad.
    El piloto usa datos sintéticos; el mecanismo de verificación para personas
    reales necesita una decisión antes de exponerlo en producción.
-4. **Recuperación/reproducibilidad**: el repositorio contiene ampliaciones y RPC,
+2. **Recuperación/reproducibilidad**: el repositorio contiene ampliaciones y RPC,
    pero no todo el DDL inicial de los cuatro proyectos. Antes de una instalación
    nueva deben versionarse/validarse baselines sin datos personales ni secretos y
    probar restauración. No se inventó un esquema inicial durante esta revisión.
-5. **Operación**: definir política gratuita de límites de acceso, retención de OCR
+3. **Operación**: definir política gratuita de límites de acceso, retención de OCR
    y auditoría, rotación de secretos y orden de sincronizaciones concurrentes.
    Ajustar tamaño de uploads y tiempos de OCR al despliegue real; solo se probaron
    estos límites localmente. No se habilitaron servicios o planes pagos.
-6. **Herramientas de calidad**: falta linter por paquete. Protección de contraseñas
-   filtradas deshabilitada en ambos proyectos; evaluar opciones permitidas sin
-   activar cargos. Las migraciones cierran los permisos de RPC observados.
+4. **Protección de contraseñas filtradas**: deshabilitada en ambos proyectos;
+   evaluar opciones permitidas sin activar cargos. Las migraciones cierran los
+   permisos de RPC observados.
+5. **Herramientas de calidad**: falta linter por paquete.
 
-La revisión técnica está documentada; el backend no se declara cerrado ni listo
-para producción mientras permanezcan estos criterios. Próximo paso: acordar los
-casos compartidos y la resolución del registro histórico antes de iniciar interfaces.
+Los pendientes anteriores corresponden a producción, separados del cierre funcional
+del prototipo. El backend no se declara listo para producción. El cierre del
+prototipo espera únicamente la comprobación ciudadana indicada a continuación.
+
+## Resolución explícita de C/D y ownership legacy — PR #14 (2026-10-18)
+
+### Datos añadidos y validación real
+
+- [x] Se agregaron exactamente **3 filas por fuente**: un estudiante, una matrícula
+  y una credencial; documento compartido `CC / SYNTH-CD-20261018-001`, sin PII real.
+  IDs, códigos, campos y relaciones completos en
+  `supabase/fixtures/multi-institution/README.md`; SQL transaccional por institución.
+- [x] El documento no existía previamente en A, B ni RAES. Las huellas de las siete
+  tablas originales de cada fuente son idénticas antes/después, excluyendo solo
+  los nuevos UUID del fixture. No se alteraron personas, matrículas ni credenciales
+  existentes, ni se agregaron sedes/programas.
+- [x] Ambos conectores completos crearon una credencial cada uno y resolvieron
+  una sola persona maestra: `daf57960-31cb-432b-8e45-684c63651f85`.
+  Tiene exactamente **2 fuentes**, con UUID institucionales diferentes.
+- [x] Credencial A `SYNTH-POLI-CD-20261018-001`: RAES
+  `981200b3-a30c-4088-ae09-84b27beab01b`, institución
+  `63829b97-c4d7-4467-a56a-f98c0c1f2c3a`.
+- [x] Credencial B `SYNTH-UDEA-CD-20261018-001`: RAES
+  `b80fb8d4-6a6c-4453-948a-62018be8b7b6`, institución
+  `6d6a4b44-db0b-40a3-9863-0fc12f9f0d8b`.
+- [x] RAES HTTP y el cliente real Credenly recuperan ambas para la misma persona,
+  preservando institución y procedencia. Ambas están VIGENTE, versión 1, con un
+  evento REGISTRADA. No se insertó la persona ni sus credenciales directamente en
+  RAES ni se escribió información académica en Credenly.
+- [x] Segunda sincronización completa de A y B: **0 altas, 0 correcciones, 0
+  revocaciones y 0 anulaciones**; A reporta 12 sin cambios + una legacy preservada;
+  B reporta 18 sin cambios. Huellas antes/después `IDENTICAL`: 30 personas maestras,
+  31 fuentes, 32 credenciales, 39 operaciones, 39 versiones y 39 eventos.
+  La auditoría de consultas puede crecer; no se confunde con eventos académicos.
+- [ ] Consulta HTTP ciudadana compartida con `source: RAES` y
+  `persistedByCredenly: false`: preparada en
+  `services/credenly-api/scripts/verify-shared-person.ts`, **aún no ejecutada**.
+  Requiere cuenta/verificación/vinculación sintéticas temporales y limpieza, cuya
+  autorización se consultó por la restricción «No crear nada desde Credenly».
+  No se asume aprobación por el tiempo transcurrido. La prueba de ruta con datos
+  simulados sigue pasando, pero no sustituye esta comprobación HTTP real.
+
+### Decisión definitiva sobre SIM-POLI-2025-0001
+
+No es un fallo de ownership del conector. El registro RAES
+`2921c117-d4ac-4132-9e4d-2c4d87f8c5fc` se creó el **2026-10-05 18:58:52 UTC** con
+operación `343be5a4-d101-4eb8-90a0-0200103aca31` y clave
+`credencial-SIM-POLI-2025-0001`. El conector espera
+`poli:create:7cf56163-1f19-4dce-b096-30f8e02b7b49`. La integración es la misma,
+pero la operación de alta no pertenece al esquema de claves del conector.
+El primer commit de implementación del conector, `ab31cd6`, es del
+2026-10-05 23:45:32 UTC, posterior al alta y a sus cambios históricos.
+
+Los eventos originales son REGISTRADA (18:58:52 UTC), CORREGIDA (23:35:20 UTC) y
+REVOCADA (23:36:16 UTC), todos del 5 de octubre. Continúa **REVOCADA, versión 3**,
+con `updated_at = 2026-10-05T23:36:16.708994Z`, aunque la fuente aún dice VIGENTE.
+Adoptarla para reconciliar podría corregir un estado terminal o sobrescribir la
+intención del historial. Se preserva deliberadamente, como autorizó el usuario.
+
+Se conserva `existingCredentialsNotAdopted`; no se hizo migración, cambio de datos
+ni excepción por código. La prueba genérica cubre claves ajenas o ausentes, estados
+VIGENTE/REVOCADA/ANULADA, contenido y estado divergentes y dos reejecuciones:
+ninguna adopción, creación, corrección o transición; filas, historial y eventos intactos.
+
+### Revalidación de este bloque
+
+- `pnpm typecheck`, `pnpm test` (**117/117**), builds aplicables y `pnpm lint` pasan.
+  Lint sigue sin scripts por paquete; no se presenta como análisis estático real.
+- Los dos verificadores nuevos/modificados se comprobaron además con TypeScript
+  estricto; el script ciudadano temporal aún no tiene resultado de ejecución.
+- Cinco pruebas SQL reales pasan con rollback: auditoría, aprovisionamiento,
+  ciclo de vida, vinculación y permisos de perfiles.
+- Auditoría HTTP real pasa; compartición pública 200 -> revocación -> 410 pasa y
+  el enlace de prueba queda revocado. Readiness de ambos servicios devuelve 200.
+- Cero duplicados de identidad, fuente o credencial; cero constraints sin validar
+  y cero tablas públicas sin RLS en RAES. Credenly conserva solo sus cinco tablas
+  operativas y hashes válidos; no almacena estado académico.
+- Solo `.env.example` versionados; cero `.env` privados, traineddata, JWT, claves
+  privadas o claves Supabase secretas detectados. Ningún secreto se imprime.
+- PR #14 se mantiene **Draft** hasta resolver el único criterio pendiente; sin merge.
 
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web.

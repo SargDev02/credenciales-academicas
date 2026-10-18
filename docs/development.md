@@ -70,18 +70,57 @@ RAES/Credenly y `--profile /ruta/al/perfil/instituciones.toml` para las fuentes.
 Un perfil personalizado es un TOML con endpoints públicos y un nombre de almacén
 local; no contiene tokens. El login se guarda en el llavero del sistema.
 
-## Verificación multiinstitución con datos existentes
+## Verificación multiinstitución C/D
 
-Con RAES local en 3101, desde `services/raes-api`:
+Los fixtures aprobados y aplicados una vez se describen exactamente en
+`supabase/fixtures/multi-institution/README.md`. No volver a aplicar sus SQL: abortan
+ante colisiones deliberadamente. La sincronización se hace por los conectores,
+nunca insertando personas o credenciales en RAES. Con RAES local compilado en 3101:
 
 ```bash
-node --env-file=.env.local --import=tsx scripts/verify-multi-institution.ts
+RAES_API_BASE_URL=http://localhost:3101 pnpm --filter @raes/connector-poli sync
+RAES_API_BASE_URL=http://localhost:3101 pnpm --filter @raes/connector-udea sync
 ```
 
-Lee las dos fuentes, verifica identidad/linaje y aislamiento en RAES, consulta la
-API como consumidor y ejecuta la lectura real del servicio Credenly con su vínculo
-existente. Solo imprime métricas. No inicia sesión como un ciudadano ni modifica
-su identidad; el recorrido de la ruta ciudadana se prueba con transporte simulado.
+Desde `services/raes-api`, después de completar ambos conectores:
+
+```bash
+node --env-file=.env.local --import=tsx scripts/verify-multi-institution.ts --record-baseline=/tmp/raes-cd-baseline.json
+```
+
+Repetir ambos comandos de sincronización y comparar:
+
+```bash
+node --env-file=.env.local --import=tsx scripts/verify-multi-institution.ts --compare-baseline=/tmp/raes-cd-baseline.json
+```
+
+El verificador exige la identidad sintética compartida, una persona maestra, dos
+fuentes con IDs institucionales diferentes y ambas credenciales con procedencia
+correcta. Valida aislamiento 404, consulta RAES HTTP y el cliente real Credenly para
+la persona compartida; también conserva la lectura del ciudadano existente.
+Es de solo lectura. Guarda exclusivamente cantidades y huellas SHA-256 locales,
+sin snapshots académicos, documentos ni secretos. Compara identidades, fuentes,
+credenciales, operaciones, versiones y eventos; el replay debe ser `IDENTICAL`.
+Los timestamps de actualización de personas/fuentes no forman parte de esa
+comparación: se comprueba identidad/linaje estable y el contenido académico íntegro.
+La auditoría de consultas sí puede crecer legítimamente.
+
+La lectura del cliente Credenly no representa por sí sola un login ciudadano.
+Para comprobar además la ruta HTTP autenticada con esta identidad hay un verificador
+separado que requiere autorización explícita para una cuenta temporal:
+
+```bash
+# Desde services/credenly-api; solo tras autorizar los datos ciudadanos temporales.
+RAES_API_BASE_URL=http://localhost:3101 node --env-file=.env.local --import=tsx scripts/verify-shared-person.ts --temporary-citizen
+```
+
+Prepara únicamente una cuenta sintética sin envío de correo, perfil, verificación
+`MOCK_DESARROLLO` y vinculación. Usa la resolución/vinculación de los servicios,
+realiza login real y exige HTTP 200 con ambas credenciales, `source: RAES` y
+`persistedByCredenly: false`. No prueba autenticidad ni OCR real. Revoca la sesión,
+elimina únicamente los registros creados por esa ejecución y comprueba ausencia
+de residuos y rechazo 401 posterior. No almacena datos académicos en Credenly.
+Los fixtures de las instituciones y su historial RAES se conservan.
 
 `supabase/raes/tests/credential_lifecycle_existing_data.sql` prueba las RPC sobre
 una credencial vigente existente. Cada escenario se revierte por subtransacción y

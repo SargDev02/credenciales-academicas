@@ -17,7 +17,9 @@ Sin correos, fecha de nacimiento ni documentos/archivos adjuntos.
 | Código de estudiante y credencial | `SYNTH-POLI-CD-20261018-001` | `SYNTH-UDEA-CD-20261018-001` |
 | Relación programa-sede | `317936ce-a820-4eda-b433-64c57439e1a3` | `021f89b1-4bb3-44de-913d-18672ed46611` |
 | Programa | `SIM-POLI-INF`, Ingeniería Informática | `SIM-UDEA-PSI`, Psicología |
+| Programa UUID | `4a26ab29-6070-4c81-a314-72e3a8861f70` | `b8e01897-da79-4ab4-a0f9-b466fba58aa4` |
 | Sede | `RIO` | `YAR` |
+| Sede UUID | `6e21b8b3-44b8-4164-8454-8e6d9ee67243` | `6e530c27-2964-4146-b6a3-75bbbcc6eade` |
 
 Estudiantes activos; matrículas activas con ingreso `2026-08-01`, periodo `2026-2`.
 Credenciales `CERTIFICADO_ESTUDIOS`, `VIGENTE`, emisión `2026-10-18`, títulos
@@ -30,7 +32,7 @@ Los demás campos opcionales quedan nulos; timestamps usan los defaults del esqu
 `poli.sql` y `udea.sql` se ejecutaron una vez, en sus proyectos respectivos, mediante
 `supabase db query --linked --file <ruta-absoluta>` con CLI 2.81.3 y perfil institucional.
 Cada archivo verifica el NIT, la relación existente y ausencia de colisiones antes
- de insertar dentro de una transacción. Una segunda aplicación aborta: los fixtures
+de insertar dentro de una transacción. Una segunda aplicación aborta: los fixtures
 no hacen upsert ni adoptan datos existentes. No son migraciones de producción.
 
 Antes de aplicarlos se comprobó que el documento no existía en A, B ni RAES.
