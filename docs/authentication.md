@@ -48,7 +48,7 @@ Scopes institucionales:
 - `credentials:revoke`
 - `credentials:annul`
 
-El scope `credentials:read` existe en el catálogo, pero no se entrega por defecto a los conectores institucionales.
+Los conectores reciben también `credentials:read` para consultar exclusivamente su estado vigente mediante `/credentials/source/{code}`. Esta ruta autentica integraciones institucionales y filtra por su institución; no habilita el acceso a rutas de clientes API.
 
 ## Clientes de API
 

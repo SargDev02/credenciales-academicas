@@ -11,13 +11,16 @@
     "presync": "pnpm --filter @raes/contracts build",
     "sync": "tsx src/cli.ts",
     "sync:base": "tsx src/cli.ts --only=base",
-    "sync:credentials": "tsx src/cli.ts --only=credentials"
+    "sync:credentials": "tsx src/cli.ts --only=credentials",
+    "presync:base": "pnpm --filter @raes/contracts build",
+    "presync:credentials": "pnpm --filter @raes/contracts build"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
     "@supabase/supabase-js": "^2.117.2",
     "dotenv": "^17.2.3",
-    "zod": "^4.6.5"
+    "zod": "^4.6.5",
+    "@raes/connector-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

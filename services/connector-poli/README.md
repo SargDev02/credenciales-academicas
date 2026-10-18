@@ -85,7 +85,7 @@ El conector no crea tablas de control en la institución.
 
 RAES conserva el estado de las operaciones mediante `operaciones_api`. El conector genera claves deterministas a partir del identificador institucional de cada credencial.
 
-Un reintento del mismo registro reutiliza la operación previa. Si el contenido de una credencial administrada por el conector cambia, RAES detecta el conflicto del registro original y el conector emite una corrección versionada.
+Un reintento del mismo registro reutiliza la operación previa. El motor compartido consulta el contenido vigente mediante RAES API y emite una corrección versionada si cambia, incluso si vuelve al valor inicial. La consulta exige `credentials:read` y está restringida a la institución autenticada. Las claves históricas `poli:create:*` se conservan.
 
 ## Estados terminales
 

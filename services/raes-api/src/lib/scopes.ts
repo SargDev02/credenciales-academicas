@@ -39,6 +39,7 @@ export const institutionAScopes: ScopeCode[] = [
   "institution:sync",
   "persons:sync",
   "credentials:create",
+  "credentials:read",
   "credentials:correct",
   "credentials:revoke",
   "credentials:annul",

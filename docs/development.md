@@ -46,3 +46,26 @@ una conexión SQL autorizada; no requiere nuevas claves.
 
 `pnpm lint` existe en la raíz, pero actualmente ningún paquete declara un script
 `lint`: su salida exitosa no constituye una revisión estática de estilo.
+
+## Operación de conectores
+
+Para este piloto se incluye una herramienta genérica server-side que reutiliza el
+modelo de aprovisionamiento existente. La incorporación normal de universidades
+sigue correspondiendo a la API administrativa; el script no crea perfiles ni
+estado de envío en las instituciones.
+
+Desde `services/raes-api`, con la configuración server-side local ya existente:
+
+```bash
+node --env-file=.env.local --import=tsx scripts/provision-connector.ts ../connector-udea/.env.local UDEA
+```
+
+Lee la institución fuente, crea/reutiliza su integración, asigna scopes y registra
+actor `SISTEMA`. Solo entrega un secreto nuevo al archivo local de ese conector,
+con permisos 0600; no lo imprime ni rota secretos existentes de forma implícita.
+Para Poli se usa el mismo script y el prefijo `POLI`.
+
+Las dos cuentas CLI se seleccionan explícitamente: `--profile supabase` para
+RAES/Credenly y `--profile /ruta/al/perfil/instituciones.toml` para las fuentes.
+Un perfil personalizado es un TOML con endpoints públicos y un nombre de almacén
+local; no contiene tokens. El login se guarda en el llavero del sistema.

@@ -130,7 +130,7 @@
   - [x] Auditoría de accesos validada con resultados `OK` y `ENLACE_REVOCADO` e IP pseudonimizada.
 
 ## Etapa 4 — Institución B
-- [ ] Conector UdeA.
+- [x] Conector UdeA.
 - [ ] Pruebas multiinstitución.
 
 ## Finalización backend — Fase 1: auditoría de clientes API (2026-10-18)
@@ -169,7 +169,7 @@ Hallazgos previos y siguientes pasos:
   `aprovisionar_cliente_api` y `aprovisionar_integracion_institucional` a `anon`
   y `authenticated`. Corregido en la migración separada
   `20261018164429_restrict_provisioning_rpc.sql`: se revocan permisos directos
-  e heredados de `PUBLIC`, se conserva `service_role` y se fija `search_path` vacío.
+  y heredados de `PUBLIC`, se conserva `service_role` y se fija `search_path` vacío.
   Prueba SQL real `PROVISIONING_PERMISSIONS_OK`, ambas RPC alcanzables vía REST
   desde el servidor con entradas que activan sus guardas sin crear filas.
   Security Advisor posterior ya no reporta estas cuatro advertencias.
@@ -186,10 +186,39 @@ Preparación de Fase 2:
   `sesolqvprebaoswferuw`; Institución A `fswppckzhvpcbybslnop`,
   Institución B `taoapbewllieuephaxsy`. Universidad de Antioquia estaba pausada;
   reanudación solicitada sobre el proyecto existente del plan gratuito.
-- Pendiente completar el arranque, inspeccionar el esquema de B y autenticar el
-  perfil CLI `instituciones`. La sesión de Chrome no autentica la CLI.
+- Ambos proyectos reanudados y acceso CLI institucional verificado. El perfil
+  usa un archivo TOML local (`--profile /Users/sargdev02/.supabase/instituciones.toml`),
+  no un nombre libre; la sesión de Chrome no autentica la CLI.
 - PR de revisión en borrador: https://github.com/SargDev02/credenciales-academicas/pull/14.
   No se ha fusionado a `main` ni desarrollado interfaces.
+
+## Finalización backend — Fase 2: conector UdeA (2026-10-18)
+
+- [x] Columnas, constraints, FKs, estados y RLS reales de B inspeccionados.
+- [x] Motor compartido `packages/connector-core`; conectores Poli/UdeA separados,
+  mismas rutas y contratos; namespaces históricos Poli preservados.
+- [x] Lectura paginada y prevalidación de referencias, incluida matrícula-persona.
+- [x] Consulta institucional del estado vigente con `credentials:read`, filtrada
+  por la institución autenticada. Sin acceso directo del conector a RAES DB.
+- [x] Correcciones detectadas contra contenido vigente, incluida vuelta al inicial;
+  terminales conservados y conflictos reportados sin reactivación automática.
+- [x] Aprovisionamiento real mediante herramienta genérica de operador server-side;
+  auditoría `SISTEMA`, secretos hasheados en RAES y originales solo en `.env.local`.
+- [x] 77/77 pruebas: RAES 38, motor 11, Poli 5, Credenly 15, contratos 8;
+  typecheck monorepo y build RAES correctos.
+- [x] Sincronización real UdeA: 13 sedes, 13 programas, 35 relaciones,
+  17 fuentes/personas y 17 credenciales; una revocación y una anulación.
+- [x] Reejecución de credenciales UdeA sin duplicados: permanecen 17 credenciales,
+  19 versiones y 19 eventos, sin correcciones ni nuevas transiciones.
+- [x] Politécnico probado con el motor compartido: 12 personas, 12 credenciales
+  fuente presentes. `SIM-POLI-2025-0001`, creada por otra operación, se reporta
+  sin adopción; se conserva además una credencial histórica ajena al conjunto fuente.
+
+No hubo migraciones de esquema para B ni escrituras en bases institucionales.
+La lectura institucional añade un permiso del catálogo existente, acotado por tenant.
+Pendiente para Fase 3: las fuentes contienen 12 identidades exclusivas de A y 17 de B,
+sin intersección; los escenarios compartidos requieren un conjunto de validación
+apropiado. No se alteraron documentos fuente para simular coincidencias.
 
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web.
