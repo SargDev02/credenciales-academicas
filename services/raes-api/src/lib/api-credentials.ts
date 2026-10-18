@@ -51,26 +51,10 @@ export function verifyClientSecret(
 export function parseApiBearer(
   authorizationHeader: string | null,
 ): ParsedBearerCredentials | null {
-  if (!authorizationHeader?.startsWith("Bearer ")) {
-    return null;
-  }
-
-  const token = authorizationHeader.slice("Bearer ".length).trim();
-  const separatorIndex = token.indexOf(".");
-
-  if (separatorIndex <= 0 || separatorIndex === token.length - 1) {
-    return null;
-  }
-
-  const clientId = token.slice(0, separatorIndex);
-  const secret = token.slice(separatorIndex + 1);
-
-  if (
-    !clientId.startsWith(CLIENT_ID_PREFIX) ||
-    !secret.startsWith(SECRET_PREFIX)
-  ) {
-    return null;
-  }
+  const match = authorizationHeader?.trim().match(/^Bearer[ \t]+(raes_cli_[A-Za-z0-9_-]+)\.(raes_sk_[A-Za-z0-9_-]+)$/i);
+  const clientId = match?.[1];
+  const secret = match?.[2];
+  if (!clientId || !secret || clientId.length > 120 || secret.length > 256) return null;
 
   return { clientId, secret };
 }

@@ -1,3 +1,4 @@
+import { parseJsonBody, requestValidationErrorResponse } from "@/lib/request-validation";
 import { z } from "zod";
 
 import {
@@ -23,6 +24,8 @@ export async function GET(request: Request) {
 
     return Response.json({ data: shares });
   } catch (error) {
+    const validation = requestValidationErrorResponse(error);
+    if (validation) return validation;
     if (error instanceof CitizenAuthError) {
       return citizenAuthErrorResponse(error);
     }
@@ -34,8 +37,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const user = await authenticateCitizen(request);
-    const body = await request.json();
-    const input = createShareInputSchema.parse(body);
+    const input = await parseJsonBody(request, createShareInputSchema);
     const result = await createShare(user.id, input);
 
     return Response.json(
@@ -50,12 +52,13 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    const validation = requestValidationErrorResponse(error);
+    if (validation) return validation;
     if (error instanceof z.ZodError) {
       return Response.json(
         {
           error: "VALIDATION_ERROR",
           message: "Los datos de la compartición no son válidos",
-          details: error.issues,
         },
         { status: 400 },
       );

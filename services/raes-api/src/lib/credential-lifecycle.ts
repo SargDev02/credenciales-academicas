@@ -238,9 +238,7 @@ function mapCredentialLifecycleError(message: string): ApiError {
     );
   }
 
-  console.error("Credential lifecycle RPC failed", {
-    databaseMessage: message,
-  });
+  console.error("Credential lifecycle RPC failed");
 
   return new ApiError(
     500,

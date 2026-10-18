@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { ApiError, apiErrorResponse } from "./api-error";
 
 import {
   ApiClientAuthError,
@@ -31,7 +32,9 @@ export async function auditedClientOperation(
     response = result.response;
     resourceId = result.resourceId;
   } catch (error) {
-    if (error instanceof ApiClientAuthError) {
+    if (error instanceof ApiError) {
+      response = apiErrorResponse(error);
+    } else if (error instanceof ApiClientAuthError) {
       response = apiClientAuthErrorResponse(error);
     } else if (error instanceof z.ZodError || error instanceof SyntaxError) {
       response = Response.json({

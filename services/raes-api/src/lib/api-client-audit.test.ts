@@ -192,3 +192,9 @@ test("fallo de transporte no filtra secretos en respuesta ni logging", async () 
   assert.equal(JSON.stringify(await response.json()).includes(secret), false);
   assertAudit(records, "PERSON_RESOLVE", 500, "ERROR");
 }));
+
+test("cuerpo excesivo devuelve 413 auditado sin datos de entrada", async () => fixture({}, async records => {
+  const response = await POST(resolveRequest("x".repeat(65537)));
+  assert.equal(response.status, 413);
+  assertAudit(records, "PERSON_RESOLVE", 413, "ERROR_VALIDACION");
+}));

@@ -330,9 +330,7 @@ export function provisioningErrorResponse(
     );
   }
 
-  console.error("Unexpected RAES provisioning error", {
-    message: error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Unexpected RAES provisioning error");
 
   return Response.json(
     {

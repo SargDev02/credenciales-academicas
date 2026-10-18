@@ -1,3 +1,5 @@
+import { ApiError, apiErrorResponse } from "@/lib/api-error";
+import { parseJsonBody } from "@/lib/request-validation";
 import { z } from "zod";
 
 import {
@@ -43,8 +45,7 @@ export async function POST(
       "ADMIN",
     ]);
     const { institutionId } = await context.params;
-    const body = await request.json();
-    const input = integrationCreateSchema.parse(body);
+    const input = await parseJsonBody(request, integrationCreateSchema);
 
     const result = await createInstitutionIntegration(
       {
@@ -68,12 +69,12 @@ export async function POST(
       { status: 201 },
     );
   } catch (error) {
+    if (error instanceof ApiError) return apiErrorResponse(error);
     if (error instanceof z.ZodError) {
       return Response.json(
         {
           error: "VALIDATION_ERROR",
           message: "Los datos de la integración no son válidos",
-          details: error.issues,
         },
         { status: 400 },
       );

@@ -87,6 +87,10 @@ export async function authenticateInstitution(
     );
   }
 
+  const parent = await supabase.from("instituciones").select("estado").eq("id", integration.institucion_id).maybeSingle();
+  if (parent.error) throw new InstitutionalAuthError(500, "AUTHENTICATION_ERROR", "No fue posible validar la institución");
+  if (parent.data?.estado !== "ACTIVA") throw new InstitutionalAuthError(401, "INVALID_CREDENTIALS", "Credenciales institucionales inválidas");
+
   const keyPrefix = getSecretLookupPrefix(credentials.secret);
 
   const { data: secretData, error: secretError } = await supabase
@@ -120,6 +124,7 @@ export async function authenticateInstitution(
   if (
     !secret ||
     secret.hash_algorithm !== "SHA256" ||
+    secret.revoked_at !== null ||
     isExpired ||
     !verifyClientSecret(credentials.secret, secret.secret_hash)
   ) {

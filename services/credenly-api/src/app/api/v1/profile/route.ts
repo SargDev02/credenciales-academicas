@@ -1,3 +1,4 @@
+import { parseJsonBody, requestValidationErrorResponse } from "@/lib/request-validation";
 import { z } from "zod";
 
 import {
@@ -31,6 +32,8 @@ export async function GET(request: Request) {
         : null,
     });
   } catch (error) {
+    const validation = requestValidationErrorResponse(error);
+    if (validation) return validation;
     return citizenAuthErrorResponse(error);
   }
 }
@@ -38,8 +41,7 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const user = await authenticateCitizen(request);
-    const body = await request.json();
-    const input = profileInputSchema.parse(body);
+    const input = await parseJsonBody(request, profileInputSchema);
     const profile = await upsertProfile(user.id, input);
 
     return Response.json({
@@ -53,12 +55,13 @@ export async function PUT(request: Request) {
       },
     });
   } catch (error) {
+    const validation = requestValidationErrorResponse(error);
+    if (validation) return validation;
     if (error instanceof z.ZodError) {
       return Response.json(
         {
           error: "VALIDATION_ERROR",
           message: "Los datos del perfil no son válidos",
-          details: error.issues,
         },
         { status: 400 },
       );

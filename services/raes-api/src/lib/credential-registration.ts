@@ -148,9 +148,7 @@ function mapCredentialRegistrationError(message: string): ApiError {
     );
   }
 
-  console.error("Credential registration RPC failed", {
-    databaseMessage: message,
-  });
+  console.error("Credential registration RPC failed");
 
   return new ApiError(
     500,

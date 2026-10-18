@@ -223,10 +223,7 @@ export function raesIntegrationErrorResponse(
     );
   }
 
-  console.error("Unexpected Credenly RAES integration error", {
-    message:
-      error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Unexpected Credenly RAES integration error");
 
   return Response.json(
     {

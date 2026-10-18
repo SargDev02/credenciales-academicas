@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { parseJsonBody } from "@/lib/request-validation";
 
 import { auditedClientOperation } from "@/lib/audited-client-operation";
 import { resolvePersonByDocument } from "@/lib/consumer-read";
@@ -13,8 +14,7 @@ const resolvePersonSchema = z.object({
 
 export async function POST(request: Request) {
   return auditedClientOperation(request, "PERSON_RESOLVE", "persons:resolve", async () => {
-    const body = await request.json();
-    const input = resolvePersonSchema.parse(body);
+    const input = await parseJsonBody(request, resolvePersonSchema);
 
     const person = await resolvePersonByDocument({
       tipoDocumento: input.tipoDocumento.toUpperCase(),

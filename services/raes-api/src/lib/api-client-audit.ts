@@ -18,7 +18,7 @@ export async function auditApiClientOperation(input: {
   const result = input.status < 400 ? "OK"
     : input.status === 403 ? "DENEGADO"
     : input.status === 404 ? "NO_ENCONTRADO"
-    : input.status === 400 ? "ERROR_VALIDACION"
+    : (input.status === 400 || input.status === 413) ? "ERROR_VALIDACION"
     : "ERROR";
 
   const { error } = await getRaesSupabaseAdmin().from("auditoria").insert({
