@@ -167,7 +167,12 @@ Hallazgos previos y siguientes pasos:
   de esta migración se registraron en una misma transacción SQL.
 - Security Advisor detecta exposición previa de las RPC `SECURITY DEFINER`
   `aprovisionar_cliente_api` y `aprovisionar_integracion_institucional` a `anon`
-  y `authenticated`. Corregir grants en una migración y commit separados.
+  y `authenticated`. Corregido en la migración separada
+  `20261018164429_restrict_provisioning_rpc.sql`: se revocan permisos directos
+  e heredados de `PUBLIC`, se conserva `service_role` y se fija `search_path` vacío.
+  Prueba SQL real `PROVISIONING_PERMISSIONS_OK`, ambas RPC alcanzables vía REST
+  desde el servidor con entradas que activan sus guardas sin crear filas.
+  Security Advisor posterior ya no reporta estas cuatro advertencias.
 - Protección de contraseñas filtradas deshabilitada en Supabase Auth. Pendiente
   evaluar opciones gratuitas antes de producción; no se habilitan servicios pagos.
 - Fases 2–5 pendientes: UdeA, integración multiinstitución, hardening integral

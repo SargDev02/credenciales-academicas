@@ -121,6 +121,14 @@ Roles:
 
 Los roles `SUPERADMIN` y `ADMIN` pueden crear instituciones e integraciones. `AUDITOR` puede consultar, pero no aprovisionar.
 
+Las RPC de aprovisionamiento solo admiten ejecución desde `service_role`, después
+de los controles administrativos del backend. Los grants se revocan explícitamente
+a `PUBLIC`, `anon` y `authenticated`; revocar únicamente `PUBLIC` no elimina
+grants directos existentes. Se mantiene un `search_path` vacío y referencias a
+tablas calificadas con `public`. La prueba SQL
+`supabase/raes/tests/provisioning_rpc_permissions.sql` verifica los tres roles
+sin crear instituciones ni clientes.
+
 Endpoints preparados para la futura RAES Web:
 
 ```text
