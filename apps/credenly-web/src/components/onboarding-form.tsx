@@ -23,25 +23,27 @@ export function OnboardingForm({
     <form
       className="citizen-form"
       aria-busy={pending}
-      onSubmit={async (event) => {
-        event.preventDefault();
-        if (pending) return;
-        const data = new FormData(event.currentTarget);
-        setPending(true);
-        setResult({});
-        try {
-          const response = await updateOnboarding(kind, data);
-          setResult(response);
-          if (response.message) router.refresh();
-        } catch {
-          setResult({
-            error:
-              "No pudimos confirmar el resultado. Actualiza el estado antes de reenviar.",
-          });
-        } finally {
-          setPending(false);
-          requestAnimationFrame(() => ref.current?.focus());
-        }
+      onSubmit={(event) => {
+        void (async () => {
+          event.preventDefault();
+          if (pending) return;
+          const data = new FormData(event.currentTarget);
+          setPending(true);
+          setResult({});
+          try {
+            const response = await updateOnboarding(kind, data);
+            setResult(response);
+            if (response.message) router.refresh();
+          } catch {
+            setResult({
+              error:
+                "No pudimos confirmar el resultado. Actualiza el estado antes de reenviar.",
+            });
+          } finally {
+            setPending(false);
+            requestAnimationFrame(() => ref.current?.focus());
+          }
+        })();
       }}
     >
       <fieldset disabled={pending}>

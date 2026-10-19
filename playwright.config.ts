@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { chromiumLaunchOptions } from "./tests/helpers/browser.mjs";
 export default defineConfig({
   testDir: "./tests/frontend",
   fullyParallel: false,
@@ -7,10 +8,7 @@ export default defineConfig({
   reporter: "list",
   use: {
     headless: true,
-    launchOptions: {
-      executablePath:
-        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-    },
+    launchOptions: chromiumLaunchOptions,
     reducedMotion: "reduce",
     trace: "off",
     video: "off",
@@ -33,12 +31,12 @@ export default defineConfig({
     {
       command: "pnpm --filter @raes/web exec next start -p 3200",
       url: "http://localhost:3200/login",
-      reuseExistingServer: true,
+      reuseExistingServer: !process.env.CI,
     },
     {
       command: "pnpm --filter @credenly/web exec next start -p 3203",
       url: "http://localhost:3203",
-      reuseExistingServer: true,
+      reuseExistingServer: !process.env.CI,
     },
   ],
 });

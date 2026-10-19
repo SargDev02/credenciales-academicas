@@ -6,3 +6,5 @@ packages:
 allowBuilds:
   esbuild: true
   tesseract.js: true
+  # Use the lockfile's platform binding; never download a fallback native binary.
+  unrs-resolver: false

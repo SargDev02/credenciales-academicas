@@ -10,7 +10,8 @@
     "pretypecheck": "pnpm --filter @raes/contracts build",
     "typecheck": "tsc --noEmit",
     "pretest": "pnpm --filter @raes/contracts build",
-    "test": "tsx --test src/*.test.ts"
+    "test": "tsx --test src/*.test.ts",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",

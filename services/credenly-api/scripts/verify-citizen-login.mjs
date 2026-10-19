@@ -1,3 +1,4 @@
+import { chromiumLaunchOptions } from "../../../tests/helpers/browser.mjs";
 import assert from "node:assert/strict";
 import { Writable } from "node:stream";
 import { createInterface } from "node:readline/promises";
@@ -89,11 +90,7 @@ try {
   assert.equal(initial.data.user.email, email);
   result.passwordAuthentication = "SUPABASE_REAL_LOGIN_OK";
   phase = "browser login";
-  browser = await chromium.launch({
-    headless: true,
-    executablePath:
-      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  });
+  browser = await chromium.launch(chromiumLaunchOptions);
   context = await browser.newContext();
   context.setDefaultTimeout(15000);
   context.setDefaultNavigationTimeout(20000);
@@ -226,7 +223,7 @@ try {
           text.slice(0, 200),
         ),
       };
-    } catch {}
+    } catch { /* Expected transient failure or optional diagnostic; no sensitive error output. */ }
   }
   process.exitCode = 1;
   console.error(

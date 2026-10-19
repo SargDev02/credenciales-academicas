@@ -8,13 +8,15 @@ export function CopyIdentifier({ value }: { value: string }) {
         className="operations-copy"
         type="button"
         aria-label={`Copiar UUID ${value}`}
-        onClick={async () => {
-          try {
-            await navigator.clipboard.writeText(value);
-            setMessage("UUID copiado");
-          } catch {
-            setMessage("Selecciona el UUID para copiarlo");
-          }
+        onClick={() => {
+          void (async () => {
+            try {
+              await navigator.clipboard.writeText(value);
+              setMessage("UUID copiado");
+            } catch {
+              setMessage("Selecciona el UUID para copiarlo");
+            }
+          })();
         }}
       >
         Copiar

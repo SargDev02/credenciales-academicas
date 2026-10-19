@@ -146,7 +146,7 @@ export async function processIdentityDocument(
       );
     }
 
-    return data as IdentityVerificationRow;
+    return data;
   } catch (error) {
     const failedAt = new Date().toISOString();
 
@@ -202,7 +202,7 @@ export async function getLatestIdentityVerification(
     );
   }
 
-  return data as IdentityVerificationRow | null;
+  return data;
 }
 
 export function identityVerificationErrorResponse(

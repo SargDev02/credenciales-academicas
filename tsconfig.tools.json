@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "jsx": "react-jsx",
+    "allowJs": true
+  },
+  "include": [
+    "tests/**/*.ts",
+    "playwright.config.ts",
+    "apps/*/next.config.ts",
+    "services/*/next.config.ts",
+    "apps/*/scripts/**/*.ts",
+    "services/*/scripts/**/*.ts"
+  ],
+  "exclude": ["node_modules", "**/.next", "**/dist"]
+}

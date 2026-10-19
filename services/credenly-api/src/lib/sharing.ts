@@ -143,7 +143,7 @@ export async function createShare(
   }
 
   return {
-    share: mapShareRow(data as ShareRow),
+    share: mapShareRow(data),
     token,
     publicPath: `/api/v1/public/shares/${token}`,
   };
@@ -230,7 +230,7 @@ export async function revokeShare(
     );
   }
 
-  return mapShareRow(data as ShareRow);
+  return mapShareRow(data);
 }
 
 function projectCredential(
@@ -380,7 +380,7 @@ export async function verifyPublicShare(
     );
   }
 
-  const share = data as ShareRow;
+  const share = data;
 
   if (share.revoked_at) {
     await logShareAccess(

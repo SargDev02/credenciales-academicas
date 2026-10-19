@@ -25,22 +25,6 @@ export class ApiClientAuthError extends Error {
   }
 }
 
-type ClientRow = {
-  id: string;
-  nombre: string;
-  tipo_cliente: string;
-  client_id: string;
-  estado: string;
-};
-
-type SecretRow = {
-  id: string;
-  secret_hash: string;
-  hash_algorithm: string;
-  expires_at: string | null;
-  revoked_at: string | null;
-};
-
 export async function authenticateApiClient(
   request: Request,
   requiredScopes: ScopeCode[] = [],
@@ -77,7 +61,7 @@ export async function authenticateApiClient(
     );
   }
 
-  const client = clientData as ClientRow | null;
+  const client = clientData;
 
   if (!client || client.estado !== "ACTIVO") {
     throw new ApiClientAuthError(
@@ -109,7 +93,7 @@ export async function authenticateApiClient(
     );
   }
 
-  const secret = secretData as SecretRow | null;
+  const secret = secretData;
   const isExpired =
     secret?.expires_at !== null &&
     secret?.expires_at !== undefined &&

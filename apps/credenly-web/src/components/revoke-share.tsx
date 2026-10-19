@@ -22,20 +22,23 @@ export function RevokeShare({ id }: { id: string }) {
       </p>
       <Button
         busy={pending}
-        onClick={async () => {
-          if (pending) return;
-          setPending(true);
-          try {
-            const value = await revokeShare(id);
-            setResult(value);
-            if (value.message) router.refresh();
-          } catch {
-            setResult({
-              error: "No pudimos confirmar la revocación. Actualiza el estado.",
-            });
-          } finally {
-            setPending(false);
-          }
+        onClick={() => {
+          void (async () => {
+            if (pending) return;
+            setPending(true);
+            try {
+              const value = await revokeShare(id);
+              setResult(value);
+              if (value.message) router.refresh();
+            } catch {
+              setResult({
+                error:
+                  "No pudimos confirmar la revocación. Actualiza el estado.",
+              });
+            } finally {
+              setPending(false);
+            }
+          })();
         }}
       >
         Sí, revocar

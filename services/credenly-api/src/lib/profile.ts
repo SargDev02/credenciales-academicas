@@ -35,7 +35,7 @@ export async function getProfile(
     );
   }
 
-  return data as ProfileRow | null;
+  return data;
 }
 
 export async function upsertProfile(
@@ -65,5 +65,5 @@ export async function upsertProfile(
     );
   }
 
-  return data as ProfileRow;
+  return data;
 }

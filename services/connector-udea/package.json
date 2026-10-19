@@ -12,6 +12,7 @@
     "sync:credentials": "tsx src/cli.ts --only=credentials",
     "presync:base": "pnpm --filter @raes/contracts build",
     "presync:credentials": "pnpm --filter @raes/contracts build",
+    "lint": "eslint . --max-warnings 0",
     "pretest": "pnpm --filter @raes/contracts build",
     "test": "tsx --test src/*.test.ts"
   },

@@ -10,11 +10,12 @@
     "build": "next build",
     "start": "next start -p 3001",
     "pretypecheck": "pnpm --filter @raes/contracts build",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts",
     "bootstrap:institution-a": "tsx scripts/bootstrap-institution-a.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts",
-    "admin:reset-password": "node scripts/reset-admin-password.mjs"
+    "admin:reset-password": "node scripts/reset-admin-password.mjs",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",

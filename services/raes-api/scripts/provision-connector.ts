@@ -51,7 +51,7 @@ if (!integration) {
 if (!integration) throw new Error("Missing integration result");
 const scopes = await db.from("scopes").select("id,codigo").in("codigo", institutionAScopes);
 if (scopes.error || scopes.data?.length !== institutionAScopes.length) throw new Error("Scope catalog incomplete");
-const grants = await db.from("integracion_scopes").upsert(scopes.data.map(s => ({ integracion_id: integration!.id, scope_id: s.id })), { onConflict: "integracion_id,scope_id" });
+const grants = await db.from("integracion_scopes").upsert(scopes.data.map(s => ({ integracion_id: integration.id, scope_id: s.id })), { onConflict: "integracion_id,scope_id" });
 if (grants.error) throw new Error("Scope assignment failed");
 const audit = await db.from("auditoria").insert({ actor_tipo: "SISTEMA", accion: "CONECTOR_APROVISIONADO", recurso_tipo: "INTEGRACION_INSTITUCIONAL", recurso_id: integration.id, metadata: { institutionId, scopes: institutionAScopes, source: "operator-cli" } });
 if (audit.error) throw new Error("Provisioning audit failed");

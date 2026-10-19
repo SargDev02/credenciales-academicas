@@ -1,3 +1,4 @@
+import { chromiumLaunchOptions } from "../../../tests/helpers/browser.mjs";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -26,11 +27,7 @@ const db = createClient(
 );
 const email = `synthetic-frontend-${randomUUID()}@example.invalid`;
 const password = randomBytes(32).toString("base64url");
-const browser = await chromium.launch({
-  headless: true,
-  executablePath:
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-});
+const browser = await chromium.launch(chromiumLaunchOptions);
 const context = await browser.newContext();
 const page = await context.newPage();
 const browserErrors: string[] = [];

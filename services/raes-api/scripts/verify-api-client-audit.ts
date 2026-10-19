@@ -41,7 +41,7 @@ const unauthorized = await fetch(`${baseUrl}/api/v1/persons/resolve`, {
 assert.equal(unauthorized.status, 401);
 const { data: audit, error: auditError } = await supabase.from("auditoria")
   .select("actor_tipo,actor_id,accion,recurso_tipo,recurso_id,metadata,created_at,ip,user_agent")
-  .eq("actor_tipo", "CLIENTE_API").eq("actor_id", client!.id).gte("created_at", startedAt);
+  .eq("actor_tipo", "CLIENTE_API").eq("actor_id", client.id).gte("created_at", startedAt);
 assert.equal(auditError, null);
 assert.ok(audit && audit.length >= 4);
 for (const action of ["PERSON_RESOLVE", "CREDENTIALS_READ"]) {
@@ -52,7 +52,8 @@ for (const row of audit) {
   assert.deepEqual(Object.keys(row.metadata).sort(), ["endpoint", "http_status", "resultado"]);
   assert.equal(row.ip, null);
   assert.equal(row.user_agent, null);
-  for (const forbidden of [secret, authorization, person.numero_documento]) {
+  const forbiddenValues: string[] = [secret, authorization, person.numero_documento];
+  for (const forbidden of forbiddenValues) {
     assert.equal(JSON.stringify(row).includes(forbidden), false);
   }
 }
