@@ -1,2 +1,27 @@
-import Link from "next/link";import { PageHeading, Card, buttonClass } from "@raes/ui";
-export default function Page(){return <main id="main-content" className="foundation-home"><p className="product-wordmark">Credenly</p><PageHeading eyebrow="TUS CREDENCIALES ACADÉMICAS" title="Tu trayectoria, en un solo lugar.">Una experiencia ciudadana para consultar y compartir tu formación.</PageHeading><Card><h2>Base visual preparada</h2><p className="ui-muted">La integración de esta aplicación se implementa por etapas. Aquí puedes consultar los componentes compartidos.</p><div><Link className={buttonClass()} href="/design-system">Explorar componentes</Link></div></Card></main>;}
+import Link from "next/link";
+import { PageHeading, Card, buttonClass } from "@raes/ui";
+export default function Page() {
+  return (
+    <main id="main-content" className="foundation-home">
+      <p className="product-wordmark">Credenly</p>
+      <PageHeading
+        eyebrow="TUS CREDENCIALES ACADÉMICAS"
+        title="Tu trayectoria, en un solo lugar."
+      >
+        Una experiencia ciudadana para consultar y compartir tu formación.
+      </PageHeading>
+      <Card>
+        <h2>Base visual preparada</h2>
+        <p className="ui-muted">
+          La integración de esta aplicación se implementa por etapas. Aquí
+          puedes consultar los componentes compartidos.
+        </p>
+        <div>
+          <Link className={buttonClass()} href="/design-system">
+            Explorar componentes
+          </Link>
+        </div>
+      </Card>
+    </main>
+  );
+}
