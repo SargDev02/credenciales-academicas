@@ -185,3 +185,21 @@ pnpm --filter @raes/api bootstrap:superadmin
 El comando crea o reutiliza el usuario de Supabase Auth indicado localmente y genera el perfil `SUPERADMIN`. Si detecta que ya existe un SUPERADMIN activo, se detiene sin modificar privilegios.
 
 Este bootstrap no se usa para incorporar universidades. Las universidades se crean posteriormente desde la API administrativa / RAES Web.
+
+## Restablecimiento local de una contraseña administrativa
+
+Para una cuenta existente y con autorización de su titular, desde la raíz:
+
+```bash
+pnpm --filter @raes/api admin:reset-password --email cuenta@dominio --check
+pnpm --filter @raes/api admin:reset-password --email cuenta@dominio
+```
+
+El primer comando solo comprueba cuenta/perfil. El segundo pide la nueva contraseña
+oculta y su confirmación en una terminal interactiva (12–256 caracteres). No acepta
+contraseñas por argumentos, variables ni archivos. Usa la configuración server-only
+existente de RAES API y `auth.admin.updateUserById` exclusivamente para el password.
+No crea cuentas ni modifica perfil, rol, metadata o datos académicos. Comprueba que
+el destino no cambió antes de actualizar, verifica un login con la nueva contraseña
+y cierra esa sesión de comprobación. No imprime contraseñas, tokens ni errores
+remotos sin sanitizar. No es un endpoint público de recuperación.

@@ -654,3 +654,15 @@ Commits de esta continuación: `450cecf` introspección; `cbc0909` altas RAES;
 No se fusionó main ni se hizo despliegue. El siguiente paso es revisión del PR y
 validación de correo/OCR documental con el entorno autorizado antes de plantear
 despliegues o los trabajos de producción pendientes.
+
+## Recuperación administrativa local autorizada (2026-10-18)
+
+- El titular autorizó restablecer el acceso de `admin@raes.com`.
+- Se añadió utilidad local con entrada oculta y confirmación; no recibe secretos
+  por chat, argumentos, variables ni archivos. Solo actualiza password de una cuenta
+  existente con perfil activo, sin ampliar permisos ni tocar datos académicos.
+- Preflight real: cuenta SUPERADMIN activa localizada. Sintaxis Node y prueba PTY
+  con entradas sintéticas distintas correctas: entrada no reflejada y rechazo antes
+  de mutar. No se cambió la contraseña durante estas verificaciones.
+- La operación queda pendiente de que el titular ejecute el comando e introduzca
+  su nueva contraseña. La utilidad verifica el login después del cambio.
