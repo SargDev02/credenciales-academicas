@@ -203,3 +203,20 @@ No crea cuentas ni modifica perfil, rol, metadata o datos académicos. Comprueba
 el destino no cambió antes de actualizar, verifica un login con la nueva contraseña
 y cierra esa sesión de comprobación. No imprime contraseñas, tokens ni errores
 remotos sin sanitizar. No es un endpoint público de recuperación.
+
+## Restablecimiento local de una contraseña ciudadana
+
+Para una cuenta existente de Credenly, con autorización de su titular:
+
+```bash
+pnpm --filter @credenly/api citizen:reset-password --email cuenta@dominio --check
+pnpm --filter @credenly/api citizen:reset-password --email cuenta@dominio
+```
+
+El comando requiere correo ya confirmado y perfil ciudadano existente. Solicita
+contraseña y confirmación ocultas (12–256 caracteres), únicamente en terminal
+interactiva; no usa argumentos/archivos/variables para la contraseña. Actualiza
+solo el password de Auth, verifica login y cierra esa sesión de comprobación.
+Comprueba que perfil y vinculación RAES permanecen iguales. No confirma correos,
+crea identidades, altera datos académicos ni cambia permisos. Es una utilidad
+operativa local, no un endpoint público de recuperación.

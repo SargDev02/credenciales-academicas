@@ -678,3 +678,14 @@ la autorización de APIs/Auth. Alternativa inmediata en la Mac: usar localhost.
 Verificación con la protección HMR de la versión Next instalada y ambas configs:
 localhost e IP configurada permitidos; origen no autorizado bloqueado con 403.
 No se modifican ni reinician los backends ni se cambian cuentas/contraseñas.
+
+## Recuperación ciudadana local autorizada (2026-10-18)
+
+- Se autorizó explícitamente restablecer `admin@credenly.com`.
+- Utilidad `citizen:reset-password`: entrada oculta, confirmación, actualización
+  exclusiva de contraseña Auth y verificación de login; preserva perfil/vínculo.
+- Preflight real confirma cuenta con correo confirmado y perfil existente en
+  Credenly. Sintaxis Node y prueba PTY de entrada oculta/confirmaciones distintas
+  pasan sin mutar la cuenta. Sin correos enviados ni secretos registrados.
+- El cambio real queda pendiente de que el titular introduzca la nueva contraseña
+  en su terminal; no se establece ni publica una contraseña predeterminada.

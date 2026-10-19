@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start -p 3002",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/*.test.ts"
+    "test": "tsx --test src/lib/*.test.ts",
+    "citizen:reset-password": "node --env-file=.env.local scripts/reset-citizen-password.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
