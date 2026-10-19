@@ -48,8 +48,21 @@ filas que modificar. Se conservan los cuerpos DML de las RPC.
 6. Probar ida y vuelta mediante conectores y APIs solo con datos sintéticos.
    Destruir el entorno aislado tras conservar únicamente evidencia sanitizada.
 
-**Estado: BLOCKED para afirmar restore reproducible.** Se recuperó el material
-faltante y su correspondencia, pero aún no se ensayó en una plataforma Supabase
-vacía ni se probó restauración de datos. Esta Mac no tiene PostgreSQL/Docker
-instalados. Seleccionar/provisionar un entorno aislado es el siguiente paso; no
-se sustituyó por una reconstrucción de las bases reales.
+## Ensayo reproducible ejecutado
+
+`node --test scripts/test/schema-bootstrap.test.mjs` reconstruye cuatro bases
+PostgreSQL/WASM vacías con PGlite 0.5.8 (dependencia de desarrollo aprobada). No abre
+red, no lee .env y no incorpora PGlite al producto/browser. Las migraciones se
+aplican literalmente, sin omitir DDL. Se comparan tablas/RLS, columnas y defaults,
+constraints y sus definiciones, índices, triggers, políticas, firmas/search_path
+y cuerpos de funciones (SHA-256 de código) con el catálogo remoto. Se ejecutan los
+tests SQL de permisos y exclusión de perfiles con UUIDs sintéticos locales.
+
+**4/4 PASS**. PGlite usa PostgreSQL 18; remoto usa 17.11. Se normaliza únicamente
+la aparición de NOT NULL como constraint de catálogo `contype=n` en PG18; la
+nulabilidad de todas las columnas se compara por separado. No se omite una
+constraint funcional diferente. El ensayo prueba el DDL y permisos con un soporte
+mínimo de auth.users/auth.uid/roles. No incluye GoTrue, PostgREST, Storage, correos,
+concurrencia entre conexiones ni un restore de datos/backups. El ensayo integral
+de Supabase y la recuperación de datos siguen pendientes; no se presenta como
+una recuperación certificada ni se borró/recreó ninguna base remota.
