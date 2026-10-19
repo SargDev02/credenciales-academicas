@@ -206,3 +206,20 @@ sesiones/datos ciudadanos. No se forzaron eliminaciones.
 - Continúan separados los pendientes de producción: autenticidad/identidad real,
   recuperación/baselines, operación/retención/rotación, protección de contraseñas
   filtradas y lint por paquete. No se declara listo para producción.
+
+## Desarrollo mediante IP de la red local
+
+En la propia Mac, usar `http://localhost:3000` (RAES) y `http://localhost:3003`
+(Credenly). Acceder por otra dirección puede bloquear el WebSocket HMR de desarrollo.
+Para una IP/host de LAN, añadir a los `.env.local` web correspondientes:
+
+```dotenv
+RAES_WEB_ALLOWED_DEV_ORIGINS=192.168.1.7
+CREDENLY_WEB_ALLOWED_DEV_ORIGINS=192.168.1.7
+```
+
+Son listas opcionales de hostnames separados por comas, sin protocolo/puerto.
+Reiniciar las webs y recargar la página. No autorizan CORS de las APIs ni cambian
+login, permisos o la configuración de producción. Si cambia la IP, actualizar el
+valor local. Para confirmar correo desde otro dispositivo, revisar además el origen
+confiable y callback Auth documentados arriba; HMR no configura ese redirect.

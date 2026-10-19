@@ -666,3 +666,15 @@ despliegues o los trabajos de producción pendientes.
   de mutar. No se cambió la contraseña durante estas verificaciones.
 - La operación queda pendiente de que el titular ejecute el comando e introduzca
   su nueva contraseña. La utilidad verifica el login después del cambio.
+
+## Acceso de desarrollo por LAN (2026-10-18)
+
+Se identificó el bloqueo HMR al acceder desde `192.168.1.7`. Ambas webs admiten
+ahora una allowlist opcional de hosts de desarrollo mediante sus variables locales
+`*_WEB_ALLOWED_DEV_ORIGINS`, documentadas en los ejemplos. La IP se configura solo
+en los archivos locales ignorados; no se añade una allowlist global ni se cambia
+la autorización de APIs/Auth. Alternativa inmediata en la Mac: usar localhost.
+
+Verificación con la protección HMR de la versión Next instalada y ambas configs:
+localhost e IP configurada permitidos; origen no autorizado bloqueado con 403.
+No se modifican ni reinician los backends ni se cambian cuentas/contraseñas.
