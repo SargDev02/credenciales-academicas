@@ -229,7 +229,17 @@ CREDENLY_WEB_ALLOWED_DEV_ORIGINS=192.168.1.7
 Son listas opcionales de hostnames separados por comas, sin protocolo/puerto.
 Reiniciar las webs y recargar la página. No autorizan CORS de las APIs ni cambian
 login, permisos o la configuración de producción. Si cambia la IP, actualizar el
-valor local. Para confirmar correo desde otro dispositivo, revisar además el origen
+valor local. Se pueden conservar varias direcciones conocidas separadas por comas;
+no usar un comodín global para evitar actualizar la lista.
+
+El mismo bloqueo puede aparecer en `/__nextjs_original-stack-frames`, el recurso
+con el que Next muestra detalles de errores en desarrollo. Autorizar el host
+restablece ese recurso; si el login continúa fallando, revisar el error anterior
+al aviso. Un aviso del panel de errores no demuestra que Auth haya rechazado la
+sesión. Comprobar por separado `/login` y `/admin/login`. La configuración local
+se guarda en `.env.local` ignorados; no versionar claves ni esos archivos.
+
+Para confirmar correo desde otro dispositivo, revisar además el origen
 confiable y callback Auth documentados arriba; HMR no configura ese redirect.
 
 ## Credenly Admin — alcance operativo aprobado
