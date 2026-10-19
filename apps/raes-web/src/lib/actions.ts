@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { apiRequest, safeReturnPath } from "@raes/web-core";
 import { createWebAuth, clearWebSessionCookies } from "./auth";
 import { getWebConfig } from "./env";
-import { isInstitutions } from "./admin-model";
+import { isAdminProfile } from "./admin-model";
 export type LoginState = { error?: string };
 export async function login(
   _state: LoginState,
@@ -30,9 +30,9 @@ export async function login(
       error: "No pudimos iniciar sesión. Revisa tus datos e intenta de nuevo.",
     };
   try {
-    await apiRequest(getWebConfig().apiBase, "/api/v1/admin/institutions", {
+    await apiRequest(getWebConfig().apiBase, "/api/v1/admin/me", {
       token: data.session.access_token,
-      validate: isInstitutions,
+      validate: isAdminProfile,
     });
   } catch {
     try {

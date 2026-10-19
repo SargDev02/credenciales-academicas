@@ -107,3 +107,21 @@ export function filterRecords<T extends { nombre: string; estado: string }>(
       (typeof state !== "string" || state === "" || i.estado === state),
   );
 }
+
+export type AdminProfile = {
+  id: string;
+  nombres: string;
+  apellidos: string;
+  rol: "SUPERADMIN" | "ADMIN" | "AUDITOR";
+  estado: "ACTIVO";
+};
+export function isAdminProfile(v: unknown): v is { data: AdminProfile } {
+  return record(v) && record(v.data) &&
+    strings(v.data, ["id", "nombres", "apellidos"]) &&
+    ["SUPERADMIN", "ADMIN", "AUDITOR"].includes(String(v.data.rol)) &&
+    v.data.estado === "ACTIVO";
+}
+export function canManage(profile: AdminProfile): boolean {
+  return profile.estado === "ACTIVO" &&
+    (profile.rol === "SUPERADMIN" || profile.rol === "ADMIN");
+}

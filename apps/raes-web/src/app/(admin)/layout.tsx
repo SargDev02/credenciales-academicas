@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Alert, Button } from "@raes/ui";
 import { WebApiError } from "@raes/web-core";
-import { getInstitutions } from "../../lib/admin-api";
-import { requireSession } from "../../lib/auth";
+import { getAdminProfile } from "../../lib/admin-api";
+import type { AdminProfile } from "../../lib/admin-model";
 import { logout } from "../../lib/actions";
 import { Navigation } from "../../components/navigation";
 export const dynamic = "force-dynamic";
@@ -11,10 +11,10 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { user } = await requireSession();
+  let profile: AdminProfile | undefined;
   let denied: WebApiError | undefined;
   try {
-    await getInstitutions();
+    profile = await getAdminProfile();
   } catch (error) {
     if (error instanceof WebApiError) denied = error;
     else throw error;
@@ -27,8 +27,8 @@ export default async function AdminLayout({
         </Link>
         <div className="admin-account">
           <div>
-            <strong>Sesión administrativa</strong>
-            <span title={user.email}>{user.email}</span>
+            <strong>{profile?.rol ?? "Sesión administrativa"}</strong>
+            <span>{profile ? `${profile.nombres} ${profile.apellidos}` : "Acceso no disponible"}</span>
           </div>
           <form action={logout}>
             <Button type="submit" variant="secondary">

@@ -508,3 +508,28 @@ Commits de implementación: `41afe24` Foundation y `ccb5153` RAES Web/QA.
 No se modifica el backend ni se inicia Credenly integrado mientras se resuelve
 ese punto. El prototipo backend sigue cerrado funcionalmente, sin declaración
 de preparación para producción.
+
+## Frontend — introspección administrativa aprobada (2026-10-18)
+
+- [x] Aprobación explícita para `GET /api/v1/admin/me`: perfil mínimo, tres roles
+  activos explícitos, JWT validado mediante `authenticateAdmin`, sin cambiar su
+  comportamiento por defecto ni ampliar permisos. Respuestas privadas sin caché.
+- [x] Login/layout consultan el perfil real vía RAES API y muestran nombre/rol;
+  no se consulta `perfiles_admin` desde la web ni se usa metadata como autorización.
+- [x] Tests de ruta: roles activos, 401 ausente/inválido/expirado, 403 sin perfil,
+  inactivo/rol desconocido, error sanitizado y proyección mínima sin secretos.
+  AUDITOR sigue recibiendo 403 en las tres rutas de altas existentes.
+- [ ] Altas RAES Web: siguiente unidad funcional; sin endpoints nuevos adicionales.
+- PR #15 permanece Draft. No hay migraciones, RPC, merge ni despliegues.
+
+Las entradas anteriores sobre el bloqueo de rol describen el punto de revisión
+anterior; esta aprobación lo resuelve. Auditoría y listados de integraciones/scopes
+continúan fuera de la API disponible.
+
+Validación de esta unidad: `pnpm typecheck`, **149/149 tests**, builds completos
+correctos y **12/12** pruebas públicas Chrome. Verificador Auth/API/Chrome real:
+200 para los tres roles activos, 401 ausente/inválido, 403 inactivo y 403 en
+las tres altas para AUDITOR. Cookie HttpOnly, cero storage sensible/peticiones
+browser a DB y cero errores de hidratación. Cuenta QA
+`716c6a99-aa6e-422d-9cc7-c3d614bd0b94` y perfil eliminados (Auth 404, perfil 0).
+Sin mutaciones institucionales, de clientes/integraciones ni académicas.

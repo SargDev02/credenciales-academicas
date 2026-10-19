@@ -132,21 +132,23 @@ En el desarrollo se corrigió un selector del verificador que confundía el
 anunciador de rutas Next.js con un error de acceso; se esperó el mensaje concreto
 antes de habilitar el perfil de prueba. Las cuentas de los intentos se limpiaron.
 
-### Decisión necesaria para altas
+### Perfil administrativo autorizado
 
-Propuesta concreta, **sin implementar**: GET `/api/v1/admin/me`, protegido con
-`authenticateAdmin(request, ["SUPERADMIN", "ADMIN", "AUDITOR"])`, respuesta
-`data: { id, nombres, apellidos, rol, estado }` del perfil validado. No devuelve
-secretos ni cambia tablas/RPC. Permitiría habilitar formularios para SUPERADMIN/ADMIN
-y mantener AUDITOR de lectura; la autorización final seguiría en cada endpoint.
-Antes de implementarlo se solicita aprobación conforme al límite de cambios backend.
-Los gaps de auditoría/listados/scopes se mantienen explícitos; no se proponen
-nuevas consultas a base de datos desde la web.
+Implementado tras aprobación explícita: `GET /api/v1/admin/me` reutiliza
+`authenticateAdmin(request, ["SUPERADMIN", "ADMIN", "AUDITOR"])`, sin cambiar
+sus roles por defecto. Solo devuelve `id`, `nombres`, `apellidos`, `rol`, `estado`
+y no se almacena en caché. Login y layout lo consultan desde el servidor.
+El encabezado muestra nombre y rol de ese perfil; no se infiere desde metadata.
+Las altas solo se ofrecen a SUPERADMIN/ADMIN y sus endpoints siguen autorizando
+cada solicitud. AUDITOR continúa en lectura. Ver contrato y errores en `docs/api.md`.
+No se añadieron tablas, migraciones, RPC ni otros endpoints administrativos.
+Los gaps de auditoría/listados/scopes siguen explícitos.
 
 ## Resultado de este bloque
 
 - Typecheck y builds de las dos webs, contratos y backends correctos.
-- `pnpm test`: **138/138** (21 frontend/utilidades + los 117 anteriores).
+- Introspección aprobada: `pnpm test` **149/149**, incluyendo 10 tests de ruta
+  y un test adicional de perfil/permisos UI. Los 117 anteriores se conservan.
 - Playwright público: **12/12** en Chrome, cuatro resoluciones.
 - Verificador Auth/RAES real: sin perfil DENIED, AUDITOR OK; dos instituciones,
   datos reales, logout correcto, cero storage sensible y cero errores de hidratación.
@@ -156,4 +158,9 @@ nuevas consultas a base de datos desde la web.
   los bundles de navegador de ambas apps no contienen secretos de los backends.
 - `pnpm lint` termina correctamente pero sigue sin scripts por paquete. No se
   presenta como análisis estático. El código se formateó, sin introducir un framework UI.
-- PR #15 Draft; sin merge, despliegue ni cambios en backend, esquema o RPC.
+- PR #15 Draft; sin merge ni despliegue. Único cambio backend autorizado: introspección
+  administrativa; sin cambios de esquema/RPC.
+
+La consulta real de `/admin/me` se comprobó además con SUPERADMIN, ADMIN y AUDITOR
+activos (200), perfil inactivo (403), sin token/inválido (401), y las tres altas
+rechazadas como AUDITOR (403). La cuenta temporal de esta ejecución fue eliminada.

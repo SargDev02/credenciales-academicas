@@ -35,3 +35,16 @@ test("date formatting is deterministic and handles no activity", () => {
   assert.equal(formatDate("invalid"), "Fecha no disponible");
   assert.ok(formatDate("2026-10-18T12:00:00Z").includes("2026"));
 });
+
+test("admin profile accepts only active server roles and permissions fail closed", async () => {
+  const { isAdminProfile, canManage } = await import("./admin-model");
+  const base = { id: "fixture", nombres: "Prueba", apellidos: "Sintética", estado: "ACTIVO" };
+  for (const rol of ["SUPERADMIN", "ADMIN", "AUDITOR"] as const) {
+    const profile = { ...base, estado: "ACTIVO" as const, rol };
+    assert.equal(isAdminProfile({ data: profile }), true);
+    assert.equal(canManage(profile), rol !== "AUDITOR");
+  }
+  for (const data of [{ ...base, rol: "CITIZEN" }, { ...base, rol: "ADMIN", estado: "INACTIVO" }, { user_metadata: { rol: "ADMIN" } }]) {
+    assert.equal(isAdminProfile({ data }), false);
+  }
+});
