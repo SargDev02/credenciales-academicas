@@ -54,3 +54,20 @@ test("worker startup failure releases capacity for a later attempt", async () =>
   await assert.rejects(provider.recognize(image));
   assert.equal((await provider.recognize(image)).text, "SYNTHETIC");
 });
+
+test("a synchronous termination failure cannot escape the deadline callback or admit another worker", async () => {
+  const provider = new TesseractOcrProvider(async () => ({
+    recognize: () => new Promise(() => {}),
+    terminate: () => { throw new Error("Synthetic termination failure"); },
+  }), 10);
+  await assert.rejects(provider.recognize(image), e => e instanceof OcrResourceError && e.status === 504);
+  await assert.rejects(provider.recognize(image), e => e instanceof OcrResourceError && e.status === 429);
+});
+test("non-finite OCR confidence is treated as zero rather than approving a document", async () => {
+  for (const confidence of [NaN, Infinity, -Infinity]) {
+    const provider = new TesseractOcrProvider(async () => ({
+      recognize: async () => ({ data: { text: "SYNTHETIC", confidence } }), terminate: async () => {},
+    }));
+    assert.equal((await provider.recognize(image)).confidence, 0);
+  }
+});

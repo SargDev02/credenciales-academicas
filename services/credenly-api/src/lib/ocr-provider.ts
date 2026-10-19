@@ -50,7 +50,8 @@ export class TesseractOcrProvider implements OcrProvider {
       if (worker && !cleanup) {
         // Do not admit another worker until termination is acknowledged. A
         // failed termination intentionally holds capacity until process restart.
-        cleanup = worker.terminate().then(release);
+        const runningWorker = worker;
+        cleanup = Promise.resolve().then(() => runningWorker.terminate()).then(release);
       }
       return cleanup;
     };
@@ -73,10 +74,11 @@ export class TesseractOcrProvider implements OcrProvider {
         // A slow startup must never start recognizing after its deadline.
         if (expired) throw new OcrResourceError(504, "OCR_TIMEOUT", "El procesamiento documental superó el tiempo permitido");
         const result = await worker.recognize(image);
+        const confidence = result.data.confidence ?? 0;
         return {
           provider: this.name,
           text: result.data.text ?? "",
-          confidence: Math.max(0, Math.min(1, (result.data.confidence ?? 0) / 100)),
+          confidence: Number.isFinite(confidence) ? Math.max(0, Math.min(1, confidence / 100)) : 0,
         };
       } finally {
         await terminate();
