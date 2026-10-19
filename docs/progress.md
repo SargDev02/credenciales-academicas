@@ -41,6 +41,17 @@ Detalle, hallazgos, evidencias y límites: [gate pre-deploy](reports/predeploy-q
 [API](reports/predeploy-api-security.md), [DB](reports/predeploy-db.md),
 [dependencias](reports/predeploy-dependencies.md), [operación](operations.md).
 
+## Diagnóstico de cambios institucionales — 2026-10-19
+
+- [x] Revisado flujo institución → conector → RAES → Credenly/Web.
+- [x] Confirmada ejecución manual de una sola pasada; iniciar APIs/webs no sincroniza.
+- [x] Lectura real: Poli 12/13 coinciden; la divergente es la legacy
+  `SIM-POLI-2025-0001` (origen VIGENTE, RAES REVOCADA v3), preservada según decisión
+  previa. UdeA 18/18 coinciden; sin altas RAES faltantes ni fuente inválida.
+- [x] Sin cambios de cuentas/datos académicos ni excepciones de ownership/terminales.
+- [x] Documentados comandos, necesidad de recargar y límites de automatización en
+  [sincronización](synchronization.md) y [diagnóstico](reports/institution-sync-diagnosis.md).
+
 ## Registro histórico de fases anteriores
 
 Las entradas siguientes conservan su fecha, cifras y decisiones originales.

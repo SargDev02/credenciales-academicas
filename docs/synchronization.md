@@ -97,3 +97,43 @@ una respuesta perdida vuelven a leer el estado y no crean otra versión si ya co
 Esta lectura no cambia el control transaccional de las RPC existentes. La fuente
 no debe ejecutar dos procesos concurrentes con fotografías distintas de la misma
 credencial; falta una política explícita de orden para ese caso antes de producción.
+
+
+## Cuándo llega un cambio a la web
+
+Los conectores actuales son comandos de una sola ejecución: leen la fuente,
+sincronizan y terminan. Iniciar RAES API/las webs no inicia los conectores. El
+repositorio no configura un worker, tarea periódica o suscripción a cambios de las
+bases institucionales. Una edición en Supabase no se envía automáticamente a RAES.
+
+Desde la raíz, con RAES API activa en el origen configurado y los `.env.local`
+server-side de cada conector preparados:
+
+```bash
+pnpm --filter @raes/connector-poli sync
+pnpm --filter @raes/connector-udea sync
+```
+
+Estos comandos **escriben en RAES por su API**: revisar antes qué registros se
+cambiaron. Para una corrección exclusivamente académica puede limitarse el comando
+al código institucional con `sync:credentials -- --credential-code=<codigo>`.
+No ejecutar dos procesos concurrentes para una misma fuente.
+
+La secuencia esperada para una credencial administrada y VIGENTE en RAES es:
+cambiar el origen, ejecutar su conector, comprobar `credentialsCorrected` y
+recargar la web. RAES conserva el contenido anterior mediante versiones/eventos.
+Credenly consulta RAES por HTTP con `cache: no-store`; no lee las bases
+institucionales ni mantiene snapshots académicos. Una pestaña ya abierta necesita
+una nueva consulta (recargar); no recibe cambios por push.
+
+Si un cambio no aparece, revisar el resumen del conector:
+
+- `existingCredentialsNotAdopted`: alta legacy o de otra operación; preservación
+  deliberada, sin corregir ni adoptar el registro automáticamente.
+- `terminalStateConflicts`: RAES ya tiene un estado terminal incompatible; no
+  reactivar ni corregir una credencial revocada/anulada desde una edición de origen.
+- `credentialsCorrected`/`credentialsUnchanged`: reconciliación de contenido propio.
+- Fallo HTTP/validación: no asumir que la ejecución terminó correctamente.
+
+El [diagnóstico de 2026-10-19](reports/institution-sync-diagnosis.md) distingue
+el envío manual del caso legacy histórico observado, sin modificar datos académicos.
