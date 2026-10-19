@@ -1,3 +1,5 @@
+import { ApiError, apiErrorResponse } from "@/lib/api-error";
+import { parseJsonBody } from "@/lib/request-validation";
 import { z } from "zod";
 
 import {
@@ -48,6 +50,7 @@ export async function GET(request: Request) {
       })),
     });
   } catch (error) {
+    if (error instanceof ApiError) return apiErrorResponse(error);
     if (error instanceof AdminAuthError) {
       return adminAuthErrorResponse(error);
     }
@@ -66,8 +69,7 @@ export async function POST(request: Request) {
       "SUPERADMIN",
       "ADMIN",
     ]);
-    const body = await request.json();
-    const input = institutionCreateSchema.parse(body);
+    const input = await parseJsonBody(request, institutionCreateSchema);
 
     const institution = await createInstitution(
       {
@@ -98,12 +100,12 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    if (error instanceof ApiError) return apiErrorResponse(error);
     if (error instanceof z.ZodError) {
       return Response.json(
         {
           error: "VALIDATION_ERROR",
           message: "Los datos de la institución no son válidos",
-          details: error.issues,
         },
         { status: 400 },
       );

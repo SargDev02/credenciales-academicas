@@ -118,6 +118,7 @@ export async function authenticateApiClient(
   if (
     !secret ||
     secret.hash_algorithm !== "SHA256" ||
+    secret.revoked_at !== null ||
     isExpired ||
     !verifyClientSecret(credentials.secret, secret.secret_hash)
   ) {

@@ -169,10 +169,7 @@ export async function processIdentityDocument(
       throw error;
     }
 
-    console.error("Local OCR processing failed", {
-      message:
-        error instanceof Error ? error.message : "unknown error",
-    });
+    console.error("Local OCR processing failed");
 
     throw new IdentityVerificationError(
       500,
@@ -221,10 +218,7 @@ export function identityVerificationErrorResponse(
     );
   }
 
-  console.error("Unexpected identity verification error", {
-    message:
-      error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Unexpected identity verification error");
 
   return Response.json(
     {

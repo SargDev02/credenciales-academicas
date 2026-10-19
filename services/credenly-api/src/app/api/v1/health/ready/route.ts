@@ -65,10 +65,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error("Credenly readiness configuration failed", {
-      message:
-        error instanceof Error ? error.message : "unknown error",
-    });
+    console.error("Credenly readiness configuration failed");
 
     return Response.json(
       {

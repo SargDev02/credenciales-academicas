@@ -48,7 +48,7 @@ Scopes institucionales:
 - `credentials:revoke`
 - `credentials:annul`
 
-El scope `credentials:read` existe en el catálogo, pero no se entrega por defecto a los conectores institucionales.
+Los conectores reciben también `credentials:read` para consultar exclusivamente su estado vigente mediante `/credentials/source/{code}`. Esta ruta autentica integraciones institucionales y filtra por su institución; no habilita el acceso a rutas de clientes API.
 
 ## Clientes de API
 
@@ -76,6 +76,29 @@ Credenly recibe únicamente:
 - `persons:resolve`
 - `credentials:read`
 
+### Auditoría de consultas de clientes
+
+`persons:resolve` y `credentials:read` registran `PERSON_RESOLVE` y
+`CREDENTIALS_READ` en `auditoria`, con `actor_tipo = CLIENTE_API` y
+`actor_id = clientes_api.id`. Se reutilizan `recurso_tipo = PERSONA`,
+`recurso_id` (persona resuelta/consultada en respuestas exitosas) y `created_at`.
+No se agregan tablas ni relaciones: `actor_id` ya era un UUID polimórfico.
+
+La metadata contiene exclusivamente `endpoint` (plantilla fija), `resultado`
+(`OK`, `DENEGADO`, `NO_ENCONTRADO`, `ERROR_VALIDACION`, `ERROR`) y `http_status`.
+No se guardan documentos, nombres, cuerpos, headers, query strings, secretos,
+IP ni user agent. Los errores de validación tampoco devuelven el input recibido.
+
+La autenticación precede a la autorización para auditar un scope insuficiente con
+actor verificado. Una credencial ausente o inválida devuelve 401 sin atribuirla
+a un cliente a partir de un Bearer no verificado. `client-whoami` conserva su
+comportamiento de diagnóstico y no genera estos eventos de consulta académica.
+
+La auditoría se espera antes de entregar la respuesta. Si falla, se devuelve
+`503 AUDIT_UNAVAILABLE` sin datos académicos y se registra solo la operación en
+el log del servidor. Esto prioriza trazabilidad sobre disponibilidad de lectura;
+las lecturas pueden reintentarse. No se modifica el versionado académico.
+
 Esto permite que Credenly resuelva una persona después de verificar su identidad y consulte sus credenciales en vivo sin persistir una copia académica.
 
 ## Endpoints de clientes
@@ -97,6 +120,14 @@ Roles:
 - `AUDITOR`
 
 Los roles `SUPERADMIN` y `ADMIN` pueden crear instituciones e integraciones. `AUDITOR` puede consultar, pero no aprovisionar.
+
+Las RPC de aprovisionamiento solo admiten ejecución desde `service_role`, después
+de los controles administrativos del backend. Los grants se revocan explícitamente
+a `PUBLIC`, `anon` y `authenticated`; revocar únicamente `PUBLIC` no elimina
+grants directos existentes. Se mantiene un `search_path` vacío y referencias a
+tablas calificadas con `public`. La prueba SQL
+`supabase/raes/tests/provisioning_rpc_permissions.sql` verifica los tres roles
+sin crear instituciones ni clientes.
 
 Endpoints preparados para la futura RAES Web:
 

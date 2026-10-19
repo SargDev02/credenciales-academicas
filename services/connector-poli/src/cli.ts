@@ -26,6 +26,7 @@ async function main(): Promise<void> {
 
   console.log("Sincronización completada.");
   console.log(JSON.stringify(summary, null, 2));
+  if (summary.terminalStateConflicts.length > 0) process.exitCode = 1;
 
   if (summary.existingCredentialsNotAdopted.length > 0) {
     console.warn(

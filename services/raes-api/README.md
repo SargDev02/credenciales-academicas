@@ -2,17 +2,15 @@
 
 Servicio backend central de RAES.
 
-## Etapa actual
+## Estado actual
 
-La primera versión incluye:
+Servicio Next.js con autenticación institucional, clientes API y administración;
+sincronización académica, registro/versionado, correcciones y estados terminales;
+consulta ciudadana e institucional y auditoría de clientes API. Ambos conectores
+han sido validados contra datos fuente existentes. Las interfaces siguen pendientes.
 
-- servicio Next.js independiente;
-- validación de variables de entorno;
-- cliente Supabase de servidor;
-- endpoint de vida;
-- endpoint de disponibilidad con prueba real contra la base de RAES.
-
-Todavía no contiene autenticación institucional ni endpoints de sincronización académica.
+Los resultados y límites de validación están en `docs/progress.md`. Los cambios de
+permisos se aplican con migraciones nuevas; no se editan los históricos aplicados.
 
 ## Configuración local
 

@@ -72,10 +72,7 @@ export function citizenAuthErrorResponse(
     );
   }
 
-  console.error("Credenly authentication failed", {
-    message:
-      error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Credenly authentication failed");
 
   return Response.json(
     {

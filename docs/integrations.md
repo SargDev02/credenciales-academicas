@@ -1,15 +1,23 @@
 # Integraciones
 
-## Primer objetivo
-
-Conectar Institución A con RAES antes de desarrollar interfaces.
+Los conectores Politécnico y Universidad de Antioquia leen fuentes físicas
+independientes y reutilizan `packages/connector-core` para contratos, transporte,
+reconciliación y ciclo de vida. Las instituciones no contienen tablas específicas
+ni conocimiento interno de RAES.
 
 ```text
-Politécnico DB -> connector-poli -> contratos Zod -> RAES API -> RAES DB
+Fuente institucional -> lectura paginada -> contratos Zod -> RAES API -> RAES DB
 ```
 
-El conector lee la institución, transforma al contrato estándar, valida, se autentica, envía operaciones idempotentes y detecta cambios incrementales.
+El estado vigente se consulta por API con aislamiento institucional; los conectores
+no reciben acceso a RAES DB. Las instituciones conservan RLS y no reciben escrituras
+ni estado de sincronización del conector. Credenly usa exclusivamente la API RAES
+para los datos académicos y su propio proyecto para Auth y datos ciudadanos.
 
-Contratos previstos: institución, sede, programa, persona, credencial nueva, corrección, revocación y anulación.
+Las claves de operación tienen namespaces separados y RAES mantiene su idempotencia
+transaccional. Una corrección no sobrescribe versiones, ni una revocación/anulación
+elimina credenciales. Los conflictos terminales y registros de otras operaciones
+se reportan al operador; no se adoptan automáticamente.
 
-Universidad de Antioquia se integrará después usando los mismos endpoints y contratos.
+Ejecución y configuración en los README de `services/connector-poli` y
+`services/connector-udea`. Evidencia real y pendientes en `docs/progress.md`.

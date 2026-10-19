@@ -1,3 +1,4 @@
+import { readBoundedBody, RequestValidationError, requestValidationErrorResponse } from "@/lib/request-validation";
 import {
   CitizenAuthError,
   authenticateCitizen,
@@ -53,6 +54,8 @@ export async function GET(request: Request) {
       data: serializeVerification(verification),
     });
   } catch (error) {
+    const validation = requestValidationErrorResponse(error);
+    if (validation) return validation;
     if (error instanceof CitizenAuthError) {
       return citizenAuthErrorResponse(error);
     }
@@ -64,7 +67,13 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const user = await authenticateCitizen(request);
-    const formData = await request.formData();
+    const bytes = await readBoundedBody(request, 8 * 1024 * 1024 + 64 * 1024);
+    let formData: FormData;
+    try {
+      formData = await new Response(bytes, { headers: { "content-type": request.headers.get("content-type") ?? "" } }).formData();
+    } catch {
+      throw new RequestValidationError(400, "INVALID_MULTIPART", "El documento debe enviarse como multipart válido");
+    }
     const document = formData.get("documento");
 
     if (!(document instanceof File)) {
@@ -90,6 +99,8 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error) {
+    const validation = requestValidationErrorResponse(error);
+    if (validation) return validation;
     if (error instanceof CitizenAuthError) {
       return citizenAuthErrorResponse(error);
     }

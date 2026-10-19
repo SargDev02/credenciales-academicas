@@ -126,9 +126,7 @@ export function adminAuthErrorResponse(
     );
   }
 
-  console.error("Unexpected RAES admin authentication error", {
-    message: error instanceof Error ? error.message : "unknown error",
-  });
+  console.error("Unexpected RAES admin authentication error");
 
   return Response.json(
     {

@@ -73,14 +73,27 @@ Si el mismo `identificadorOrigen` de una institución intenta cambiar a otro doc
 
 Los payloads representan la fotografía actual del registro de origen. Los campos opcionales omitidos se normalizan a `null` en RAES.
 
-## Fuera de alcance de esta subetapa
+## Extensiones implementadas
 
-Todavía no se implementan:
+Programa-sede, registro idempotente, versiones, correcciones, revocaciones y
+anulaciones ya forman parte del backend. Los conectores usan los contratos y rutas
+compartidos; la evidencia real y escenarios pendientes se mantienen en `progress.md`.
 
-- programa ↔ sede;
-- credenciales;
-- idempotencia HTTP de mutaciones;
-- historial de credenciales;
-- correcciones, revocaciones y anulaciones.
+## Reconciliación de conectores
 
-Esos componentes se agregan después de validar esta sincronización base.
+`GET /api/v1/credentials/source/{code}` requiere autenticación institucional y
+`credentials:read`. Filtra siempre por la institución de la integración; no acepta
+un ID de institución del consumidor. Devuelve la proyección vigente, referencias
+locales de persona y clave de la operación de alta propia. Otra institución obtiene
+404. No permite utilizar credenciales de clientes API ciudadanos en esta ruta.
+
+Ambos conectores usan `@raes/connector-core`. Conservar la clave histórica de alta
+permite reconocer registros propios sin adoptar operaciones ajenas. La comparación
+contra la proyección vigente corrige la secuencia contenido A -> B -> A; comparar
+solo contra el hash del alta original no detectaba la última vuelta a A.
+Las claves de corrección incluyen versión observada y contenido; reintentos tras
+una respuesta perdida vuelven a leer el estado y no crean otra versión si ya coincide.
+
+Esta lectura no cambia el control transaccional de las RPC existentes. La fuente
+no debe ejecutar dos procesos concurrentes con fotografías distintas de la misma
+credencial; falta una política explícita de orden para ese caso antes de producción.
