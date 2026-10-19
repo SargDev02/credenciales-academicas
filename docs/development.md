@@ -118,9 +118,16 @@ Prepara únicamente una cuenta sintética sin envío de correo, perfil, verifica
 `MOCK_DESARROLLO` y vinculación. Usa la resolución/vinculación de los servicios,
 realiza login real y exige HTTP 200 con ambas credenciales, `source: RAES` y
 `persistedByCredenly: false`. No prueba autenticidad ni OCR real. Revoca la sesión,
-elimina únicamente los registros creados por esa ejecución y comprueba ausencia
-de residuos y rechazo 401 posterior. No almacena datos académicos en Credenly.
+elimina en orden vinculación, verificación, perfil y usuario Auth. Si falla un
+paso se detiene sin forzar cascadas. Comprueba Auth 404, ausencia de residuos y
+rechazo HTTP 401 posterior. No almacena datos académicos en Credenly.
 Los fixtures de las instituciones y su historial RAES se conservan.
+
+La ejecución autorizada del 2026-10-18 pasó contra ambos servicios compilados.
+Además se comprobó por SQL ausencia de usuario, sesión y datos ciudadanos; las
+huellas de las cinco tablas Credenly y las siete tablas de cada institución fueron
+idénticas antes/después. Los UUID HTTP se corresponden con los dos códigos fuente
+documentados; la aplicación no introduce excepciones para este fixture.
 
 `supabase/raes/tests/credential_lifecycle_existing_data.sql` prueba las RPC sobre
 una credencial vigente existente. Cada escenario se revierte por subtransacción y

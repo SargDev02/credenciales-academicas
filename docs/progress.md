@@ -1,12 +1,11 @@
 # Progreso
 
-Estado al 2026-10-18: auditoría de clientes y ambos conectores implementados y
-validados; hardening aplicado y revisión técnica realizada. C/D en RAES y la
-lectura del cliente real Credenly ya pasan con el fixture compartido aprobado.
-La credencial legacy se preserva por decisión explícita. Falta la prueba HTTP
-ciudadana con la identidad compartida, pendiente de autorización para una cuenta
-sintética temporal en Credenly; el cierre funcional aún no se marca. No se han
-iniciado interfaces ni despliegues frontend.
+Estado al 2026-10-18: **backend funcionalmente cerrado para el alcance del prototipo**.
+Auditoría, conectores A/B, C/D multiinstitución, hardening y revisión técnica validados.
+La ruta ciudadana HTTP real recupera ambas credenciales; la cuenta sintética temporal
+se eliminó completamente. La legacy se preserva por decisión explícita. **No listo
+para producción**: los cinco pendientes de producción se mantienen separados abajo.
+No se han iniciado interfaces ni despliegues frontend.
 
 ## Etapa 0 — Infraestructura de datos
 - [x] Institución A.
@@ -25,7 +24,7 @@ iniciado interfaces ni despliegues frontend.
 - [x] Contratos Zod compartidos.
 
 ## Etapa 2 — Institución A -> RAES
-- [ ] RAES API.
+- [x] RAES API.
   - [x] Servicio base y health checks.
   - [x] Cliente Supabase server-side.
   - [x] Conexión local con RAES verificada.
@@ -35,7 +34,7 @@ iniciado interfaces ni despliegues frontend.
   - [x] Bootstrap de Institución A implementado.
   - [x] Bootstrap probado contra RAES.
   - [x] Endpoint autenticado `/auth/whoami` validado.
-- [ ] Idempotencia.
+- [x] Idempotencia.
   - [x] Headers X-Request-Id e Idempotency-Key implementados.
   - [x] Hash canónico SHA-256 implementado.
   - [x] Protección transaccional y replay implementados en RAES.
@@ -49,30 +48,30 @@ iniciado interfaces ni despliegues frontend.
   - [x] Idempotencia del conector implementada sin escribir estado en la institución.
   - [x] Datos base validados realmente contra Institución A.
   - [x] Credencial real validada mediante el conector.
-- [ ] Sedes y programas.
+- [x] Sedes y programas.
   - [x] Endpoints autenticados implementados.
   - [x] Sincronización real validada con Institución A.
-- [ ] Resolución de personas.
+- [x] Resolución de personas.
   - [x] Resolución maestra por tipo + número de documento implementada.
   - [x] Fuente institucional por identificador de origen implementada.
   - [x] Resolución real validada con Institución A.
-- [ ] Registro/versionado de credenciales.
+- [x] Registro/versionado de credenciales.
   - [x] RPC transaccional de registro inicial aplicada en RAES.
   - [x] Endpoint POST /api/v1/credentials implementado.
   - [x] Versión 1 + evento REGISTRADA implementados.
   - [x] Registro real validado con una credencial de Institución A.
-- [ ] Correcciones.
+- [x] Correcciones.
   - [x] Versionado completo con tipo y categoría.
   - [x] RPC transaccional de corrección aplicada en RAES.
   - [x] Endpoint de corrección implementado.
   - [x] Corrección real validada de extremo a extremo.
-- [ ] Revocaciones/anulaciones.
+- [x] Revocaciones/anulaciones.
   - [x] Metadatos de anulación agregados al esquema.
   - [x] RPC transaccional de estados terminales aplicada en RAES.
   - [x] Endpoints de revocación y anulación implementados.
   - [x] Revocación real validada.
   - [x] Anulación real validada.
-- [ ] Pruebas de integración.
+- [x] Pruebas de integración.
   - [x] Sincronización base Institución A -> RAES validada.
   - [x] Registro idempotente de credencial vía conector validado.
 
@@ -139,7 +138,7 @@ iniciado interfaces ni despliegues frontend.
 
 ## Etapa 4 — Institución B
 - [x] Conector UdeA.
-- [ ] Pruebas multiinstitución.
+- [x] Pruebas multiinstitución.
 
 ## Finalización backend — Fase 1: auditoría de clientes API (2026-10-18)
 
@@ -240,22 +239,21 @@ apropiado. No se alteraron documentos fuente para simular coincidencias.
 - [x] F/G: RPC reales de corrección, revocación y anulación sobre una credencial
   UdeA existente; versiones y eventos comprobados y cambios revertidos por
   subtransacciones. No se crean credenciales de prueba persistentes.
-- [x] H: integración de servicio Credenly -> RAES real con su vinculación ciudadana
-  existente. Una prueba de ruta con transporte simulado verifica dos instituciones,
-  `source: RAES`, `persistedByCredenly: false` y ausencia de escrituras académicas.
+- [x] H: lectura del servicio Credenly -> RAES con vínculo existente y consulta
+  HTTP ciudadana real con el fixture compartido: dos instituciones, `source: RAES`,
+  `persistedByCredenly: false` y cero escrituras académicas. La cuenta temporal se
+  eliminó; ver evidencia independiente de limpieza en el cierre de este bloque.
 - [x] C/D en RAES: fixture compartido autorizado posteriormente; una persona
   maestra, dos fuentes y dos credenciales institucionales con procedencia correcta.
-  El cliente real Credenly las recupera por RAES HTTP. Ver evidencia de cierre
-  debajo; la ruta ciudadana compartida sigue pendiente de autorización separada.
+  El cliente real Credenly y su ruta HTTP ciudadana autenticada las recuperan.
+  Ver evidencia de la ejecución y limpieza más abajo.
 
 Verificador reproducible: `services/raes-api/scripts/verify-multi-institution.ts`.
 Resultado real: A 12 personas/12 credenciales fuente; B 17/17; lecturas cruzadas 404;
-servicio Credenly correcto, sin mutaciones académicas. Se detecta una discrepancia
-histórica de estado en la credencial Poli no adoptada; requiere decisión explícita
-antes de reconciliar datos ajenos al conector. Total de pruebas locales: 78.
-Esta fue la validación inicial previa al fixture compartido aprobado. La revisión
-legacy quedó resuelta conservándolo deliberadamente; el único criterio pendiente
-de esta fase es la lectura HTTP ciudadana compartida descrita más abajo.
+servicio Credenly correcto, sin mutaciones académicas. Aquella validación inicial
+tenía 78 pruebas y detectó la discrepancia histórica Poli; posteriormente se
+resolvió preservando la legacy y se completó C/D con el fixture aprobado.
+La Fase 3 queda cerrada para el prototipo con la lectura HTTP real descrita abajo.
 
 ## Finalización backend — Fase 4: hardening (2026-10-18)
 
@@ -296,6 +294,8 @@ de esta fase es la lectura HTTP ciudadana compartida descrita más abajo.
 | Readiness HTTP real | RAES 200; Credenly 200 con base y RAES disponibles |
 | Auditoría de clientes real | Auth/lecturas 200; UUID/JSON 400; sin Auth 401; eventos verificados |
 | Integración multiinstitución real | 30 personas/31 fuentes; una identidad compartida; sin duplicados; aislamiento 404 |
+| Ruta ciudadana C/D HTTP real | 200 con ambas instituciones; source RAES; persistedByCredenly false |
+| Limpieza ciudadana temporal | Auth/sesión/perfil/verificación/vinculación: 0 filas; HTTP posterior 401 |
 | Ciclo de vida real SQL | Corrección, revocación, anulación e historial pasan con rollback |
 | Compartición pública real | 200, revocación y posterior 410; auditoría y hash comprobados |
 | Security Advisor RAES/Credenly | Solo permanece protección de contraseñas filtradas deshabilitada |
@@ -326,9 +326,9 @@ están registradas en sus respectivas bases; los históricos no se editaron.
    permisos de RPC observados.
 5. **Herramientas de calidad**: falta linter por paquete.
 
-Los pendientes anteriores corresponden a producción, separados del cierre funcional
-del prototipo. El backend no se declara listo para producción. El cierre del
-prototipo espera únicamente la comprobación ciudadana indicada a continuación.
+Los pendientes anteriores corresponden a producción y no se marcan como resueltos.
+El backend está funcionalmente cerrado para el prototipo; no está listo para
+producción. No se habilitan interfaces ni se fusiona el PR como parte de este cierre.
 
 ## Resolución explícita de C/D y ownership legacy — PR #14 (2026-10-18)
 
@@ -360,13 +360,35 @@ prototipo espera únicamente la comprobación ciudadana indicada a continuación
   B reporta 18 sin cambios. Huellas antes/después `IDENTICAL`: 30 personas maestras,
   31 fuentes, 32 credenciales, 39 operaciones, 39 versiones y 39 eventos.
   La auditoría de consultas puede crecer; no se confunde con eventos académicos.
-- [ ] Consulta HTTP ciudadana compartida con `source: RAES` y
-  `persistedByCredenly: false`: preparada en
-  `services/credenly-api/scripts/verify-shared-person.ts`, **aún no ejecutada**.
-  Requiere cuenta/verificación/vinculación sintéticas temporales y limpieza, cuya
-  autorización se consultó por la restricción «No crear nada desde Credenly».
-  No se asume aprobación por el tiempo transcurrido. La prueba de ruta con datos
-  simulados sigue pasando, pero no sustituye esta comprobación HTTP real.
+- [x] Consulta HTTP ciudadana compartida autorizada explícitamente y ejecutada:
+  `GET /api/v1/credentials` en Credenly compilado local (3102), con sesión real
+  Supabase Auth, devuelve **HTTP 200** con ambas credenciales e instituciones,
+  `source: "RAES"` y `persistedByCredenly: false`.
+  `services/credenly-api/scripts/verify-shared-person.ts` comprueba los UUID del
+  fixture; los códigos de origen se trazan por esos mismos UUID en el verificador
+  RAES, sin agregar campos ni excepciones a la aplicación.
+- [x] Se creó únicamente un usuario sintético temporal, su perfil, verificación
+  `MOCK_DESARROLLO` y vinculación. La resolución y vinculación usaron los servicios
+  normales y la RPC existentes; el login fue real. La verificación fue un fixture
+  sintético aprobado, **no OCR ni comprobación de autenticidad reales**.
+  Contraseña aleatoria solo en memoria; no se imprimieron sesión, contraseña,
+  claves ni secretos y no se enviaron correos.
+- [x] Usuario temporal `cd1e6510-f50e-4e03-950c-d01a57d530e8`; verificación temporal
+  `b1c3bc36-b311-4dcb-af02-58ac28e6f67d`: eliminados. Se revocó la sesión y se borró
+  en orden vinculación, verificación, perfil y usuario Auth. No hubo errores de
+  limpieza ni FK; el script se detiene al primer fallo, sin forzar cascadas.
+- [x] Comprobación independiente SQL posterior: **0 usuarios Auth, 0 sesiones,
+  0 perfiles, 0 verificaciones y 0 vinculaciones** del usuario temporal; tampoco
+  queda vinculación a la persona sintética compartida. Consulta administrativa de
+  Auth devuelve 404 y la sesión usada devuelve HTTP 401 al consultar Credenly.
+- [x] Las huellas de **las cinco tablas públicas de Credenly** son idénticas antes
+  y después de la prueba y limpieza: sin cambios a cuentas existentes ni escrituras
+  académicas. Solo existen perfiles, verificaciones, vinculaciones, comparticiones
+  y accesos; no hay tablas académicas.
+- [x] Huellas completas de las siete tablas de A y B, incluidos los fixtures,
+  idénticas antes/después. Verificador RAES posterior devuelve `IDENTICAL` contra
+  la referencia del replay: persona maestra, dos fuentes y dos credenciales C/D,
+  así como todo el historial RAES, preservados. La legacy sigue REVOCADA v3.
 
 ### Decisión definitiva sobre SIM-POLI-2025-0001
 
@@ -394,8 +416,10 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
 
 - `pnpm typecheck`, `pnpm test` (**117/117**), builds aplicables y `pnpm lint` pasan.
   Lint sigue sin scripts por paquete; no se presenta como análisis estático real.
-- Los dos verificadores nuevos/modificados se comprobaron además con TypeScript
-  estricto; el script ciudadano temporal aún no tiene resultado de ejecución.
+- Después de la prueba HTTP y limpieza se repitieron `pnpm typecheck`, los
+  **117 tests**, `pnpm lint` y `pnpm -r --if-present build`: todos terminan bien.
+  Contratos y ambos backends compilan. Lint conserva su limitación de scripts.
+  El verificador ciudadano se comprobó además con TypeScript estricto y ejecución real.
 - Cinco pruebas SQL reales pasan con rollback: auditoría, aprovisionamiento,
   ciclo de vida, vinculación y permisos de perfiles.
 - Auditoría HTTP real pasa; compartición pública 200 -> revocación -> 410 pasa y
@@ -405,7 +429,8 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
   operativas y hashes válidos; no almacena estado académico.
 - Solo `.env.example` versionados; cero `.env` privados, traineddata, JWT, claves
   privadas o claves Supabase secretas detectados. Ningún secreto se imprime.
-- PR #14 se mantiene **Draft** hasta resolver el único criterio pendiente; sin merge.
+- C/D y pruebas multiinstitución completados; conector UdeA validado.
+  PR #14 **Ready for Review**, sin merge a `main`.
 
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web.
