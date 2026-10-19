@@ -7,7 +7,8 @@
     "lint": "node scripts/check-workspace-scripts.mjs && pnpm -r lint && eslint scripts tests playwright.config.ts eslint.config.mjs --max-warnings 0",
     "test": "node scripts/check-workspace-scripts.mjs && pnpm -r test && node --test scripts/test/*.test.mjs",
     "test:frontend:browser": "playwright test",
-    "audit:gate": "node scripts/audit-dependencies.mjs"
+    "audit:gate": "node scripts/audit-dependencies.mjs",
+    "security:scan": "node scripts/scan-repository-secrets.mjs"
   },
   "engines": {
     "node": ">=22.13.0"
