@@ -85,3 +85,10 @@ test("terminal academic and document states retain distinct labels", () => {
   assert.equal(statusText("ANULADA"), "Anulada");
   assert.equal(statusText("REVISION"), "En revisión");
 });
+
+test("calendar dates preserve their day while timestamps use the local timezone", async () => {
+  const { date } = await import("./citizen-model");
+  assert.equal(date("2026-10-18").includes("18"), true);
+  assert.equal(date("2026-10-18T00:00:00Z").includes("17"), true);
+  assert.equal(date(null), "No informada");
+});

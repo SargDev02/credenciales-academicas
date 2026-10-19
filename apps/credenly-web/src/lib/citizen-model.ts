@@ -154,7 +154,7 @@ export function date(value: string | null | undefined): string {
     ? "No disponible"
     : new Intl.DateTimeFormat("es-CO", {
         dateStyle: "medium",
-        timeZone: "America/Bogota",
+        timeZone: /^\d{4}-\d{2}-\d{2}$/.test(value) ? "UTC" : "America/Bogota",
       }).format(parsed);
 }
 export function statusText(state: string) {

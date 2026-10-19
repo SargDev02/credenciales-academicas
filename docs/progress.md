@@ -586,3 +586,36 @@ logout/guard, cuatro anchos y cero errores de hidratación/storage sensible.
 La prueba local de estados no sustituye OCR real: prueba el transporte multipart y
 la UI; el backend conserva sus tests/verificación local Tesseract anteriores.
 Validación adicional con APIs reales y fixture C/D se registra en el cierre.
+
+## Frontend — comparticiones y verificación / Fase F (2026-10-18)
+
+- [x] Crear enlaces con campos visibles y duración dentro de 1–720 horas; copiar,
+  descartar token al cerrar/recargar; listado ACTIVA/REVOCADA/EXPIRADA y revocación
+  con confirmación. Sin guardar tokens completos ni snapshots académicos.
+- [x] Página pública `/verify/[token]`, sin login, consulta dinámica a Credenly API
+  → RAES; distingue disponible, 410 revocada/expirada, 404 y otros errores seguros.
+  Muestra procedencia, estado actual y estados terminales sin convertirlos en error.
+- [x] Ocho pruebas de modelos ciudadanos/comparticiones; Chrome fixture local cubre
+  los estados académicos/documentales, enlaces y errores públicos 200/410/404/503.
+- [x] Chrome + APIs reales: identidad C/D vinculada mediante el botón/endpoint normal,
+  ambas credenciales institucionales visibles y HTTP 200, source RAES y persistedByCredenly false.
+  Creación, consulta pública y revocación reales de enlace sintético, más no disponible.
+- [x] Limpieza completa: usuario `38de9731-a931-4ece-89e9-251f517c28af`, verificación
+  `d3673705-c31a-429f-9220-5e9a3396f723`, vinculación y enlace
+  `b74efd8d-02e5-4110-a359-1803d7d8f94d` con sus accesos eliminados.
+  Huellas completas de las cinco tablas Credenly idénticas antes/después,
+  Auth 404 y sesión antigua 401. Fixtures académicos A/B y persona RAES preservados.
+- [x] La verificación preparada para esta prueba real es MOCK_DESARROLLO explícita,
+  no una validación OCR real ni prueba de autenticidad. La subida documental/UI se
+  probó contra API fixture; no se cambió el proveedor OCR ni el backend.
+- [x] QA real esperó el contenido de las tarjetas antes de contar/capturar la vista
+  (el primer intento se adelantó al streaming y ejecutó limpieza).
+
+## Frontend — responsive y revisión / Fase G (2026-10-18)
+
+- [x] Dos productos diferenciados con tokens/componentes Figma compartidos:
+  administración compacta con tablas frente a experiencia ciudadana de tarjetas.
+- [x] Navegación móvil completa, cuatro anchos, foco visible, labels, mensajes y
+  estados textuales; sin errores de hidratación. Revisión visual de capturas reales.
+- [x] Corregida la presentación de fechas calendario sin hora: se conserva su día
+  original; solo timestamps se convierten a America/Bogota. Prueba de regresión.
