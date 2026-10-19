@@ -113,7 +113,9 @@ bloqueos públicos de la matriz: no se convierten en PASS por tener tests verdes
 
 Evidencia sanitizada en [validation JSON](evidence/predeploy-validation.json),
 [ledger DB](evidence/predeploy-approved-changes.json),
-[catálogo posterior](evidence/predeploy-db-post-catalog.json) y los resultados SQL.
+[catálogo posterior](evidence/predeploy-db-post-catalog.json) y los resultados SQL. La [consulta final de residuos](evidence/predeploy-final-preservation.json)
+confirmó cero Auth/sesiones/perfiles/datos de QA, 32 credenciales/39 versiones/39
+eventos RAES y los cinco shares/nueve accesos ciudadanos originales.
 Sin contraseñas, tokens, hashes de secretos, capturas privadas ni dumps en Git.
 
 ## Calidad visual y rendimiento observado
