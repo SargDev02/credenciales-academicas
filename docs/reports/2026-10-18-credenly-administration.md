@@ -1,8 +1,20 @@
 # Informe de cambios importantes: administración y separación de cuentas en Credenly
 
-**Fecha:** 18 de octubre de 2026.  
-**Estado:** diagnóstico verificado y propuesta de implementación.  
-**Alcance de esta entrega:** documentación; no se modifican cuentas, permisos, esquema ni APIs.
+**Fecha:** 18 de octubre de 2026.
+**Estado original:** diagnóstico y propuesta; alcance mínimo aprobado e implementado después, según el bloque de actualización siguiente.
+**Alcance original del informe:** documentación. La implementación posterior autorizada se registra en `docs/progress.md`; la separación real de cuentas sigue pendiente.
+
+## Actualización tras aprobación
+
+Se implementaron modelo administrativo Credenly separado, auditoría mínima, guard
+por UUID/rol/estado, introspección y panel operativo de solo lectura. Las dos nuevas
+tablas se aplicaron con RLS/grants mínimos; no se crearon cuentas ni se cambió el
+correo ciudadano. El diagnóstico previo y la propuesta que siguen se conservan
+como contexto; los contratos y límites vigentes están en `docs/frontend.md`,
+`docs/authentication.md`, `docs/database.md` y `docs/api.md`.
+
+Valentina conserva su UUID, correo y relaciones. La cuenta administrativa definitiva
+no existe todavía; requiere primero confirmar un correo ciudadano controlado.
 
 ## 1. Objetivo
 
@@ -14,7 +26,7 @@ Se deben conservar el perfil, la verificación documental, la vinculación RAES 
 las comparticiones de la ciudadana. El administrador no debe heredar esos datos
 ni consultar credenciales como si fuera su titular.
 
-## 2. Estado actual comprobado
+## 2. Estado comprobado antes de implementar el alcance aprobado
 
 Se revisaron arquitectura, tablas documentadas, autenticación ciudadana, rutas de
 Credenly API y layout web. Se consultó además el proyecto Supabase Credenly en

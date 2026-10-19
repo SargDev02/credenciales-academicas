@@ -39,3 +39,9 @@ HTTP/configuración en `packages/web-core`. RAES ofrece gestión según rol; Cre
 integra perfil, verificación documental, credenciales, comparticiones y consulta
 pública mediante las APIs existentes. Comandos, evidencia y límites en
 [docs/frontend.md](docs/frontend.md). Sin despliegue ni certificación de producción.
+
+Credenly incluye un panel operativo separado en `/admin/login` y `/admin`, con rol
+`ADMIN_CREDENLY` validado por backend y consultas mínimas de solo lectura. La cuenta
+administrativa definitiva aún no está aprovisionada: la separación del correo
+ciudadano actual requiere confirmación del titular. Ver
+[modelo de autenticación](docs/authentication.md).

@@ -95,7 +95,7 @@ No hay acceso frontend a tablas privadas ni persistencia de información académ
 | `/api-clients` | `GET/POST /api/v1/admin/api-clients` |
 | `/audit` | Explica indisponibilidad de consulta; no accede a DB |
 
-Único cambio backend aprobado: `/admin/me`, cinco campos de perfil y tres roles
+Cambio backend aprobado para RAES: `/admin/me`, cinco campos de perfil y tres roles
 explícitos con `authenticateAdmin`; sin cambiar su comportamiento por defecto.
 Ver contrato en `docs/api.md`. Login y layout usan ese perfil, nunca metadata.
 SUPERADMIN/ADMIN ven altas; AUDITOR solo consultas. Las Server Actions vuelven a
@@ -200,9 +200,9 @@ sesiones/datos ciudadanos. No se forzaron eliminaciones.
 ## Límites conservados
 
 - Lint raíz termina, pero no hay scripts por paquete: no constituye análisis lint.
-- Auditoría/listados administrativos ausentes se explican; sin endpoints extra.
-- No se cambió esquema, RPC, arquitectura de identidad o proveedor OCR.
-- Sin merge ni despliegues. PR #15 permanece Draft por instrucción explícita.
+- Los gaps administrativos de RAES se mantienen; el alcance Credenly Admin aprobado se documenta debajo.
+- Credenly Admin añade dos tablas autorizadas. Sin RPC nueva, cambio de identidad académica ni proveedor OCR.
+- Sin merge ni despliegues. PR #15 sigue abierto; su estado actual se registra en `docs/progress.md`.
 - Continúan separados los pendientes de producción: autenticidad/identidad real,
   recuperación/baselines, operación/retención/rotación, protección de contraseñas
   filtradas y lint por paquete. No se declara listo para producción.
@@ -223,3 +223,88 @@ Reiniciar las webs y recargar la página. No autorizan CORS de las APIs ni cambi
 login, permisos o la configuración de producción. Si cambia la IP, actualizar el
 valor local. Para confirmar correo desde otro dispositivo, revisar además el origen
 confiable y callback Auth documentados arriba; HMR no configura ese redirect.
+
+## Credenly Admin — alcance operativo aprobado
+
+Experiencia separada del ciudadano y de RAES Admin. Usa el Auth del proyecto
+Credenly, pero requiere un registro **ACTIVO / ADMIN_CREDENLY** en su propia
+`perfiles_admin`, identificado por UUID. Un correo que comienza por admin o una
+metadata editada no concede permisos. No existe registro público de administradores.
+
+| Ruta web | Consulta backend Credenly |
+| --- | --- |
+| `/admin/login` | Auth Credenly + `GET /api/v1/admin/me` |
+| `/admin` | `GET /api/v1/admin/overview` |
+| `/admin/users` | `GET /api/v1/admin/users?page=1` + overview |
+| `/admin/verifications` | Conteos documentales de overview |
+| `/admin/links` | Conteos de vinculaciones de overview |
+| `/admin/shares` | Conteos de comparticiones de overview |
+| `/admin/health` | `GET /api/v1/admin/health`, proyecta el readiness existente |
+
+No necesita variables nuevas. Las credenciales de servidor continúan únicamente
+en Credenly API; la web llama a sus endpoints. Cookies administrativas
+`credenly-admin-web-auth`, separadas de `credenly-web-auth`, con las mismas
+protecciones SSR. El proxy refresca solo el ámbito de la ruta. Cada render vuelve
+a validar perfil/rol en API. Cerrar administración no cierra la sesión ciudadana
+independiente. El login ciudadano valida `/api/v1/auth/me`; una cuenta con perfil
+administrativo, incluso inactivo, recibe 403 en todas las rutas ciudadanas protegidas.
+
+Diseño operativo compacto: navegación lateral en escritorio y rejilla de enlaces
+en móvil, tablas con scroll accesible dentro del panel, conteos con labels, errores,
+vacíos, loading y foco visible. Conserva Inter, tokens y primitives del Figma; no
+se modifica el archivo Figma ni se introduce un framework visual adicional.
+
+El panel solo lee: UUID Auth, confirmación de correo y fechas; estados agregados;
+salud y hasta diez errores de `auditoria_admin`. No muestra correos, documentos,
+imágenes, texto OCR, hashes, sesiones, tokens, credenciales académicas ni identidad
+RAES individual. No permite cambiar cuentas, verificar documentos manualmente,
+forzar vinculaciones ni revocar comparticiones ajenas. No constituye KYC.
+
+Los conteos son lecturas actuales independientes, no históricos ni una instantánea
+transaccional. Fallos producen error, no ceros inventados. Shares revocadas tienen
+precedencia sobre expiración; activas y expiradas restantes son excluyentes.
+Auth se pagina en bloques de 20 sin inventar un total; una página completa habilita
+la siguiente, que podría estar vacía. Auth «configurada» en readiness comprueba
+configuración, no un login de prueba. HTTP 200 del wrapper puede incluir
+`httpStatus:503` y `not_ready` de su dependencia, mostrados explícitamente.
+
+Las lecturas administrativas exitosas y fallidas se auditan antes de responder.
+Si no puede escribirse auditoría, se responde 503 sin entregar datos. No se crean
+actores administrativos para registrar denegaciones de ciudadanos o anónimos.
+Los errores mostrados solo cubren esta fuente de auditoría; no representan todos
+los errores del sistema.
+
+Prueba reproducible **sin cuentas ni escrituras remotas**, después del build,
+desde `apps/credenly-web`:
+
+```bash
+pnpm exec tsx scripts/verify-admin-isolation.ts
+```
+
+Arranca API/Web reales compiladas en 3312/3313 y fixtures HTTPS locales en 3433.
+Auth/DB/RAES son simulados exclusivamente en memoria. TLS con certificado temporal
+confiado solo por esos procesos, sin desactivar validación. Comprueba guards HTTP,
+rol/estado, redacción, sesión ciudadana, seis rutas, cookies/logout independientes,
+ready/dependencia caída, errores/vacíos y cuatro anchos. No carga `.env` en el
+operador ni crea usuarios en Supabase. Contraseña de fixture solo en memoria;
+sin trazas/HAR/storageState/videos/capturas de sesión. Capturas de panel sintético
+se guardan únicamente en `/tmp/credenly-admin-qa`.
+
+**Límite de validación:** el esquema y RLS/grants se comprueban en Supabase real;
+el login administrativo 200 y navegación se prueban con fixtures locales. Las
+nuevas tablas remotas están vacías: no se crea un administrador remoto temporal
+ni definitivo para eludir la prohibición de mutar cuentas. La cuenta ciudadana de
+Valentina sigue intacta y su separación requiere confirmar primero un correo
+ciudadano controlado. Ver `docs/authentication.md` para el procedimiento pendiente.
+
+Escaneo local posterior al build, desde la raíz:
+
+```bash
+node scripts/verify-web-boundaries.mjs
+```
+
+Lee valores privados de los env ignorados solo en memoria, compara con archivos
+versionables y bundles públicos y reporta únicamente conteos. Exige env locales
+presentes para que la comprobación no pase vacía. No sustituye un escáner de secretos
+histórico ni un análisis lint. Resultado de esta entrega: 310 archivos / 36 bundles,
+sin valores privados, env/traineddata indexados ni persistencia manual en browser.

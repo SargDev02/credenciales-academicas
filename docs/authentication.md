@@ -220,3 +220,67 @@ solo el password de Auth, verifica login y cierra esa sesión de comprobación.
 Comprueba que perfil y vinculación RAES permanecen iguales. No confirma correos,
 crea identidades, altera datos académicos ni cambia permisos. Es una utilidad
 operativa local, no un endpoint público de recuperación.
+
+## Administración propia de Credenly
+
+RAES Admin y Credenly Admin son autoridades distintas, con proyectos Auth y tablas
+administrativas físicamente separados. Los roles RAES no conceden permisos en
+Credenly. En Credenly, `authenticateCredenlyAdmin` valida bearer con Auth, busca por
+UUID en `public.perfiles_admin` y exige rol `ADMIN_CREDENLY` y estado `ACTIVO`.
+No consulta email ni `user_metadata` para decidir permisos. Un ciudadano válido
+sin perfil administrativo recibe 403; token ausente/inválido recibe 401. Fallos
+al consultar autorización bloquean la petición con 503. No altera roles RAES.
+
+`GET /api/v1/admin/me` devuelve solo id/nombres/apellidos/rol/estado. No devuelve
+email, tokens, metadata Auth o identidad RAES. Las rutas operativas reutilizan el
+mismo guard. `authenticateCitizen` rechaza cualquier UUID con perfil administrativo
+(incluso inactivo), antes de leer o modificar información ciudadana o consultar
+credenciales. Esta separación no confía en ocultar controles frontend.
+
+La sesión web administrativa usa cookies HttpOnly con nombre
+`credenly-admin-web-auth`; la ciudadana conserva `credenly-web-auth`. Ambos flujos
+comprueban el usuario en servidor y llaman su endpoint de introspección. No hay
+sesiones en localStorage ni service role en la web. El panel no permite altas o
+asignación de roles; el aprovisionamiento definitivo sigue pendiente.
+
+### Separación de cuentas: aún bloqueada
+
+El UUID ciudadano `0b0c1230-994a-4940-9c89-f330975ac9d6` sigue siendo el de Valentina
+y conserva el correo `admin@credenly.com`. **No es una cuenta administrativa.**
+No se elevó su rol, renombró perfil, movió relaciones o duplicó identidad. Hace
+falta que el titular proporcione y confirme una dirección ciudadana bajo su control
+antes de modificar Auth o crear la cuenta administrativa definitiva.
+
+Diagnóstico sin escrituras, desde `services/credenly-api` (el entorno queda local):
+
+```bash
+node --env-file=.env.local --import=tsx scripts/diagnose-account-separation.ts --user-id <UUID-ciudadano-existente>
+```
+
+Comprueba presencia Auth, confirmación de correo y conteos de perfil/verificaciones/
+vínculos/comparticiones; exige ausencia de perfil administrativo. No imprime correo,
+documentos, contraseña, hashes Auth o tokens. No acepta un correo de destino ni
+incluye operaciones de mutación.
+
+Procedimiento pendiente, que **no se ejecuta en esta entrega**:
+
+1. Confirmar por el titular la nueva dirección ciudadana y su control; comprobar
+   unicidad Auth, proveedor/identidades y referencias FK antes de cualquier cambio.
+2. Guardar evidencia privada de UUID y huellas/conteos de relaciones, sin copiar
+   información académica ni credenciales. Preparar recuperación del acceso.
+3. Cambiar únicamente el correo de la cuenta ciudadana con el mismo UUID mediante
+   el flujo Auth aprobado y comprobar confirmación/login. No modificar tablas
+   ciudadanas ni desactivar restricciones FK/unicidad.
+4. Solo tras liberar y verificar el correo administrativo, crear una cuenta Auth
+   independiente y su perfil `ADMIN_CREDENLY` autorizado. No reutilizar ni duplicar
+   el UUID ciudadano. Verificar admin/me 200 y rutas ciudadanas 403.
+5. Repetir huellas/conteos y confirmar que vínculos, verificaciones y comparticiones
+   siguen asociados al UUID original. Ante diferencias, detenerse; sin transferir
+   ni borrar relaciones como reparación automática.
+
+Recuperación: si falla confirmación o login después del futuro cambio, detener el
+aprovisionamiento del administrador, conservar el UUID y relaciones y recuperar el
+acceso mediante Auth y un correo previamente confirmado/controlado. Si hay conflicto
+de unicidad, no borrar la cuenta conflictiva ni forzar actualizaciones; solicitar
+revisión antes de revertir email. Ninguna recuperación se presenta aquí como ya
+probada o ejecutada. No se cambia contraseña en esta entrega.

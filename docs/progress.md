@@ -704,3 +704,97 @@ No se modifican ni reinician los backends ni se cambian cuentas/contraseñas.
 Esta entrega solo documenta. No cambia cuentas, contraseñas, roles, vínculos,
 credenciales, esquemas, RPC ni endpoints. Las herramientas de recuperación de
 contraseña no equivalen a asignar permisos administrativos.
+
+## Credenly Admin — alcance mínimo aprobado (2026-10-18)
+
+Este bloque actualiza el diagnóstico anterior y el cierre frontend inicial. La
+separación real de cuentas sigue pendiente; no se ejecuta como parte de esta entrega.
+
+- [x] `perfiles_admin` propio de Credenly, FK por UUID a Auth, rol único
+  ADMIN_CREDENLY y estado ACTIVO/INACTIVO. Sin decisiones por correo/metadata.
+- [x] Auditoría mínima separada: actor, acción, resultado, fecha y recurso; sin
+  payloads sensibles. Tablas con RLS, ningún permiso browser y grants runtime
+  mínimos. Sin RPC nueva, retención/purga ni cambios en RAES/instituciones.
+- [x] Migraciones `20261019042521` y `20261019042601` aplicadas a Credenly.
+  Dry-run confirmó solamente ambas nuevas. El workdir CLI temporal recuperó la
+  historia remota existente para evitar reaplicar migraciones previas; no se
+  reparó ni alteró la historia remota antigua.
+- [x] Guard `authenticateCredenlyAdmin`; GET admin/me, overview, users y health.
+  Perfil mínimo, cuentas sin emails/hashes/sesiones, agregados reales, readiness
+  existente y errores de auditoría como única fuente de incidentes.
+- [x] Consultas administrativas registradas antes de devolver resultados; fallo
+  de auditoría responde 503 sin datos. Sin nuevos actores para denegaciones.
+- [x] Guard ciudadano rechaza perfiles administrativos incluso inactivos. Los
+  ciudadanos actuales sin perfil admin mantienen su flujo y sus permisos.
+- [x] `/admin/login`, `/admin`, `/admin/users`, `/admin/verifications`, `/admin/links`,
+  `/admin/shares`, `/admin/health`: layout operativo separado, primitives y tokens
+  Figma existentes, sesión/cookies administrativas independientes del ciudadano.
+- [x] Diagnóstico de separación de cuentas estrictamente de solo lectura.
+- [ ] Confirmar dirección ciudadana controlada para Valentina.
+- [ ] Ejecutar separación real del correo conservando el UUID ciudadano y después
+  aprovisionar una cuenta administrativa definitiva independiente. **Bloqueado**
+  por la condición explícita del titular; no se intenta ni se simula como realizado.
+
+### Comprobaciones posteriores
+
+- `pnpm typecheck`: correcto en todos los paquetes.
+- `pnpm test`: **192/192**, frente a 166 previos: 21 casos nuevos de guard/API y
+  aislamiento, cuatro de modelo frontend y uno de query HTTP. Los 117 tests
+  originales del backend siguen incluidos. Sin regresiones RAES/ciudadanas.
+- `pnpm -r --if-present build`: contratos, backends y ambas webs correctos.
+- `pnpm lint`: exit 0 con recursión `--if-present`; ningún paquete define lint.
+  No se presenta como análisis estático.
+- `pnpm test:frontend:browser`: **12/12** Chrome, cuatro anchos.
+- `scripts/verify-admin-isolation.ts`: API y Web compiladas reales contra
+  Auth/PostgREST/RAES fixtures HTTPS **exclusivamente locales**. HTTP 401 ausente/
+  inválido, ciudadano/email admin/metadata sin elevación 403, ADMIN_CREDENLY activo
+  200, inactivo 403, administrador en credenciales ciudadanas 403. Ciudadano con
+  consulta HTTP 200/source RAES/persistedByCredenly false y navegación conservada.
+  Seis rutas administrativas, paginación/vacío/error, readiness 200 y dependencia
+  caída 503, logout aislado, cookies HttpOnly y cero storage de sesión. Responsive
+  360/768/1024/1440 y cero errores de hidratación. Browser solo contacta la web.
+  Sin usuarios remotos de QA, escrituras académicas o mutaciones de cuenta.
+- SQL remoto `supabase/credenly/tests/admin_permissions.sql`: RLS/FK/grants mínimos,
+  SELECT/INSERT/UPDATE/DELETE denegados al ciudadano y lecturas denegadas a anon.
+  Ejecución transaccional con ROLLBACK: `ADMIN_RLS_GRANTS_AND_CITIZEN_DENIAL_OK`.
+- Advisor real: INFO sin policies intencionales en las dos tablas backend-only,
+  INFO previo en accesos_compartidos y WARN previo de contraseñas filtradas. No
+  nuevos WARN/ERROR de las tablas añadidas; no se silencian con policies permisivas.
+- `node scripts/verify-web-boundaries.mjs`: **310 archivos versionables / 36
+  bundles**, cero secretos de backend, claves privadas, env privados/traineddata
+  indexados o persistencia manual de sesión en browser.
+
+### Conservación real de cuentas y datos
+
+Huellas SHA-256 de las filas completas (ordenadas por UUID) comparadas antes/después,
+sin imprimir su contenido: perfiles **2**, verificaciones **1**, vínculos **1**,
+comparticiones **5**, accesos compartidos **9**; todas idénticas. Las **3** cuentas
+Auth conservan su proyección de identidad (UUID/correo/confirmación/alta) idéntica.
+No se leen ni publican hashes de contraseñas. `perfiles_admin`: **0** filas;
+`auditoria_admin`: **0** filas remotas. La auditoría de casos 200/ERROR se valida
+localmente, sin inventar actores remotos para obtener evidencia.
+
+Valentina conserva UUID `0b0c1230-994a-4940-9c89-f330975ac9d6`, correo
+`admin@credenly.com`, perfil ciudadano, una verificación, un vínculo y cinco
+comparticiones; cero perfiles administrativos. No se cambió contraseña, email,
+metadata, relaciones, identidad RAES o datos académicos.
+
+**Límite explícito:** no existe aún un administrador Credenly remoto aprovisionado.
+El login 200/panel se valida con fixtures locales; en Supabase real se valida esquema,
+permisos y conservación. No se utilizó una cuenta temporal para saltar la prohibición
+de mutar cuentas. Falta el correo ciudadano confirmado antes de ese siguiente paso.
+
+Commits de esta continuación: `67b1fb8` modelo administrativo; `9f294b4` guard,
+introspección y lecturas; `560bc2c` panel operativo; `9d17c91` formato y ajuste
+responsive; `285242f` pruebas y diagnóstico. Documentación en commit separado.
+
+Rama `feat/frontend-platform`; PR #15 abierto y actualizado, sin merge ni despliegue.
+La consulta actual de GitHub lo muestra **Ready for Review** (ya estaba fuera de
+Draft al iniciar esta continuación); se conserva ese estado sin cambiarlo aquí.
+El working tree conserva fuera de los commits los cuatro `next-env.d.ts` generados
+preexistentes de las dos webs y dos APIs. No se descartan cambios locales ajenos.
+
+El alcance administrativo mínimo del prototipo queda implementado y comprobado,
+con aprovisionamiento/separación de cuentas pendientes. No se declara preparación
+para producción. Siguen pendientes autenticidad/identidad real, recuperación y
+baselines, operación/retención/rotación, contraseñas filtradas y lint por paquete.
