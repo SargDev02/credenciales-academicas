@@ -23,7 +23,7 @@ test("Credenly entrega credenciales de dos instituciones mediante API y sin pers
     }
     assert.equal(url.hostname, "raes-api-fixture.example");
     assert.equal(url.pathname, "/api/v1/persons/master-person/credentials");
-    return Response.json({ data: [{ id: "a", institucion: { id: "institution-a" } }, { id: "b", institucion: { id: "institution-b" } }] });
+    return Response.json({ data: ["a", "b"].map(id => ({ id, codigoRaes: `SYNTH-${id}`, tipo: "DIPLOMA", categoria: "TITULO", estadoActual: "VIGENTE", versionActual: 1, fechaRegistroRaes: "2026-01-01", revocadaAt: null, motivoRevocacion: null, anuladaAt: null, motivoAnulacion: null, programa: null, sede: null, version: null, institucion: { id: `institution-${id}`, nit: `SYNTH-${id}`, nombre: `Synthetic ${id}` } })) });
   };
   try {
     const result = await GET(new Request("http://localhost/api/v1/credentials", { headers: { authorization: "Bearer fixture-citizen-session" } }));
