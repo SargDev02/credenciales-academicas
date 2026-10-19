@@ -1,75 +1,78 @@
 import Link from "next/link";
-import { Alert, Card, EmptyState, PageHeading } from "@raes/ui";
-import { getOverview } from "../../../lib/admin-api";
-import { date } from "../../../lib/citizen-model";
+import { Card, MetricCard } from "@raes/ui";
+import { WebApiError } from "@raes/web-core";
+import { getOverview, getAdminHealth } from "../../../lib/admin-api";
+import {
+  metricBreakdown,
+  metricDefinitions,
+} from "../../../lib/admin-presentation";
+import { AdminHeading } from "../../../components/admin/heading";
+import { ServiceStatus } from "../../../components/admin/service-status";
+import { AdministrativeIncidents } from "../../../components/admin/incidents";
 export const metadata = { title: "Resumen operativo" };
 export default async function Operations() {
-  const data = await getOverview();
+  const [data, health] = await Promise.all([
+    getOverview(),
+    getAdminHealth()
+      .then((value) => ({ value }))
+      .catch((error) => {
+        if (error instanceof WebApiError) return { value: null };
+        throw error;
+      }),
+  ]);
   return (
     <>
-      <PageHeading eyebrow="SUPERVISIÓN DE CREDENLY" title="Resumen operativo">
-        Indicadores actuales de los procesos ciudadanos. Solo lectura.
-      </PageHeading>
+      <AdminHeading
+        title="Resumen operativo"
+        description="Estado actual de los procesos ciudadanos de Credenly."
+        observedAt={data.observedAt}
+      />
       <div className="operations-stats">
-        {[
-          ["Perfiles ciudadanos", data.profiles.total, "/admin/users"],
-          ["Verificaciones", data.verifications.total, "/admin/verifications"],
-          ["Vinculaciones", data.links.total, "/admin/links"],
-          ["Comparticiones", data.shares.total, "/admin/shares"],
-        ].map(([label, value, href]) => (
-          <Card key={String(label)}>
-            <p>{label}</p>
-            <strong>{value}</strong>
-            <Link href={String(href)}>
-              Consultar estado
-              <span className="ui-visually-hidden"> de {label}</span>
-            </Link>
-          </Card>
+        {metricDefinitions.map((metric) => (
+          <MetricCard
+            key={metric.key}
+            title={metric.title}
+            value={data[metric.key].total}
+            action={
+              <Link href={metric.href}>
+                Ver detalle
+                <span className="ui-visually-hidden"> de {metric.title}</span>
+                <span aria-hidden="true"> →</span>
+              </Link>
+            }
+          >
+            <dl className="operations-metric-breakdown">
+              {metricBreakdown(data[metric.key], metric.states).map((item) => (
+                <div key={item.state}>
+                  <dt>{item.label}</dt>
+                  <dd>{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </MetricCard>
         ))}
       </div>
-      <p className="live-note">
-        Consulta: {date(data.observedAt)}. Conteos actuales; no representan
-        series históricas ni una instantánea transaccional.
+      <p className="operations-data-note">
+        Conteos actuales, sin tendencias históricas. Los procesos se consultan
+        por separado.
       </p>
-      <Card>
-        <h2>Errores administrativos registrados</h2>
-        <p className="ui-hint">
-          Fuente: auditoría administrativa de Credenly. Se muestran hasta diez
-          registros, sin payloads ni datos privados.
-        </p>
-        {data.incidents.length ? (
-          <ul className="operations-incidents">
-            {data.incidents.map((i) => (
-              <li key={i.id}>
-                <span>
-                  {
-                    (
-                      {
-                        ADMIN_PROFILE_READ: "Consulta de perfil administrativo",
-                        OPERATIONS_READ: "Consulta operativa",
-                        AUTH_ACCOUNTS_READ: "Consulta de cuentas",
-                        HEALTH_READ: "Consulta de salud",
-                      } as Record<string, string>
-                    )[i.action]
-                  }
-                </span>
-                <span>Error · {date(i.occurredAt)}</span>
-              </li>
-            ))}
-          </ul>
+      <div className="operations-dashboard-panels">
+        {health.value ? (
+          <ServiceStatus data={health.value} />
         ) : (
-          <EmptyState title="Sin errores administrativos registrados">
-            La ausencia de registros no sustituye la comprobación de salud del
-            servicio.
-          </EmptyState>
+          <Card className="operations-system">
+            <h2>Estado del sistema</h2>
+            <div role="status">
+              <h3>Salud no disponible</h3>
+              <p className="ui-muted">
+                No pudimos consultar la disponibilidad. Los indicadores de
+                procesos corresponden a su última consulta.
+              </p>
+            </div>
+            <Link href="/admin/health">Consultar salud del servicio</Link>
+          </Card>
         )}
-      </Card>
-      <div className="citizen-section">
-        <Alert title="Alcance de supervisión">
-          Este panel no muestra documentos, imágenes OCR, sesiones, contraseñas,
-          enlaces completos ni credenciales académicas.{" "}
-          <Link href="/admin/health">Comprobar salud</Link>
-        </Alert>
+        <AdministrativeIncidents incidents={data.incidents} />
       </div>
     </>
   );

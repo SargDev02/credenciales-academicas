@@ -113,6 +113,26 @@ export function Card({
 }) {
   return <section className={`ui-card ${className}`}>{children}</section>;
 }
+export function MetricCard({
+  title,
+  value,
+  children,
+  action,
+}: {
+  title: string;
+  value: number;
+  children?: ReactNode;
+  action?: ReactNode;
+}) {
+  return (
+    <Card className="ui-metric">
+      <h2 className="ui-metric-title">{title}</h2>
+      <p className="ui-metric-value">{value.toLocaleString("es-CO")}</p>
+      {children}
+      {action && <div className="ui-metric-action">{action}</div>}
+    </Card>
+  );
+}
 export function CredentialCard({
   category,
   title,
