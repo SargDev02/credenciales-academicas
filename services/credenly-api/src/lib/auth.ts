@@ -4,7 +4,7 @@ import { getCredenlySupabaseAdmin } from "./supabase-admin";
 
 export class CitizenAuthError extends Error {
   constructor(
-    public readonly status: 401 | 403,
+    public readonly status: 401 | 403 | 503,
     public readonly code: string,
     message: string,
   ) {
@@ -13,9 +13,7 @@ export class CitizenAuthError extends Error {
   }
 }
 
-export function extractBearerToken(
-  authorizationHeader: string | null,
-): string {
+export function extractBearerToken(authorizationHeader: string | null): string {
   if (!authorizationHeader) {
     throw new CitizenAuthError(
       401,
@@ -38,12 +36,8 @@ export function extractBearerToken(
   return token;
 }
 
-export async function authenticateCitizen(
-  request: Request,
-): Promise<User> {
-  const token = extractBearerToken(
-    request.headers.get("authorization"),
-  );
+export async function authenticateCitizen(request: Request): Promise<User> {
+  const token = extractBearerToken(request.headers.get("authorization"));
   const supabase = getCredenlySupabaseAdmin();
 
   const { data, error } = await supabase.auth.getUser(token);
@@ -56,12 +50,29 @@ export async function authenticateCitizen(
     );
   }
 
+  // Administrative identity never automatically inherits citizen access, even
+  // when the admin profile is inactive. No email or editable metadata decisions.
+  const admin = await supabase
+    .from("perfiles_admin")
+    .select("id")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  if (admin.error)
+    throw new CitizenAuthError(
+      503,
+      "CITIZEN_ACCESS_UNAVAILABLE",
+      "No fue posible validar el acceso ciudadano",
+    );
+  if (admin.data)
+    throw new CitizenAuthError(
+      403,
+      "CITIZEN_ACCESS_DENIED",
+      "Esta cuenta administrativa no tiene acceso al flujo ciudadano",
+    );
   return data.user;
 }
 
-export function citizenAuthErrorResponse(
-  error: unknown,
-): Response {
+export function citizenAuthErrorResponse(error: unknown): Response {
   if (error instanceof CitizenAuthError) {
     return Response.json(
       {

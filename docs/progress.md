@@ -5,7 +5,8 @@ Auditoría, conectores A/B, C/D multiinstitución, hardening y revisión técnic
 La ruta ciudadana HTTP real recupera ambas credenciales; la cuenta sintética temporal
 se eliminó completamente. La legacy se preserva por decisión explícita. **No listo
 para producción**: los cinco pendientes de producción se mantienen separados abajo.
-No se han iniciado interfaces ni despliegues frontend.
+Se inició la Foundation frontend y la primera RAES Web de lectura; las altas por
+rol esperan aprobación de la consulta de identidad administrativa. Sin despliegues.
 
 ## Etapa 0 — Infraestructura de datos
 - [x] Institución A.
@@ -433,6 +434,554 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
   PR #14 **Ready for Review**, sin merge a `main`.
 
 ## Etapa 5 — Interfaces y despliegue
-- [ ] RAES Web.
-- [ ] Credenly Web.
+- [x] RAES Web para APIs administrativas disponibles (gaps GET documentados).
+  - [x] Foundation, login SSR y primera consulta administrativa.
+  - [x] Altas y aprovisionamiento según rol desde endpoints existentes.
+- [x] Credenly Web integrada.
+  - [x] Auth, perfil, verificación, vinculación, credenciales y comparticiones.
 - [ ] Despliegues independientes.
+
+## Frontend — Fases A/B/C (2026-10-18)
+
+- [x] Working tree limpio; `main` actualizado por fast-forward al squash
+  `50c28c2457276e79043eb21bf8a0484c458a966c`. No se volvió a fusionar PR #14
+  ni su rama. Nueva rama `feat/frontend-platform`.
+- [x] Inspección de monorepo, APIs, contratos, variables y siete componentes Figma
+  mediante MCP, con código/contexto y screenshots de referencia.
+- [x] Dos apps Next.js independientes, `packages/ui` y `packages/web-core`.
+- [x] Tokens, Inter local, Button Primary/Secondary, Input, Badge, CredentialCard,
+  Card, Alert, Spinner, Skeleton, EmptyState, FormField y PageHeading.
+- [x] Galería de demostración en ambas apps; sin datos académicos simulados en
+  pantallas integradas. Variantes compactas y ajustes AA documentados.
+- [x] Foundation: typecheck, 132 pruebas y builds de ambas apps/backends pasan;
+  los 117 tests anteriores siguen pasando. No hay linter por paquete.
+- [x] RAES Web inicial: login, sesión y lectura administrativa implementados; ver Fase D.
+- [ ] Rol del administrador: la API aún no devuelve perfil/rol autenticado. Se
+  requiere decisión antes de habilitar altas según rol. No se consulta la tabla
+  privada ni se confía en metadata del usuario.
+- [ ] Credenly funcional: pendiente del reporte/decisión tras la primera RAES Web.
+
+## Frontend — Fase D: primera RAES Web (2026-10-18)
+
+- [x] Login/logout SSR con JWT solo en servidor y cookies HttpOnly aisladas.
+  Sin service role en las webs, sin tokens en localStorage/sessionStorage.
+- [x] Layout administrativo, navegación activa y skip link; resumen con métricas
+  derivadas únicamente de listados reales, instituciones, filtros/detalle y clientes API.
+- [x] Loading, empty, error, estados y vista de auditoría que explica el gap.
+  No se simula actividad ni se inventan scopes/listados.
+- [x] Se mantienen UI y permisos en lectura para cualquier rol válido hasta poder
+  confirmar el rol real vía API. Ni metadata ni tablas privadas se consultan para inferirlo.
+- [x] Chrome real: cuenta sintética rechazada sin perfil y aceptada como AUDITOR,
+  dos instituciones leídas desde RAES API, detalle/filtros/clientes/logout y guard.
+  Cookies HttpOnly/Lax, cero storage de sesión y cero peticiones browser a bases
+  de datos; sin errores de hidratación. Perfil/cuenta de QA eliminados.
+- [x] Responsive real del resumen y las tablas en 360/768/1024/1440; las tablas
+  cambian a fichas en móvil, conservando labels/acciones. Correo largo truncado
+  visualmente con nombre completo accesible. Ver capturas de QA locales.
+- [ ] Auditoría consultable, integraciones listables y scopes asignados: no existen
+  endpoints GET suficientes; se documenta y no se modifica backend.
+- [ ] Altas institucionales y clientes/integraciones: necesitan la consulta del
+  perfil/rol administrativo. Propuesta mínima `GET /api/v1/admin/me` en
+  `docs/frontend.md`, pendiente de aprobación antes de modificar backend.
+- [ ] Continuar Credenly y comparticiones después del reporte de este bloque,
+  según la secuencia acordada. Sin despliegue ni merge.
+
+### Resultado y punto de revisión frontend
+
+- [x] Verificación final: `pnpm typecheck`, **138/138 tests**, `pnpm lint` y
+  `pnpm -r --if-present build` terminan correctamente. Lint conserva el límite
+  conocido: ningún paquete tiene script de análisis. Los 117 tests previos pasan.
+- [x] Chrome: **12/12** tests públicos de componentes, teclado y responsive;
+  prueba Auth/RAES real adicional pasa para el código compilado final.
+- [x] QA `7f98bf61-89b4-45d0-ae35-3c3b39fee33d`: SQL independiente confirma cero
+  Auth users, sesiones y perfiles; cero cuentas del prefijo sintético de todos
+  los intentos. Ninguna institución/cliente/integración ni dato académico alterado.
+- [x] Cero env privados, JWT/claves privadas o traineddata versionables detectados;
+  cero secretos de backend en los bundles JS de las dos webs.
+- [x] Revisión visual: referencia Figma y capturas reales a los cuatro anchos.
+- [x] PR #15 abierto **Draft**, base `main`, rama `feat/frontend-platform`.
+- [ ] Aprobar o rechazar la propuesta mínima `GET /api/v1/admin/me` antes de
+  habilitar altas por rol y continuar el siguiente bloque, según la instrucción
+  de reportar una limitación material al completar Foundation + primera RAES Web.
+
+Commits de implementación: `41afe24` Foundation y `ccb5153` RAES Web/QA.
+No se modifica el backend ni se inicia Credenly integrado mientras se resuelve
+ese punto. El prototipo backend sigue cerrado funcionalmente, sin declaración
+de preparación para producción.
+
+## Frontend — introspección administrativa aprobada (2026-10-18)
+
+- [x] Aprobación explícita para `GET /api/v1/admin/me`: perfil mínimo, tres roles
+  activos explícitos, JWT validado mediante `authenticateAdmin`, sin cambiar su
+  comportamiento por defecto ni ampliar permisos. Respuestas privadas sin caché.
+- [x] Login/layout consultan el perfil real vía RAES API y muestran nombre/rol;
+  no se consulta `perfiles_admin` desde la web ni se usa metadata como autorización.
+- [x] Tests de ruta: roles activos, 401 ausente/inválido/expirado, 403 sin perfil,
+  inactivo/rol desconocido, error sanitizado y proyección mínima sin secretos.
+  AUDITOR sigue recibiendo 403 en las tres rutas de altas existentes.
+- [ ] Altas RAES Web: siguiente unidad funcional; sin endpoints nuevos adicionales.
+- PR #15 permanece Draft. No hay migraciones, RPC, merge ni despliegues.
+
+Las entradas anteriores sobre el bloqueo de rol describen el punto de revisión
+anterior; esta aprobación lo resuelve. Auditoría y listados de integraciones/scopes
+continúan fuera de la API disponible.
+
+Validación de esta unidad: `pnpm typecheck`, **149/149 tests**, builds completos
+correctos y **12/12** pruebas públicas Chrome. Verificador Auth/API/Chrome real:
+200 para los tres roles activos, 401 ausente/inválido, 403 inactivo y 403 en
+las tres altas para AUDITOR. Cookie HttpOnly, cero storage sensible/peticiones
+browser a DB y cero errores de hidratación. Cuenta QA
+`716c6a99-aa6e-422d-9cc7-c3d614bd0b94` y perfil eliminados (Auth 404, perfil 0).
+Sin mutaciones institucionales, de clientes/integraciones ni académicas.
+
+## Frontend — altas RAES Web según rol (2026-10-18)
+
+- [x] Formularios para institución, cliente API e integración institucional dentro
+  de las rutas existentes. Solo SUPERADMIN/ADMIN; AUDITOR no recibe formularios.
+- [x] Revalidación del rol antes de POST en servidor y autorización independiente
+  de RAES API. Inputs tipados/validados, errores, espera y bloqueo de doble envío.
+- [x] Scopes introducidos explícitamente; sin inventar catálogo/asignaciones.
+  Integración sin scopes usa defaults de backend y muestra la respuesta real.
+- [x] Secreto solo al crear, en memoria temporal, copiar/cerrar; no recuperable al
+  recargar. No se persiste ni se devuelve el bearer completo desde Server Actions.
+- [x] QA de altas con API fixture local + Auth real: tres formularios, 409, cierre
+  y recarga, rol cambiado antes del envío, cuatro anchos y cero errores de hidratación.
+  Cero instituciones/clientes/integraciones remotas creadas. Auth temporal
+  `e8a84223-9ca1-4fd7-95e5-068d6ae62b6f` eliminado (404).
+- [x] Typecheck y build RAES Web; tests globales **155/155** tras añadir validación
+  de formularios/proyección y POST sin reintentos. Sin cambios backend adicionales.
+- [ ] Credenly funcional, comparticiones y verificación pública: siguiente bloque.
+
+El gap de perfil quedó resuelto; permanecen documentados los GET no disponibles
+(auditoría, integraciones y scopes asignados). No son necesarios para las altas
+implementadas. PR #15 sigue Draft, sin merge ni despliegues.
+
+Validación RAES real posterior a las altas: cuenta
+`f7fac53e-f590-4ff9-87ec-b89587080c60`, perfil y sesiones eliminados; tres roles
+obtenidos de `/admin/me`, formularios presentes para ADMIN/SUPERADMIN y ausentes
+para AUDITOR, lectura de dos instituciones reales, 403 de las altas para AUDITOR,
+logout/guard, cuatro anchos y cero errores de hidratación/storage sensible.
+
+## Frontend — Credenly Web / Fase E (2026-10-18)
+
+- [x] Auth SSR separado de RAES: login/logout y registro por correo con confirmación
+  (settings reales: signup habilitado, email activo, autoconfirm deshabilitado).
+  Callback PKCE con destino configurado y fijo, cookies HttpOnly aisladas.
+- [x] Perfil y onboarding con seis pasos, imagen multipart al OCR existente del
+  backend (hasta 8 MB), estados reales, aprobación documental y vinculación RAES.
+  No hay OCR en browser ni afirmación de autenticidad legal/KYC.
+- [x] Credenciales desde Credenly API → RAES, tarjetas/detalle, estados terminales
+  visibles con fecha/motivo disponible, vacío/error/loading y guard ciudadano.
+  Sin snapshots académicos, tokens en storage ni acceso web a tablas privadas.
+- [x] Modelo/contratos con 4 pruebas nuevas; typecheck y build Credenly pasan.
+- [x] Chrome con Auth real y API fixture local: perfil/documento/vinculación,
+  estados PENDIENTE/REVISION/RECHAZADA/APROBADA y VIGENTE/REVOCADA/ANULADA,
+  responsive 360/768/1024/1440; cero errores de hidratación.
+- [x] Corrección de QA: tras logout se evitó una segunda revocación de la misma
+  sesión. Consulta SQL independiente confirmó cero sesiones y datos ciudadanos;
+  usuario temporal `4f16c3f5-793f-4eb7-9278-3c4c0e3960e5` eliminado normalmente
+  (Auth 404), sin forzar FKs. Ejecución posterior limpia elimina la cuenta
+  `504fffe0-321a-4b28-a8c3-b2539f45774c` y sus datos.
+
+La prueba local de estados no sustituye OCR real: prueba el transporte multipart y
+la UI; el backend conserva sus tests/verificación local Tesseract anteriores.
+Validación adicional con APIs reales y fixture C/D se registra en el cierre.
+
+## Frontend — comparticiones y verificación / Fase F (2026-10-18)
+
+- [x] Crear enlaces con campos visibles y duración dentro de 1–720 horas; copiar,
+  descartar token al cerrar/recargar; listado ACTIVA/REVOCADA/EXPIRADA y revocación
+  con confirmación. Sin guardar tokens completos ni snapshots académicos.
+- [x] Página pública `/verify/[token]`, sin login, consulta dinámica a Credenly API
+  → RAES; distingue disponible, 410 revocada/expirada, 404 y otros errores seguros.
+  Muestra procedencia, estado actual y estados terminales sin convertirlos en error.
+- [x] Ocho pruebas de modelos ciudadanos/comparticiones; Chrome fixture local cubre
+  los estados académicos/documentales, enlaces y errores públicos 200/410/404/503.
+- [x] Chrome + APIs reales: identidad C/D vinculada mediante el botón/endpoint normal,
+  ambas credenciales institucionales visibles y HTTP 200, source RAES y persistedByCredenly false.
+  Creación, consulta pública y revocación reales de enlace sintético, más no disponible.
+- [x] Limpieza completa: usuario `38de9731-a931-4ece-89e9-251f517c28af`, verificación
+  `d3673705-c31a-429f-9220-5e9a3396f723`, vinculación y enlace
+  `b74efd8d-02e5-4110-a359-1803d7d8f94d` con sus accesos eliminados.
+  Huellas completas de las cinco tablas Credenly idénticas antes/después,
+  Auth 404 y sesión antigua 401. Fixtures académicos A/B y persona RAES preservados.
+- [x] La verificación preparada para esta prueba real es MOCK_DESARROLLO explícita,
+  no una validación OCR real ni prueba de autenticidad. La subida documental/UI se
+  probó contra API fixture; no se cambió el proveedor OCR ni el backend.
+- [x] QA real esperó el contenido de las tarjetas antes de contar/capturar la vista
+  (el primer intento se adelantó al streaming y ejecutó limpieza).
+
+## Frontend — responsive y revisión / Fase G (2026-10-18)
+
+- [x] Dos productos diferenciados con tokens/componentes Figma compartidos:
+  administración compacta con tablas frente a experiencia ciudadana de tarjetas.
+- [x] Navegación móvil completa, cuatro anchos, foco visible, labels, mensajes y
+  estados textuales; sin errores de hidratación. Revisión visual de capturas reales.
+- [x] Corregida la presentación de fechas calendario sin hora: se conserva su día
+  original; solo timestamps se convierten a America/Bogota. Prueba de regresión.
+
+## Frontend — comprobaciones y cierre de este alcance / Fase H (2026-10-18)
+
+- [x] `pnpm typecheck` correcto y **166/166 tests**: los 117 previos, 10 nuevos de
+  introspección y 39 de UI/utilidades/apps. Las diez pruebas `/admin/me` también
+  pasan por separado, incluyendo comprobación de que solo hace lecturas.
+- [x] `pnpm -r --if-present build`: ambas webs, ambos backends y contratos correctos.
+- [x] `pnpm lint` termina en 0, sin scripts lint en los paquetes; no equivale a
+  análisis estático. Pendiente conservado explícitamente.
+- [x] Chrome público **12/12**; verificadores Auth/API reales y API fixture pasan.
+  Extensión final cubre onboarding, credenciales, comparticiones y público en los
+  cuatro anchos. Cuenta de esa ejecución `b82145f3-e7db-4943-9c36-983c12246549`
+  eliminada; ejecución anterior `07d44324-f9d7-4295-9eeb-0239b7bb90a8` también limpia.
+- [x] SQL independiente posterior: cero usuarios/sesiones del prefijo sintético
+  en RAES y Credenly. Sin vínculo residual a la persona C/D; verificación, enlace
+  de compartición y accesos temporales ausentes. Dataset académico preservado.
+- [x] Escaneo de 274 archivos versionables y 33 bundles JS: cero valores privados
+  detectados, cero `.env` privados y cero traineddata versionables. Sin claves de
+  backend en browser. Solo `/admin/me` y sus tests cambian el backend respecto a main.
+- [x] README, arquitectura, desarrollo, frontend y progreso actualizados.
+- [x] Revisión visual Figma y capturas; interfaces diferenciadas, sin framework UI
+  grande, servicios pagos, analytics externos, migraciones ni RPC adicionales.
+
+Alcance de implementación frontend del prototipo completado para las APIs
+existentes. Confirmación de email no probada extremo a extremo; OCR documental UI
+probado con transporte/estados fixture y prueba real C/D con aprobación sintética
+MOCK_DESARROLLO, sin afirmar autenticidad. Mantener los gaps GET administrativos y
+los pendientes de producción separados. No es una declaración de listo para producción.
+
+Commits de esta continuación: `450cecf` introspección; `cbc0909` altas RAES;
+`779630e` Auth/onboarding/credenciales; `969d957` comparticiones/público;
+`e47b2b6` pruebas adicionales. PR #15 se mantiene Draft por instrucción explícita.
+No se fusionó main ni se hizo despliegue. El siguiente paso es revisión del PR y
+validación de correo/OCR documental con el entorno autorizado antes de plantear
+despliegues o los trabajos de producción pendientes.
+
+## Recuperación administrativa local autorizada (2026-10-18)
+
+- El titular autorizó restablecer el acceso de `admin@raes.com`.
+- Se añadió utilidad local con entrada oculta y confirmación; no recibe secretos
+  por chat, argumentos, variables ni archivos. Solo actualiza password de una cuenta
+  existente con perfil activo, sin ampliar permisos ni tocar datos académicos.
+- Preflight real: cuenta SUPERADMIN activa localizada. Sintaxis Node y prueba PTY
+  con entradas sintéticas distintas correctas: entrada no reflejada y rechazo antes
+  de mutar. No se cambió la contraseña durante estas verificaciones.
+- La operación queda pendiente de que el titular ejecute el comando e introduzca
+  su nueva contraseña. La utilidad verifica el login después del cambio.
+
+## Acceso de desarrollo por LAN (2026-10-18)
+
+Se identificó el bloqueo HMR al acceder desde `192.168.1.7`. Ambas webs admiten
+ahora una allowlist opcional de hosts de desarrollo mediante sus variables locales
+`*_WEB_ALLOWED_DEV_ORIGINS`, documentadas en los ejemplos. La IP se configura solo
+en los archivos locales ignorados; no se añade una allowlist global ni se cambia
+la autorización de APIs/Auth. Alternativa inmediata en la Mac: usar localhost.
+
+Verificación con la protección HMR de la versión Next instalada y ambas configs:
+localhost e IP configurada permitidos; origen no autorizado bloqueado con 403.
+No se modifican ni reinician los backends ni se cambian cuentas/contraseñas.
+
+## Recuperación ciudadana local autorizada (2026-10-18)
+
+- Se autorizó explícitamente restablecer `admin@credenly.com`.
+- Utilidad `citizen:reset-password`: entrada oculta, confirmación, actualización
+  exclusiva de contraseña Auth y verificación de login; preserva perfil/vínculo.
+- Preflight real confirma cuenta con correo confirmado y perfil existente en
+  Credenly. Sintaxis Node y prueba PTY de entrada oculta/confirmaciones distintas
+  pasan sin mutar la cuenta. Sin correos enviados ni secretos registrados.
+- El cambio real queda pendiente de que el titular introduzca la nueva contraseña
+  en su terminal; no se establece ni publica una contraseña predeterminada.
+
+## Informe de administración propia de Credenly (2026-10-18)
+
+- [x] Informe `docs/reports/2026-10-18-credenly-administration.md` con diagnóstico,
+  separación de responsabilidades RAES/Credenly, plan de cuentas y criterios de aceptación.
+- [x] Consulta solo lectura confirma que `admin@credenly.com` sigue asociado al
+  UUID ciudadano existente, perfil de Valentina ACTIVO y vínculo RAES VERIFICADA.
+- [ ] Separar el correo ciudadano y crear administrador real de Credenly con UUID
+  independiente. Primero definir correo controlado de Valentina y aprobar los
+  cambios necesarios de esquema, autorización y API.
+- [ ] Panel operativo Credenly y pruebas de aislamiento de roles.
+
+Esta entrega solo documenta. No cambia cuentas, contraseñas, roles, vínculos,
+credenciales, esquemas, RPC ni endpoints. Las herramientas de recuperación de
+contraseña no equivalen a asignar permisos administrativos.
+
+## Credenly Admin — alcance mínimo aprobado (2026-10-18)
+
+Este bloque actualiza el diagnóstico anterior y el cierre frontend inicial. La
+separación real de cuentas sigue pendiente; no se ejecuta como parte de esta entrega.
+
+- [x] `perfiles_admin` propio de Credenly, FK por UUID a Auth, rol único
+  ADMIN_CREDENLY y estado ACTIVO/INACTIVO. Sin decisiones por correo/metadata.
+- [x] Auditoría mínima separada: actor, acción, resultado, fecha y recurso; sin
+  payloads sensibles. Tablas con RLS, ningún permiso browser y grants runtime
+  mínimos. Sin RPC nueva, retención/purga ni cambios en RAES/instituciones.
+- [x] Migraciones `20261019042521` y `20261019042601` aplicadas a Credenly.
+  Dry-run confirmó solamente ambas nuevas. El workdir CLI temporal recuperó la
+  historia remota existente para evitar reaplicar migraciones previas; no se
+  reparó ni alteró la historia remota antigua.
+- [x] Guard `authenticateCredenlyAdmin`; GET admin/me, overview, users y health.
+  Perfil mínimo, cuentas sin emails/hashes/sesiones, agregados reales, readiness
+  existente y errores de auditoría como única fuente de incidentes.
+- [x] Consultas administrativas registradas antes de devolver resultados; fallo
+  de auditoría responde 503 sin datos. Sin nuevos actores para denegaciones.
+- [x] Guard ciudadano rechaza perfiles administrativos incluso inactivos. Los
+  ciudadanos actuales sin perfil admin mantienen su flujo y sus permisos.
+- [x] `/admin/login`, `/admin`, `/admin/users`, `/admin/verifications`, `/admin/links`,
+  `/admin/shares`, `/admin/health`: layout operativo separado, primitives y tokens
+  Figma existentes, sesión/cookies administrativas independientes del ciudadano.
+- [x] Diagnóstico de separación de cuentas estrictamente de solo lectura.
+- [ ] Confirmar dirección ciudadana controlada para Valentina.
+- [ ] Ejecutar separación real del correo conservando el UUID ciudadano y después
+  aprovisionar una cuenta administrativa definitiva independiente. **Bloqueado**
+  por la condición explícita del titular; no se intenta ni se simula como realizado.
+
+### Comprobaciones posteriores
+
+- `pnpm typecheck`: correcto en todos los paquetes.
+- `pnpm test`: **192/192**, frente a 166 previos: 21 casos nuevos de guard/API y
+  aislamiento, cuatro de modelo frontend y uno de query HTTP. Los 117 tests
+  originales del backend siguen incluidos. Sin regresiones RAES/ciudadanas.
+- `pnpm -r --if-present build`: contratos, backends y ambas webs correctos.
+- `pnpm lint`: exit 0 con recursión `--if-present`; ningún paquete define lint.
+  No se presenta como análisis estático.
+- `pnpm test:frontend:browser`: **12/12** Chrome, cuatro anchos.
+- `scripts/verify-admin-isolation.ts`: API y Web compiladas reales contra
+  Auth/PostgREST/RAES fixtures HTTPS **exclusivamente locales**. HTTP 401 ausente/
+  inválido, ciudadano/email admin/metadata sin elevación 403, ADMIN_CREDENLY activo
+  200, inactivo 403, administrador en credenciales ciudadanas 403. Ciudadano con
+  consulta HTTP 200/source RAES/persistedByCredenly false y navegación conservada.
+  Seis rutas administrativas, paginación/vacío/error, readiness 200 y dependencia
+  caída 503, logout aislado, cookies HttpOnly y cero storage de sesión. Responsive
+  360/768/1024/1440 y cero errores de hidratación. Browser solo contacta la web.
+  Sin usuarios remotos de QA, escrituras académicas o mutaciones de cuenta.
+- SQL remoto `supabase/credenly/tests/admin_permissions.sql`: RLS/FK/grants mínimos,
+  SELECT/INSERT/UPDATE/DELETE denegados al ciudadano y lecturas denegadas a anon.
+  Ejecución transaccional con ROLLBACK: `ADMIN_RLS_GRANTS_AND_CITIZEN_DENIAL_OK`.
+- Advisor real: INFO sin policies intencionales en las dos tablas backend-only,
+  INFO previo en accesos_compartidos y WARN previo de contraseñas filtradas. No
+  nuevos WARN/ERROR de las tablas añadidas; no se silencian con policies permisivas.
+- `node scripts/verify-web-boundaries.mjs`: **310 archivos versionables / 36
+  bundles**, cero secretos de backend, claves privadas, env privados/traineddata
+  indexados o persistencia manual de sesión en browser.
+
+### Conservación real de cuentas y datos
+
+Huellas SHA-256 de las filas completas (ordenadas por UUID) comparadas antes/después,
+sin imprimir su contenido: perfiles **2**, verificaciones **1**, vínculos **1**,
+comparticiones **5**, accesos compartidos **9**; todas idénticas. Las **3** cuentas
+Auth conservan su proyección de identidad (UUID/correo/confirmación/alta) idéntica.
+No se leen ni publican hashes de contraseñas. `perfiles_admin`: **0** filas;
+`auditoria_admin`: **0** filas remotas. La auditoría de casos 200/ERROR se valida
+localmente, sin inventar actores remotos para obtener evidencia.
+
+Valentina conserva UUID `0b0c1230-994a-4940-9c89-f330975ac9d6`, correo
+`admin@credenly.com`, perfil ciudadano, una verificación, un vínculo y cinco
+comparticiones; cero perfiles administrativos. No se cambió contraseña, email,
+metadata, relaciones, identidad RAES o datos académicos.
+
+**Límite explícito:** no existe aún un administrador Credenly remoto aprovisionado.
+El login 200/panel se valida con fixtures locales; en Supabase real se valida esquema,
+permisos y conservación. No se utilizó una cuenta temporal para saltar la prohibición
+de mutar cuentas. Falta el correo ciudadano confirmado antes de ese siguiente paso.
+
+Commits de esta continuación: `67b1fb8` modelo administrativo; `9f294b4` guard,
+introspección y lecturas; `560bc2c` panel operativo; `9d17c91` formato y ajuste
+responsive; `285242f` pruebas y diagnóstico. Documentación en commit separado.
+
+Rama `feat/frontend-platform`; PR #15 abierto y actualizado, sin merge ni despliegue.
+La consulta actual de GitHub lo muestra **Ready for Review** (ya estaba fuera de
+Draft al iniciar esta continuación); se conserva ese estado sin cambiarlo aquí.
+El working tree conserva fuera de los commits los cuatro `next-env.d.ts` generados
+preexistentes de las dos webs y dos APIs. No se descartan cambios locales ajenos.
+
+El alcance administrativo mínimo del prototipo queda implementado y comprobado,
+con aprovisionamiento/separación de cuentas pendientes. No se declara preparación
+para producción. Siguen pendientes autenticidad/identidad real, recuperación y
+baselines, operación/retención/rotación, contraseñas filtradas y lint por paquete.
+
+## Separación ciudadana validada — email y recuperación autorizados (2026-10-18)
+
+- [x] Se comprobó que `valentina@yopmail.com` no existía en Auth y se registraron
+  UUID/email, IDs de relaciones, conteos y huellas antes de actuar.
+- [x] API oficial Supabase `auth.admin.updateUserById`, único campo email:
+  `admin@credenly.com` → `valentina@yopmail.com`. UUID conservado exactamente:
+  `0b0c1230-994a-4940-9c89-f330975ac9d6`. Sin SQL interno Auth o cuenta nueva.
+- [x] El primer login falló con invalid_credentials. El titular autorizó después
+  restablecer la contraseña y la introdujo/confirmó con entrada oculta en Terminal.
+  Se comprobó el restablecimiento sin imprimir ni guardar la contraseña.
+- [x] Login real Supabase y formulario web correctos. GET auth/me, profile,
+  identity-verifications, raes/link, credentials y shares: HTTP 200.
+- [x] Web onboarding, credenciales, detalle y comparticiones correctos; cero errores
+  de hidratación y cero sesión en localStorage/sessionStorage. Sesiones de prueba
+  cerradas, incluido logout web.
+- [x] Consulta ciudadana viva: RAES-CRD-00000001 (REVOCADA) y RAES-CRD-00000002
+  (ANULADA), source RAES y persistedByCredenly false. Sin escrituras académicas.
+- [x] Confirmación por Yopmail: envío inicial 429, único reintento posterior 200,
+  correo recibido y enlace consumido con verifyOtp oficial, mismo UUID/email.
+  Sin enlace administrativo, email_confirm forzado, cambios de SMTP o límites.
+  Timestamp Auth heredado conservado; prueba de buzón documentada por separado.
+- [x] Mismos IDs y SHA-256: perfil 1, verificación 1, vínculo 1, comparticiones 5,
+  accesos 9. Las cinco tablas completas conservan huellas después de todas las
+  comprobaciones. Tres cuentas Auth; una coincidencia del email nuevo y cero del viejo.
+- [ ] Administrador definitivo: no creado; tabla administrativa sigue vacía.
+  Se cumple la detención solicitada para reportar antes de ese siguiente paso.
+
+Evidencia de IDs/huellas, incidencias y comandos en
+`docs/reports/2026-10-18-valentina-email-separation.md` y
+`docs/evidence/2026-10-18-valentina-email-separation.json`.
+Operador de verificación de login con contraseña oculta y cierre de sesiones,
+sin mutaciones de cuenta. Sintaxis Node y verificación real correctas. Comprobador
+local temporal de enlace retirado al terminar; captura sin secretos en
+`/tmp/credenly-email-confirmed.png`. Sin cambios de esquema/RPC/lógica de negocio,
+merge o despliegue. Escaneo de secretos posterior antes del commit.
+
+## Credenly Admin — refinamiento visual y funcional (2026-10-19)
+
+Continúa en `feat/frontend-platform`, PR #15 abierto. Esta fase no modifica APIs,
+esquemas, RPC, cuentas remotas ni datos ciudadanos/académicos. `admin@credenly.com`
+queda reservado; no se crea todavía. Se conserva la separación ciudadana de
+Valentina ya validada en el bloque anterior.
+
+- [x] Inspección del panel existente, contratos administrativos, UI compartida y
+  Figma oficial. Contexto y capturas de Button Primary `1:26`, Input `1:30`, Badge
+  Vigente `1:34` y Card Credencial `1:40`. Inter y ocho colores oficiales conservados;
+  sin librería visual, dependencia nueva ni modificación del archivo Figma.
+- [x] Shell administrativo separado: sidebar estable de 232px, navegación activa,
+  contexto, nombre/rol y logout. Navegación móvil desplegable con las seis rutas,
+  Enter/Escape y retorno de foco; aviso permanente de solo lectura. CSS acotado
+  al árbol `/admin`, sin reemplazar la experiencia ciudadana.
+- [x] `/admin`: «Resumen operativo», cuatro KPIs con totales/desgloses reales y
+  enlaces, hora de consulta y actualización manual. Overview y salud en paralelo;
+  sin polling, tendencias, porcentajes o historia inventada. Salud parcial fallida
+  muestra indisponibilidad sin descartar los conteos obtenidos ni fabricar ceros.
+- [x] Componente genérico `MetricCard` en `packages/ui`; componentes específicos
+  de encabezado, refresco, salud, incidencias, estados y copia de UUID en la app.
+  Primitives existentes Button/Input/Card/Badge/Alert/Skeleton reutilizados.
+- [x] `/admin/users`: perfiles agregados, tabla de cuatro campos mínimos, UUID
+  completo/copiar con feedback, confirmación de correo, fechas y paginación real.
+  Página inválida/vacía explícita, sin emails o actividad inferida. Tabla dentro de
+  una región enfocable con desplazamiento horizontal y `caption`/`th scope`.
+- [x] Verificaciones con los cinco estados y advertencia de procesamiento
+  documental sin autenticidad legal; vínculos con cuatro estados; comparticiones
+  con tres. Sin PII, OCR, imágenes, tokens completos, acceso académico ni controles
+  de modificación. No se amplía la API para mejorar la presentación.
+- [x] `/admin/health`: tres dependencias, badges con texto, descripciones, hora y
+  HTTP readiness. Auth «Configurado» no equivale a login probado. Incidencias
+  limitadas a registros administrativos reales; vacío con su alcance explicado.
+- [x] `/admin/login` diferenciado del ciudadano, campos Correo/Contraseña y CTA
+  Iniciar sesión; sin registro ni recuperación por email. Loading/error/empty
+  coherentes. Defecto real corregido: el reintento de error boundary ahora refresca
+  los Server Components; `reset()` solo no volvía a consultar el backend.
+- [x] Responsive 360/768/1024/1440px: KPIs 1/2/2/4, todas las rutas disponibles,
+  sin overflow del viewport. Teclado, foco visible, `aria-current`, labels y estados
+  expresados con texto y color. Sin errores de hidratación detectados.
+
+### Validación de esta fase
+
+- `pnpm typecheck`: correcto en todos los paquetes.
+- `pnpm test`: **199/199**, incluidos los 192 previos. Seis casos nuevos de
+  presentación (conteos, readiness, tonos, fechas y página) y uno de MetricCard.
+- `pnpm -r --if-present build`: correcto en todo el monorepo.
+- `pnpm lint`: exit 0, pero siguen sin existir scripts lint por paquete; no se
+  ejecuta análisis lint real.
+- `pnpm test:frontend:browser`: **20/20**, doce públicos previos y ocho admin.
+  API/Web compiladas reales con fixtures HTTPS de Auth/PostgREST/RAES únicamente
+  locales: login/errores, seis rutas, KPIs, todos los estados, ceros, cuentas/copia/
+  paginación, salud caída/parcial, streaming loading, fallo sanitizado/reintento,
+  incidencias y aislamiento ciudadano/admin. Guards 401/403/200, perfil inactivo
+  403, email/metadata sin elevación, cookies HttpOnly/logout independientes,
+  consulta ciudadana source RAES y persistedByCredenly false. Sin storage manual,
+  requests browser a dependencias privadas ni escrituras privadas inesperadas.
+- Typecheck estricto adicional del fixture y spec Playwright: correcto. La prueba
+  anterior `scripts/verify-admin-isolation.ts` delega en la suite canónica, sin
+  duplicar lógica. Se puede ejecutar el proyecto `credenly-admin` aisladamente.
+- Capturas locales revisadas: `/tmp/credenly-admin-polish-qa/{login,admin,
+  admin-users,admin-verifications,admin-health}-{360,1440}.png`. Son datos sintéticos
+  de QA, no evidencia de una cuenta administrativa remota creada. Sin contraseñas,
+  tokens, trazas, HAR, videos o storageState guardados.
+- `node scripts/verify-web-boundaries.mjs`: **324 archivos versionables / 38
+  bundles**, cero secretos backend/claves privadas, env privados/traineddata
+  indexados o persistencia manual de sesión. No sustituye escaneo histórico o lint.
+- Cuatro `next-env.d.ts` inspeccionados: solo importaciones/comentarios generados
+  por Next. Restaurados según autorización explícita, sin `reset --hard`.
+
+**Límites conservados:** no se ejecuta login contra un administrador remoto porque
+su aprovisionamiento pertenece a la próxima operación separada. No fue necesario
+crear endpoints o modificar backend. El panel es observacional, no KYC, editor de
+identidad ni visor académico. Añadir sus pantallas al Figma sería documentación
+visual útil para otra fase; no bloquea esta entrega. Continúan los pendientes de
+producción ya identificados: autenticidad/identidad real, recuperación/baselines,
+operación/retención/rotación, protección de contraseñas filtradas y lint por paquete.
+Sin merge ni despliegue; no se declara listo para producción.
+
+Commits: `d87b3d3` shell/resumen y componentes; `1336b05` secciones administrativas;
+`ca3b331` regresión de interfaz. Documentación en commit separado. PR #15 conserva
+su estado previo **Ready for Review**, abierto; no se cambia a Draft ni se fusiona.
+
+## Administrador definitivo de Credenly aprovisionado (2026-10-19)
+
+Esta operación autorizada resuelve el pendiente de cuenta del bloque anterior.
+Rama `feat/frontend-platform`, PR #15 abierto; sin merge ni despliegue.
+
+- [x] Precheck real, repetido tras la entrada de contraseña: `admin@credenly.com`
+  libre, tres cuentas Auth y cero filas en ambas tablas administrativas. Valentina
+  conserva UUID/email y todos los IDs/huellas de la separación previa.
+- [x] Operador genérico `scripts/provision-credenly-admin.mjs` en Credenly API:
+  inventario paginado completo, colisiones sin adopción, evidencia ciudadana
+  protegida, contraseña oculta dos veces (12–256 caracteres), solo en memoria.
+  Modo `--check` de solo lectura y diagnóstico sin secretos. Sin dependencia nueva.
+- [x] Auth creado mediante API oficial `auth.admin.createUser`, UUID nuevo
+  **`bf79e684-6004-49f2-9ad3-b0ab6105b76f`**, distinto del ciudadano
+  `0b0c1230-994a-4940-9c89-f330975ac9d6`. Email `admin@credenly.com`, nombre
+  Administrador Credenly; `perfiles_admin` ADMIN_CREDENLY / ACTIVO.
+- [x] `email_confirm:true` autorizado para cuenta sintética de operador, sin correo
+  enviado. **No demuestra control del buzón** ni sustituye verificación ciudadana.
+  Sin SQL de escritura sobre Auth, cambios de esquema/RPC o configuración Auth.
+- [x] Fallo parcial protegido: solo compensa Auth demostrado como nuevo, con perfil
+  ausente y sin relaciones ciudadanas; verifica 404. Ambigüedad/FK/limpieza fallida
+  detiene sin forzar ni reintentar. Nueve tests locales; no fue necesario compensar
+  la creación real.
+- [x] Login Auth real correcto. GET admin/me, overview, users y health: **200**.
+  Perfil mínimo exacto; readiness HTTP **200/ready**, DB up, Auth configured,
+  RAES up. Totales reales: 2 perfiles, 1 verificación, 1 vínculo, 5 comparticiones.
+- [x] GET ciudadanos auth/me, profile, identity-verifications, raes/link,
+  credentials y shares: **403 los seis**. Huellas antes/después idénticas también
+  durante estas llamadas; cero escrituras por denegaciones y cero relaciones
+  ciudadanas del administrador. No se consultan enlaces públicos de Valentina.
+- [x] Login web real en `http://localhost:3003/admin/login`, nombre/rol correctos,
+  seis secciones y navegación, dashboard coincidente con API. Cookie administrativa
+  HttpOnly separada, sin cookie ciudadana; cero storage manual o errores de
+  hidratación. Browser solo contacta el origen web.
+- [x] Logout web y signOut local de sesión HTTP correctos. SQL independiente
+  posterior confirma **0 sesiones Auth** del nuevo administrador y **0 UUID** con
+  ambos tipos de perfil. Sin cambios de contraseña/sesiones de Valentina.
+- [x] Auditoría real: **25 filas**, actor nuevo, campos mínimos existentes; acciones
+  ADMIN_PROFILE_READ 10, OPERATIONS_READ 8, AUTH_ACCOUNTS_READ 2, HEALTH_READ 5.
+  Sin passwords, JWT, emails o payload privado en auditoría.
+- [x] Valentina: mismo UUID/email; perfil **1**, verificación **1**, vínculo **1**,
+  comparticiones **5**, accesos **9**, IDs/SHA-256 idénticos. Las cinco tablas
+  completas conservan sus huellas. Proyección Auth de las tres cuentas existentes
+  idéntica; solo se suma el administrador, total **4** cuentas.
+
+Validación posterior: sintaxis Node correcta, `pnpm typecheck` correcto y
+`pnpm test` **208/208** (199 previos + nueve del operador). No cambió código de
+producto; no fue necesario repetir builds. La UI real se validó con la cuenta
+nueva, además de la regresión local 20/20 de la fase visual anterior. `pnpm lint`
+termina exit 0, pero sin scripts por paquete no constituye análisis lint.
+`node scripts/verify-web-boundaries.mjs`: **329 archivos / 38 bundles**, sin secretos
+backend, claves privadas, env/traineddata indexados o persistencia manual.
+
+Incidencias auxiliares resueltas: MCP SQL sin permiso para este proyecto y CLI
+directo sin ruta IPv6. La comprobación SQL final se realizó por Management API
+HTTPS de solo lectura con el perfil CLI autorizado; credencial del llavero solo
+en memoria. No se modificaron red, perfiles CLI ni configuración remota.
+
+Evidencia exacta e informe:
+`docs/evidence/2026-10-19-credenly-admin-provisioning.json` y
+`docs/reports/2026-10-19-credenly-admin-provisioning.md`. No se guardan contraseña,
+tokens, hashes de contraseña o capturas de sesión. El aprovisionamiento queda
+completado; se detiene esta operación. Persisten los pendientes de producción
+documentados; no se declara listo para producción.
+
+Operador y tests en `66df433`; informe/evidencia y actualización de guías en commit
+separado. PR #15 conserva su estado Ready for Review y permanece abierto.

@@ -30,3 +30,22 @@ Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 7. RAES Web y Credenly se desplegarán como aplicaciones independientes.
 
 Consulta [docs/progress.md](docs/progress.md) para el estado del proyecto.
+
+## Interfaces
+
+`apps/raes-web` (3000) y `apps/credenly-web` (3003) son aplicaciones Next.js
+independientes. Comparten tokens/primitives Figma en `packages/ui` y utilidades
+HTTP/configuración en `packages/web-core`. RAES ofrece gestión según rol; Credenly
+integra perfil, verificación documental, credenciales, comparticiones y consulta
+pública mediante las APIs existentes. Comandos, evidencia y límites en
+[docs/frontend.md](docs/frontend.md). Sin despliegue ni certificación de producción.
+
+Credenly incluye un panel operativo separado en `/admin/login` y `/admin`, con rol
+`ADMIN_CREDENLY` validado por backend y consultas mínimas de solo lectura.
+El panel reúne KPIs con datos actuales, estados de procesos, cuentas paginadas,
+incidencias y salud, con navegación compacta en móvil. Su QA autenticada usa
+fixtures locales y forma parte de `pnpm test:frontend:browser`. La cuenta sintética
+`admin@credenly.com` ya está aprovisionada con UUID administrativo independiente y
+login real validado. Valentina conserva `valentina@yopmail.com` y sus relaciones;
+el administrador no tiene acceso ciudadano. Ver
+[modelo de autenticación](docs/authentication.md).

@@ -1,10 +1,7 @@
-# Apps
+# Aplicaciones web
 
-Las interfaces finales se crearán después de completar y probar las integraciones backend.
+- `raes-web`: administración institucional, puerto 3000.
+- `credenly-web`: experiencia ciudadana, puerto 3003.
 
-Aplicaciones previstas:
-
-- `raes-web`
-- `credenly`
-
-Se desplegarán de forma independiente.
+Son aplicaciones Next.js independientes. Comparten `@raes/ui` y `@raes/web-core`,
+sin acceso directo a las tablas privadas de RAES. Ver `docs/frontend.md`.

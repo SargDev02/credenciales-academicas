@@ -185,3 +185,110 @@ pnpm --filter @raes/api bootstrap:superadmin
 El comando crea o reutiliza el usuario de Supabase Auth indicado localmente y genera el perfil `SUPERADMIN`. Si detecta que ya existe un SUPERADMIN activo, se detiene sin modificar privilegios.
 
 Este bootstrap no se usa para incorporar universidades. Las universidades se crean posteriormente desde la API administrativa / RAES Web.
+
+## Restablecimiento local de una contraseña administrativa
+
+Para una cuenta existente y con autorización de su titular, desde la raíz:
+
+```bash
+pnpm --filter @raes/api admin:reset-password --email cuenta@dominio --check
+pnpm --filter @raes/api admin:reset-password --email cuenta@dominio
+```
+
+El primer comando solo comprueba cuenta/perfil. El segundo pide la nueva contraseña
+oculta y su confirmación en una terminal interactiva (12–256 caracteres). No acepta
+contraseñas por argumentos, variables ni archivos. Usa la configuración server-only
+existente de RAES API y `auth.admin.updateUserById` exclusivamente para el password.
+No crea cuentas ni modifica perfil, rol, metadata o datos académicos. Comprueba que
+el destino no cambió antes de actualizar, verifica un login con la nueva contraseña
+y cierra esa sesión de comprobación. No imprime contraseñas, tokens ni errores
+remotos sin sanitizar. No es un endpoint público de recuperación.
+
+## Restablecimiento local de una contraseña ciudadana
+
+Para una cuenta existente de Credenly, con autorización de su titular:
+
+```bash
+pnpm --filter @credenly/api citizen:reset-password --email cuenta@dominio --check
+pnpm --filter @credenly/api citizen:reset-password --email cuenta@dominio
+```
+
+El comando requiere correo ya confirmado y perfil ciudadano existente. Solicita
+contraseña y confirmación ocultas (12–256 caracteres), únicamente en terminal
+interactiva; no usa argumentos/archivos/variables para la contraseña. Actualiza
+solo el password de Auth, verifica login y cierra esa sesión de comprobación.
+Comprueba que perfil y vinculación RAES permanecen iguales. No confirma correos,
+crea identidades, altera datos académicos ni cambia permisos. Es una utilidad
+operativa local, no un endpoint público de recuperación.
+
+## Administración propia de Credenly
+
+RAES Admin y Credenly Admin son autoridades distintas, con proyectos Auth y tablas
+administrativas físicamente separados. Los roles RAES no conceden permisos en
+Credenly. En Credenly, `authenticateCredenlyAdmin` valida bearer con Auth, busca por
+UUID en `public.perfiles_admin` y exige rol `ADMIN_CREDENLY` y estado `ACTIVO`.
+No consulta email ni `user_metadata` para decidir permisos. Un ciudadano válido
+sin perfil administrativo recibe 403; token ausente/inválido recibe 401. Fallos
+al consultar autorización bloquean la petición con 503. No altera roles RAES.
+
+`GET /api/v1/admin/me` devuelve solo id/nombres/apellidos/rol/estado. No devuelve
+email, tokens, metadata Auth o identidad RAES. Las rutas operativas reutilizan el
+mismo guard. `authenticateCitizen` rechaza cualquier UUID con perfil administrativo
+(incluso inactivo), antes de leer o modificar información ciudadana o consultar
+credenciales. Esta separación no confía en ocultar controles frontend.
+
+La sesión web administrativa usa cookies HttpOnly con nombre
+`credenly-admin-web-auth`; la ciudadana conserva `credenly-web-auth`. Ambos flujos
+comprueban el usuario en servidor y llaman su endpoint de introspección. No hay
+sesiones en localStorage ni service role en la web. El panel no permite altas o
+asignación de roles; el aprovisionamiento se ejecuta mediante una herramienta de
+operador, fuera del runtime web/API.
+
+### Separación ciudadana y administrador independiente validados
+
+El UUID `0b0c1230-994a-4940-9c89-f330975ac9d6` sigue siendo el de Valentina,
+con email actualizado de `admin@credenly.com` a `valentina@yopmail.com` mediante
+la API administrativa oficial. No es administradora. No se crearon cuentas,
+perfiles ni identidades duplicadas, ni se transfirieron relaciones ciudadanas.
+
+Se conservan IDs y huellas de perfil, verificación, vínculo, cinco comparticiones
+y nueve accesos. El titular autorizó posteriormente restablecer la contraseña y
+la introdujo con entrada oculta. Pasaron login Supabase y formulario web reales,
+seis GET ciudadanos HTTP 200, consulta académica RAES sin persistencia y navegación.
+La contraseña y las sesiones no se imprimen ni documentan; las sesiones de prueba
+se cerraron.
+
+El primer envío de prueba fue rechazado por límite de correo 429. Un reintento
+posterior llegó a Yopmail y el enlace entregado se consumió mediante verifyOtp
+oficial, mismo UUID/email, sin email_confirm administrativo. El timestamp Auth de
+confirmación sigue siendo heredado; la entrega/consumo constituyen la comprobación
+del nuevo buzón. No se relajaron límites ni se cambió SMTP.
+
+Tras la autorización separada del 19 de octubre, se creó `admin@credenly.com` con
+UUID nuevo `bf79e684-6004-49f2-9ad3-b0ab6105b76f`, perfil ADMIN_CREDENLY/ACTIVO.
+Se utilizó `auth.admin.createUser` y `email_confirm:true` exclusivamente para esta
+cuenta sintética: significa aprovisionamiento de operador, **no control del buzón**.
+No se reutilizó el UUID ciudadano ni se copiaron relaciones. El login real Auth/Web,
+las lecturas administrativas 200 y seis denegaciones ciudadanas 403 se validaron;
+las sesiones de QA quedaron cerradas. SQL posterior confirmó cero sesiones para
+el nuevo administrador y cero UUID con ambos tipos de perfil.
+
+El operador `scripts/provision-credenly-admin.mjs` pide contraseña oculta dos veces,
+comprueba colisiones, conserva evidencia ciudadana y compensa fallos parciales
+solo cuando puede demostrar propiedad del UUID nuevo. No sirve para adoptar
+cuentas existentes o restablecer contraseñas. No hay registro público admin.
+Uso, evidencia y límites en
+[`2026-10-19-credenly-admin-provisioning.md`](reports/2026-10-19-credenly-admin-provisioning.md).
+
+Evidencia completa: `docs/reports/2026-10-18-valentina-email-separation.md`.
+Diagnóstico de relaciones sin escrituras, desde `services/credenly-api`:
+
+```bash
+node --env-file=.env.local --import=tsx scripts/diagnose-account-separation.ts --user-id <UUID-ciudadano-existente>
+```
+
+El verificador de login de `scripts/verify-citizen-login.mjs` se documenta en el
+informe. No cambia cuentas. Para un restablecimiento futuro, usar la utilidad
+ciudadana existente solo con autorización específica y el email actual; no pasar
+la contraseña en argumentos o por chat. Nunca borrar cuentas, desactivar FKs ni
+mover relaciones como mecanismo de recuperación.

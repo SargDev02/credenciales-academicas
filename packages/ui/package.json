@@ -1,0 +1,26 @@
+{
+  "name": "@raes/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test test/*.test.tsx"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "5.3.0",
+    "react": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@types/node": "^20",
+    "react-dom": "19.2.8",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  }
+}
