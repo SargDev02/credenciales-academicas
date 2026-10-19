@@ -327,13 +327,13 @@ del login vacío y del panel con datos sintéticos se guardan únicamente en
 generan capturas automáticas. La suite comprueba cero escrituras privadas
 inesperadas; la auditoría administrativa normal se simula en memoria local.
 
-**Límite de validación:** el esquema y RLS/grants se comprueban en Supabase real;
-el login administrativo 200 y navegación se prueban con fixtures locales. Las
-nuevas tablas remotas están vacías: no se crea un administrador remoto temporal
-ni definitivo para eludir la prohibición de mutar cuentas. El email ciudadano de Valentina ya cambió a `valentina@yopmail.com` conservando
-su UUID/relaciones. Tras resolver las incidencias iniciales de correo/contraseña,
-se validaron entrega y consumo de enlace Yopmail, login real y rutas ciudadanas;
-no se aprovisiona aún un administrador definitivo. Ver `docs/authentication.md` para el procedimiento pendiente.
+La suite automática anterior conserva fixtures exclusivamente locales. En una
+operación separada y autorizada del 19 de octubre se aprovisionó el administrador
+definitivo sintético `admin@credenly.com`, UUID independiente, y se validaron
+login Auth/Web real, las seis secciones, auditoría, logout y seis denegaciones
+ciudadanas 403. El email ciudadano de Valentina sigue siendo `valentina@yopmail.com`,
+con su UUID/relaciones intactos. Ver `docs/authentication.md` y el
+[informe del aprovisionamiento](reports/2026-10-19-credenly-admin-provisioning.md).
 
 Escaneo local posterior al build, desde la raíz:
 
@@ -344,7 +344,7 @@ node scripts/verify-web-boundaries.mjs
 Lee valores privados de los env ignorados solo en memoria, compara con archivos
 versionables y bundles públicos y reporta únicamente conteos. Exige env locales
 presentes para que la comprobación no pase vacía. No sustituye un escáner de secretos
-histórico ni un análisis lint. Resultado de esta entrega: 324 archivos / 38 bundles,
+histórico ni un análisis lint. Resultado del refinamiento visual: 324 archivos / 38 bundles,
 sin valores privados, env/traineddata indexados ni persistencia manual en browser.
 
 Validación del refinamiento administrativo (2026-10-19): `pnpm typecheck` y build

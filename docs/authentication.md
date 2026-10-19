@@ -241,9 +241,10 @@ La sesión web administrativa usa cookies HttpOnly con nombre
 `credenly-admin-web-auth`; la ciudadana conserva `credenly-web-auth`. Ambos flujos
 comprueban el usuario en servidor y llaman su endpoint de introspección. No hay
 sesiones en localStorage ni service role en la web. El panel no permite altas o
-asignación de roles; el aprovisionamiento definitivo sigue pendiente.
+asignación de roles; el aprovisionamiento se ejecuta mediante una herramienta de
+operador, fuera del runtime web/API.
 
-### Separación ciudadana validada; administrador pendiente
+### Separación ciudadana y administrador independiente validados
 
 El UUID `0b0c1230-994a-4940-9c89-f330975ac9d6` sigue siendo el de Valentina,
 con email actualizado de `admin@credenly.com` a `valentina@yopmail.com` mediante
@@ -263,11 +264,21 @@ oficial, mismo UUID/email, sin email_confirm administrativo. El timestamp Auth d
 confirmación sigue siendo heredado; la entrega/consumo constituyen la comprobación
 del nuevo buzón. No se relajaron límites ni se cambió SMTP.
 
-La cuenta administrativa definitiva **no se ha creado**, aun estando libre el
-email anterior: el titular pidió detenerse y reportar al completar la separación
-ciudadana. Ese aprovisionamiento requiere el siguiente paso autorizado, con UUID
-independiente, perfil ADMIN_CREDENLY y comprobación de aislamiento. No reutilizar
-el UUID ciudadano ni copiar sus relaciones.
+Tras la autorización separada del 19 de octubre, se creó `admin@credenly.com` con
+UUID nuevo `bf79e684-6004-49f2-9ad3-b0ab6105b76f`, perfil ADMIN_CREDENLY/ACTIVO.
+Se utilizó `auth.admin.createUser` y `email_confirm:true` exclusivamente para esta
+cuenta sintética: significa aprovisionamiento de operador, **no control del buzón**.
+No se reutilizó el UUID ciudadano ni se copiaron relaciones. El login real Auth/Web,
+las lecturas administrativas 200 y seis denegaciones ciudadanas 403 se validaron;
+las sesiones de QA quedaron cerradas. SQL posterior confirmó cero sesiones para
+el nuevo administrador y cero UUID con ambos tipos de perfil.
+
+El operador `scripts/provision-credenly-admin.mjs` pide contraseña oculta dos veces,
+comprueba colisiones, conserva evidencia ciudadana y compensa fallos parciales
+solo cuando puede demostrar propiedad del UUID nuevo. No sirve para adoptar
+cuentas existentes o restablecer contraseñas. No hay registro público admin.
+Uso, evidencia y límites en
+[`2026-10-19-credenly-admin-provisioning.md`](reports/2026-10-19-credenly-admin-provisioning.md).
 
 Evidencia completa: `docs/reports/2026-10-18-valentina-email-separation.md`.
 Diagnóstico de relaciones sin escrituras, desde `services/credenly-api`:

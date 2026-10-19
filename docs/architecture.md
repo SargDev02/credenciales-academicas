@@ -52,5 +52,6 @@ de auditoría. No accede a RAES DB ni presenta documentos/credenciales completas
 
 La separación ciudadana ya se validó: Valentina conserva su
 UUID y relaciones, con email actualizado a `valentina@yopmail.com`, buzón y login
-validados. No se crea el administrador definitivo hasta el siguiente paso autorizado. Ver [autenticación](authentication.md),
-[frontend](frontend.md) e [informe actualizado](reports/2026-10-18-credenly-administration.md).
+validados. El administrador sintético `admin@credenly.com` se aprovisionó después,
+con UUID propio y cero relaciones ciudadanas. Ver [autenticación](authentication.md),
+[frontend](frontend.md) e [informe de aprovisionamiento](reports/2026-10-19-credenly-admin-provisioning.md).

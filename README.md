@@ -44,8 +44,8 @@ Credenly incluye un panel operativo separado en `/admin/login` y `/admin`, con r
 `ADMIN_CREDENLY` validado por backend y consultas mínimas de solo lectura.
 El panel reúne KPIs con datos actuales, estados de procesos, cuentas paginadas,
 incidencias y salud, con navegación compacta en móvil. Su QA autenticada usa
-fixtures locales y forma parte de `pnpm test:frontend:browser`. La cuenta
-administrativa definitiva aún no está aprovisionada: el email ciudadano ya cambió
-a `valentina@yopmail.com` y se validaron el buzón y el login. El titular pidió
-detenerse antes de crear el administrador. Ver
+fixtures locales y forma parte de `pnpm test:frontend:browser`. La cuenta sintética
+`admin@credenly.com` ya está aprovisionada con UUID administrativo independiente y
+login real validado. Valentina conserva `valentina@yopmail.com` y sus relaciones;
+el administrador no tiene acceso ciudadano. Ver
 [modelo de autenticación](docs/authentication.md).

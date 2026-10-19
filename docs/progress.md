@@ -917,3 +917,71 @@ Sin merge ni despliegue; no se declara listo para producción.
 Commits: `d87b3d3` shell/resumen y componentes; `1336b05` secciones administrativas;
 `ca3b331` regresión de interfaz. Documentación en commit separado. PR #15 conserva
 su estado previo **Ready for Review**, abierto; no se cambia a Draft ni se fusiona.
+
+## Administrador definitivo de Credenly aprovisionado (2026-10-19)
+
+Esta operación autorizada resuelve el pendiente de cuenta del bloque anterior.
+Rama `feat/frontend-platform`, PR #15 abierto; sin merge ni despliegue.
+
+- [x] Precheck real, repetido tras la entrada de contraseña: `admin@credenly.com`
+  libre, tres cuentas Auth y cero filas en ambas tablas administrativas. Valentina
+  conserva UUID/email y todos los IDs/huellas de la separación previa.
+- [x] Operador genérico `scripts/provision-credenly-admin.mjs` en Credenly API:
+  inventario paginado completo, colisiones sin adopción, evidencia ciudadana
+  protegida, contraseña oculta dos veces (12–256 caracteres), solo en memoria.
+  Modo `--check` de solo lectura y diagnóstico sin secretos. Sin dependencia nueva.
+- [x] Auth creado mediante API oficial `auth.admin.createUser`, UUID nuevo
+  **`bf79e684-6004-49f2-9ad3-b0ab6105b76f`**, distinto del ciudadano
+  `0b0c1230-994a-4940-9c89-f330975ac9d6`. Email `admin@credenly.com`, nombre
+  Administrador Credenly; `perfiles_admin` ADMIN_CREDENLY / ACTIVO.
+- [x] `email_confirm:true` autorizado para cuenta sintética de operador, sin correo
+  enviado. **No demuestra control del buzón** ni sustituye verificación ciudadana.
+  Sin SQL de escritura sobre Auth, cambios de esquema/RPC o configuración Auth.
+- [x] Fallo parcial protegido: solo compensa Auth demostrado como nuevo, con perfil
+  ausente y sin relaciones ciudadanas; verifica 404. Ambigüedad/FK/limpieza fallida
+  detiene sin forzar ni reintentar. Nueve tests locales; no fue necesario compensar
+  la creación real.
+- [x] Login Auth real correcto. GET admin/me, overview, users y health: **200**.
+  Perfil mínimo exacto; readiness HTTP **200/ready**, DB up, Auth configured,
+  RAES up. Totales reales: 2 perfiles, 1 verificación, 1 vínculo, 5 comparticiones.
+- [x] GET ciudadanos auth/me, profile, identity-verifications, raes/link,
+  credentials y shares: **403 los seis**. Huellas antes/después idénticas también
+  durante estas llamadas; cero escrituras por denegaciones y cero relaciones
+  ciudadanas del administrador. No se consultan enlaces públicos de Valentina.
+- [x] Login web real en `http://localhost:3003/admin/login`, nombre/rol correctos,
+  seis secciones y navegación, dashboard coincidente con API. Cookie administrativa
+  HttpOnly separada, sin cookie ciudadana; cero storage manual o errores de
+  hidratación. Browser solo contacta el origen web.
+- [x] Logout web y signOut local de sesión HTTP correctos. SQL independiente
+  posterior confirma **0 sesiones Auth** del nuevo administrador y **0 UUID** con
+  ambos tipos de perfil. Sin cambios de contraseña/sesiones de Valentina.
+- [x] Auditoría real: **25 filas**, actor nuevo, campos mínimos existentes; acciones
+  ADMIN_PROFILE_READ 10, OPERATIONS_READ 8, AUTH_ACCOUNTS_READ 2, HEALTH_READ 5.
+  Sin passwords, JWT, emails o payload privado en auditoría.
+- [x] Valentina: mismo UUID/email; perfil **1**, verificación **1**, vínculo **1**,
+  comparticiones **5**, accesos **9**, IDs/SHA-256 idénticos. Las cinco tablas
+  completas conservan sus huellas. Proyección Auth de las tres cuentas existentes
+  idéntica; solo se suma el administrador, total **4** cuentas.
+
+Validación posterior: sintaxis Node correcta, `pnpm typecheck` correcto y
+`pnpm test` **208/208** (199 previos + nueve del operador). No cambió código de
+producto; no fue necesario repetir builds. La UI real se validó con la cuenta
+nueva, además de la regresión local 20/20 de la fase visual anterior. `pnpm lint`
+termina exit 0, pero sin scripts por paquete no constituye análisis lint.
+`node scripts/verify-web-boundaries.mjs`: **329 archivos / 38 bundles**, sin secretos
+backend, claves privadas, env/traineddata indexados o persistencia manual.
+
+Incidencias auxiliares resueltas: MCP SQL sin permiso para este proyecto y CLI
+directo sin ruta IPv6. La comprobación SQL final se realizó por Management API
+HTTPS de solo lectura con el perfil CLI autorizado; credencial del llavero solo
+en memoria. No se modificaron red, perfiles CLI ni configuración remota.
+
+Evidencia exacta e informe:
+`docs/evidence/2026-10-19-credenly-admin-provisioning.json` y
+`docs/reports/2026-10-19-credenly-admin-provisioning.md`. No se guardan contraseña,
+tokens, hashes de contraseña o capturas de sesión. El aprovisionamiento queda
+completado; se detiene esta operación. Persisten los pendientes de producción
+documentados; no se declara listo para producción.
+
+Operador y tests en `66df433`; informe/evidencia y actualización de guías en commit
+separado. PR #15 conserva su estado Ready for Review y permanece abierto.
