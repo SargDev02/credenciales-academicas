@@ -12,8 +12,6 @@ const envPath = process.env.CONNECTOR_ENV_FILE
   ? resolve(process.cwd(), process.env.CONNECTOR_ENV_FILE)
   : defaultEnvPath;
 
-config({ path: envPath });
-
 const envSchema = z.object({
   UDEA_SUPABASE_URL: z.string().url(),
   UDEA_SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
@@ -25,7 +23,12 @@ const envSchema = z.object({
 export type ConnectorEnv = z.infer<typeof envSchema>;
 
 export function getConnectorEnv(): ConnectorEnv {
-  const parsed = envSchema.safeParse(process.env);
+  config({ path: envPath, quiet: true });
+  return parseConnectorEnv(process.env);
+}
+
+export function parseConnectorEnv(input: unknown): ConnectorEnv {
+  const parsed = envSchema.safeParse(input);
 
   if (!parsed.success) {
     const fields = parsed.error.issues
