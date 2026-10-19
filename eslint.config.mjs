@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import js from "@eslint/js";
 import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
@@ -68,7 +69,7 @@ export default defineConfig(
           "apps/credenly-web",
           "services/raes-api",
           "services/credenly-api",
-        ],
+        ].map((path) => resolve(import.meta.dirname, path)),
       },
     },
   })),

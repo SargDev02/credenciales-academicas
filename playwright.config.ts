@@ -31,12 +31,23 @@ export default defineConfig({
     {
       command: "pnpm --filter @raes/web exec next start -p 3200",
       url: "http://localhost:3200/login",
-      reuseExistingServer: !process.env.CI,
+      // Public pages need valid configuration but never a remote account.
+      env: {
+        RAES_WEB_SUPABASE_URL: "https://localhost:9",
+        RAES_WEB_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_local_fixture_only",
+        RAES_API_BASE_URL: "http://localhost:9",
+      },
+      reuseExistingServer: false,
     },
     {
       command: "pnpm --filter @credenly/web exec next start -p 3203",
       url: "http://localhost:3203",
-      reuseExistingServer: !process.env.CI,
+      env: {
+        CREDENLY_WEB_SUPABASE_URL: "https://localhost:9",
+        CREDENLY_WEB_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_local_fixture_only",
+        CREDENLY_API_BASE_URL: "http://localhost:9",
+      },
+      reuseExistingServer: false,
     },
   ],
 });
