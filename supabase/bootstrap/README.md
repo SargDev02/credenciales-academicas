@@ -28,10 +28,15 @@ filas que modificar. Se conservan los cuerpos DML de las RPC.
    solamente los archivos de su lista en `manifest.json`, en ese orden, con un
    cliente SQL que falle al primer error (`psql -v ON_ERROR_STOP=1`). No continuar
    tras un error ni usar `--include-all` contra una base existente.
-3. En RAES ejecutar después `raes/scopes.sql`. Las políticas de acceso y los
+3. Aplicar después los cinco archivos correctivos `postBaselineMigrations` del
+   manifest, solo al proyecto indicado, en orden de versión. Esos archivos coinciden
+   con las nuevas versiones remotas, sin duplicar los SQL del archivo histórico.
+   El encabezado PROPOSAL describe su estado al redactarse; fueron aprobados y
+   aplicados el 2026-10-19, según el ledger de evidencia.
+   En RAES ejecutar después `raes/scopes.sql`. Las políticas de acceso y los
    defaults de grants deben revisarse explícitamente: los defaults Supabase que
-   se observaron conceden demasiado a roles browser. Ver informe de DB antes de
-   exponer Data API. Esta recuperación no convierte esos grants en seguros.
+   se observaron conceden demasiado a roles browser. Las cinco correcciones revocan grants browser sobrantes. Revisar defaults de
+   supabase_admin y todo objeto nuevo antes de exponer Data API.
 4. Ejecutar los tests SQL transaccionales versionados, volver a inventariar
    columnas/constraints/índices/triggers/RPC/RLS/ACL y comparar con la captura.
    Documentar cualquier diferencia; no copiar datos ni modificar UUIDs remotos.

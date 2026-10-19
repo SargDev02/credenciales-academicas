@@ -188,5 +188,42 @@
         "existingLocalMigration": []
       }
     ]
-  }
+  },
+  "postBaselineMigrations": [
+    {
+      "project": "raes",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114830",
+      "file": "supabase/raes/migrations/20261019114830_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "credenly",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114842",
+      "file": "supabase/credenly/migrations/20261019114842_least_privilege_browser_roles.sql",
+      "sha256": "75a3b965d9730d109744d5520007730b6434a7c93ed76d907dd9732719b4fa7f"
+    },
+    {
+      "project": "credenly",
+      "name": "enforce_credenly_profile_exclusion",
+      "version": "20261019114846",
+      "file": "supabase/credenly/migrations/20261019114846_enforce_credenly_profile_exclusion.sql",
+      "sha256": "485f59b35db98b59f04160dfa4948bc956c0d7c54cab834c2ae6012942124035"
+    },
+    {
+      "project": "poli",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114859",
+      "file": "supabase/poli/migrations/20261019114859_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "udea",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114905",
+      "file": "supabase/udea/migrations/20261019114905_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    }
+  ]
 }

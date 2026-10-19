@@ -25,24 +25,28 @@ columnas id/nombres/apellidos. Un administrador puede intentar crear su perfil
 propio por Data API sin pasar por ese guard. Esto no eleva su acceso a la API,
 pero contradice la separación de perfiles. No se convirtió ninguna cuenta.
 
-## Corrección preparada, NO aplicada remotamente
+## Corrección autorizada y aplicada (2026-10-19)
 
-- `20261019114151_least_privilege_browser_roles.sql` en cada proyecto revoca
+- `least_privilege_browser_roles` en cada proyecto revoca
   permisos browser de tablas/secuencias/funciones y grants de columnas, conserva
   grants explícitos del backend y revoca defaults de objetos creados por postgres.
   Credenly conserva exactamente sus lecturas RLS y escritura limitada de nombres.
   Los defaults de supabase_admin no se alteran: requieren configuración del
   propietario de plataforma, y todo objeto futuro debe llevar REVOKE explícito.
-- Credenly `20261019114224_enforce_credenly_profile_exclusion.sql` rechaza cualquier
+- Credenly `enforce_credenly_profile_exclusion` rechaza cualquier
   solapamiento preexistente y añade dos triggers con una función interna sin
   EXECUTE browser ni service_role. Serializa por UUID dentro de PostgreSQL y
   comprueba la otra tabla sin usar email/metadata. Solo admite READ COMMITTED en
   esas escrituras: rechaza otras aislamientos para no comprobar snapshots viejos.
   No añade endpoint/RPC de negocio, no mueve perfiles ni cambia UUIDs.
 
-Antes de aplicar persistentemente: revisar alcance, validar transaccionalmente
-con ROLLBACK, comprobar ausencia de solapamientos y autorizar la aplicación remota.
-Después: rerun grants/RLS/Advisor, pruebas de API/identidades y comparar conteos.
+Se revisó alcance, se validó con ROLLBACK y el propietario autorizó explícitamente
+la aplicación. Se utilizó la API oficial de migraciones, que asignó timestamps
+remotos; los cinco archivos locales fueron renombrados para coincidir exactamente.
+No se reparó el historial anterior ni se reescribió una migración aplicada.
+La advertencia PROPOSAL del cuerpo SQL registra su estado al redactarse; el estado
+actual es el de este informe y el ledger de aplicación.
+Se repitieron grants/RLS/Advisor y seis tests SQL: PASS.
 No ejecutar el archivo de bootstrap sobre ninguna base existente.
 
 ## Advisor y constraints
@@ -79,3 +83,17 @@ una carrera con dos conexiones concurrentes ni una reconstrucción vacía.
 Captura de catálogo sin filas: [JSON](evidence/predeploy-db-catalog.json).
 Resultados sanitizados: [tests previos](evidence/predeploy-existing-sql-tests.json)
 y [propuestas con rollback](evidence/predeploy-proposed-db-tests.json).
+
+## Resultado posterior a la aplicación aprobada
+
+TRUNCATE browser: **0 en los cuatro proyectos**. Se conservaron todos los conteos
+(incluidas 32 credenciales, 39 versiones, 39 eventos y 31 fuentes RAES; cinco
+comparticiones y nueve accesos Credenly). Auth Credenly: mismos UUIDs, correos y
+confirmaciones antes/después; cero cuentas creadas por las migraciones. No se
+modificaron contraseñas. Mínimo Auth 12 en RAES y Credenly; signup deshabilitado
+solo en RAES. El registro ciudadano permanece habilitado.
+
+[Ledger de aplicación](evidence/predeploy-approved-changes.json),
+[catálogo posterior](evidence/predeploy-db-post-catalog.json),
+[tests posteriores](evidence/predeploy-post-sql-tests.json).
+Los avisos INFO de RLS sin políticas y WARN de HIBP siguen visibles y explicados.
