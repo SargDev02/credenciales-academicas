@@ -151,13 +151,14 @@ export async function createShare(
 
 export async function listShares(userId: string) {
   const supabase = getCredenlySupabaseAdmin();
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("comparticiones")
     .select(
       "id,usuario_id,raes_credencial_id,token_prefix,token_hash,campos_visibles,expires_at,revoked_at,created_at,updated_at",
+      { count: "exact" },
     )
     .eq("usuario_id", userId)
-    .order("created_at", { ascending: false });
+    .order("created_at", { ascending: false }).order("id", { ascending: false }).limit(1000);
 
   if (error) {
     throw new ShareError(
@@ -167,6 +168,9 @@ export async function listShares(userId: string) {
     );
   }
 
+  if (count === null || count !== (data?.length ?? 0)) {
+    throw new ShareError(503, "LIST_LIMIT_EXCEEDED", "La consulta requiere paginación antes de poder devolver un listado completo");
+  }
   return (data as ShareRow[]).map(mapShareRow);
 }
 

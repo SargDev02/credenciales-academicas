@@ -110,12 +110,14 @@ export async function createInstitution(
 export async function listInstitutions() {
   const supabase = getRaesSupabaseAdmin();
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("instituciones")
     .select(
       "id,nit,codigo_snies,nombre,tipo_institucion,estado,created_at,updated_at",
+      { count: "exact" },
     )
-    .order("nombre");
+    .order("nombre")
+    .limit(1000);
 
   if (error) {
     throw new ProvisioningError(
@@ -125,6 +127,9 @@ export async function listInstitutions() {
     );
   }
 
+  if (count === null || count !== (data?.length ?? 0)) {
+    throw new ProvisioningError(503, "LIST_LIMIT_EXCEEDED", "La consulta requiere paginación antes de poder devolver un listado completo");
+  }
   return data ?? [];
 }
 
@@ -288,12 +293,14 @@ export async function createApiClient(
 export async function listApiClients() {
   const supabase = getRaesSupabaseAdmin();
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("clientes_api")
     .select(
       "id,nombre,tipo_cliente,client_id,estado,ultimo_uso_at,created_at,updated_at",
+      { count: "exact" },
     )
-    .order("nombre");
+    .order("nombre")
+    .limit(1000);
 
   if (error) {
     throw new ProvisioningError(
@@ -303,12 +310,15 @@ export async function listApiClients() {
     );
   }
 
+  if (count === null || count !== (data?.length ?? 0)) {
+    throw new ProvisioningError(503, "LIST_LIMIT_EXCEEDED", "La consulta requiere paginación antes de poder devolver un listado completo");
+  }
   return data ?? [];
 }
 
 export class ProvisioningError extends Error {
   constructor(
-    public readonly status: 400 | 404 | 409 | 500,
+    public readonly status: 400 | 404 | 409 | 500 | 503,
     public readonly code: string,
     message: string,
   ) {
