@@ -16,6 +16,12 @@ assert.equal(new URL(env.CREDENLY_SUPABASE_URL).hostname, "rleocqxvahtbswclqmif.
 const db = getCredenlySupabaseAdmin();
 const person = await resolveRaesPerson({ tipoDocumento: "CC", numeroDocumento: "SYNTH-CD-20261018-001" });
 const expected = await getRaesCredentialsForPerson(person.id);
+const fixtureCredentials = [
+  { id: "981200b3-a30c-4088-ae09-84b27beab01b", sourceCode: "SYNTH-POLI-CD-20261018-001", institutionId: "63829b97-c4d7-4467-a56a-f98c0c1f2c3a" },
+  { id: "b80fb8d4-6a6c-4453-948a-62018be8b7b6", sourceCode: "SYNTH-UDEA-CD-20261018-001", institutionId: "6d6a4b44-db0b-40a3-9863-0fc12f9f0d8b" },
+];
+// Fixture assertions are confined to this operator test; no application exceptions.
+for (const fixture of fixtureCredentials) assert.ok(expected.some(c => c.id === fixture.id && c.institucion?.id === fixture.institutionId), "Approved C/D fixture missing");
 assert.equal(expected.length, 2);
 assert.equal(new Set(expected.map(c => c.institucion?.id)).size, 2);
 const alreadyLinked = await db.from("vinculaciones_raes").select("id").eq("raes_persona_id", person.id);
@@ -62,30 +68,28 @@ try {
 } finally {
   // Only identifiers created by this invocation may be removed.
   if (userId) {
-    const cleanupFailures: string[] = [];
-    try {
-      const signedOut = await sessionClient.auth.signOut({ scope: "global" });
-      if (signedOut.error) cleanupFailures.push("session revocation");
-    } catch { cleanupFailures.push("session revocation"); }
-    for (const table of ["vinculaciones_raes", "verificaciones_identidad"]) {
-      try {
-        const cleanup = await db.from(table).delete().eq("usuario_id", userId);
-        if (cleanup.error) cleanupFailures.push(table);
-      } catch { cleanupFailures.push(table); }
+    const signedOut = await sessionClient.auth.signOut({ scope: "global" });
+    assert.ok(!signedOut.error, `Stop: temporary session revocation failed; review user ${userId}`);
+    // Respect dependency order. Stop on the first failure; do not force cascades.
+    for (const table of ["vinculaciones_raes", "verificaciones_identidad", "perfiles"]) {
+      const field = table === "perfiles" ? "id" : "usuario_id";
+      const cleanup = await db.from(table).delete().eq(field, userId);
+      assert.ok(!cleanup.error, `Stop: temporary ${table} cleanup failed; review user ${userId}`);
     }
     const deleted = await db.auth.admin.deleteUser(userId);
-    assert.ok(!deleted.error, `Temporary auth user cleanup failed; review user ${userId}`);
+    assert.ok(!deleted.error, `Stop: temporary auth user cleanup failed; review user ${userId}`);
+    const authUser = await db.auth.admin.getUserById(userId);
+    assert.ok(authUser.error?.status === 404 && !authUser.data.user, "Temporary Auth user remains or cannot be verified");
     for (const table of ["perfiles", "vinculaciones_raes", "verificaciones_identidad"]) {
       const rows = await db.from(table).select(table === "perfiles" ? "id" : "usuario_id").eq(table === "perfiles" ? "id" : "usuario_id", userId);
       assert.ok(!rows.error && rows.data?.length === 0, `Temporary citizen data remains; review user ${userId}`);
     }
-    assert.deepEqual(cleanupFailures, [], "Cleanup had failures; review verified removal and session revocation");
   }
 }
 assert.ok(accessToken && userId, "Authenticated read was not completed");
 const after = await fetch(`${base}/api/v1/credentials`, { headers: { authorization: `Bearer ${accessToken}` } });
 assert.equal(after.status, 401, "Deleted temporary citizen still authenticates");
-console.log(JSON.stringify({ masterPersonId: person.id, credentials: expected.map(c => ({ id: c.id, institutionId: c.institucion?.id })),
+console.log(JSON.stringify({ masterPersonId: person.id, credentials: expected.map(c => ({ id: c.id, sourceCode: fixtureCredentials.find(f => f.id === c.id)!.sourceCode, codigoRaes: c.codigoRaes, institutionId: c.institucion?.id, institutionName: c.institucion?.nombre })),
   authenticatedHttp: 200, source: "RAES", persistedByCredenly: false, academicWrites: 0,
-  temporaryCitizenId: userId, temporaryCitizenRemoved: true, sessionAfterCleanup: after.status,
+  temporaryCitizenId: userId, temporaryVerificationId: verificationId, temporaryCitizenRemoved: true, authUserAfterCleanup: 404, sessionAfterCleanup: after.status,
   verification: "SYNTHETIC_MOCK_DEVELOPMENT_NOT_REAL_OCR" }));
