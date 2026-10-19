@@ -689,3 +689,18 @@ No se modifican ni reinician los backends ni se cambian cuentas/contraseñas.
   pasan sin mutar la cuenta. Sin correos enviados ni secretos registrados.
 - El cambio real queda pendiente de que el titular introduzca la nueva contraseña
   en su terminal; no se establece ni publica una contraseña predeterminada.
+
+## Informe de administración propia de Credenly (2026-10-18)
+
+- [x] Informe `docs/reports/2026-10-18-credenly-administration.md` con diagnóstico,
+  separación de responsabilidades RAES/Credenly, plan de cuentas y criterios de aceptación.
+- [x] Consulta solo lectura confirma que `admin@credenly.com` sigue asociado al
+  UUID ciudadano existente, perfil de Valentina ACTIVO y vínculo RAES VERIFICADA.
+- [ ] Separar el correo ciudadano y crear administrador real de Credenly con UUID
+  independiente. Primero definir correo controlado de Valentina y aprobar los
+  cambios necesarios de esquema, autorización y API.
+- [ ] Panel operativo Credenly y pruebas de aislamiento de roles.
+
+Esta entrega solo documenta. No cambia cuentas, contraseñas, roles, vínculos,
+credenciales, esquemas, RPC ni endpoints. Las herramientas de recuperación de
+contraseña no equivalen a asignar permisos administrativos.

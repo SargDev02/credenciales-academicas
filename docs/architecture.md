@@ -40,3 +40,11 @@ Credenly Web usa exclusivamente Credenly API para perfil/verificación/vinculaci
 lectura académica y comparticiones. La consulta pública permanece dinámica y llega
 a RAES por Credenly API. Las webs comparten presentación/transporte, conservando
 sesiones Auth y despliegues independientes; no se comparten claves de integraciones.
+
+## Propuesta pendiente: administración propia de Credenly
+
+El [informe de separación de cuentas y administración](reports/2026-10-18-credenly-administration.md)
+documenta el diagnóstico y el estado objetivo: administrador Credenly independiente
+de la identidad ciudadana de Valentina. El perfil/rol y panel de administración de
+Credenly no están implementados; sus cambios de esquema, autorización y API requieren
+aprobación específica. RAES no sustituye la administración operativa de Credenly.
