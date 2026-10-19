@@ -1,3 +1,4 @@
+import { inspectImageBounds, ImageBoundsError } from "./image-bounds";
 import { getCredenlySupabaseAdmin } from "./supabase-admin";
 import {
   decideIdentityVerification,
@@ -78,6 +79,12 @@ export async function processIdentityDocument(
   file: File,
 ): Promise<IdentityVerificationRow> {
   validateIdentityDocumentFile(file);
+  const image = Buffer.from(await file.arrayBuffer());
+  try { inspectImageBounds(image, file.type); }
+  catch (error) {
+    if (error instanceof ImageBoundsError) throw new IdentityVerificationError(error.status, error.code, error.message);
+    throw error;
+  }
 
   const supabase = getCredenlySupabaseAdmin();
   const ocrProvider = getOcrProvider();
@@ -107,7 +114,6 @@ export async function processIdentityDocument(
   const processedAt = new Date().toISOString();
 
   try {
-    const image = Buffer.from(await file.arrayBuffer());
     const ocr = await ocrProvider.recognize(image);
     const parsed = parseColombianIdentityDocument(ocr.text);
     const decision = decideIdentityVerification(

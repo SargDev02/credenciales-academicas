@@ -82,7 +82,7 @@ export function OnboardingForm({
             type="file"
             label="Imagen del documento"
             accept="image/jpeg,image/png,image/webp"
-            hint="JPEG, PNG o WEBP. Hasta 8 MB. Se procesa en el servidor y se elimina la imagen."
+            hint="JPEG, PNG o WEBP fijos. Hasta 8 MB y 16 megapíxeles (8192 px por lado). Se procesa en el servidor, sin almacenar la imagen."
             required
           />
         ) : (
