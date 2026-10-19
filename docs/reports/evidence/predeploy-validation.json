@@ -1,6 +1,6 @@
 {
   "reviewDate": "2026-10-19",
-  "sourceCommit": "9c6cb88",
+  "sourceCommit": "b3eee17",
   "runtime": {
     "node": "24.22.0",
     "pnpm": "12.8.1"
@@ -12,13 +12,14 @@
     "declaredBuilds": 5
   },
   "current": {
-    "unitIntegrationToolingTests": 248,
-    "browserTests": 25,
+    "unitIntegrationToolingTests": 256,
+    "browserTests": 26,
     "declaredBuilds": 5,
     "lint": "PASS_10_WORKSPACES_AND_TOOLS",
     "types": "PASS_10_WORKSPACES_AND_TOOLS",
     "schemaReconstructions": 4,
-    "postOcrPatchBrowserAdminTests": 9
+    "postOcrPatchBrowserAdminTests": 9,
+    "postCitizenStatePatchBrowserAdminTests": 10
   },
   "cleanBuild": {
     "copiedIgnoredEnv": false,
@@ -28,7 +29,7 @@
     "types": "PASS",
     "tests": "PASS",
     "allDeclaredBuilds": "PASS",
-    "browser": "PASS_25_AFTER_ISOLATED_RERUN",
+    "browser": "PASS_26_FINAL_APPROVED_STATE_PATCH",
     "interruptedAttempt": "MAC_SLEEP_NETWORK_IO_SUSPENDED_TIMEOUT_NOT_HIDDEN",
     "finalOcrPatch": {
       "typecheck": "PASS",
@@ -36,8 +37,17 @@
       "apiBuild": "PASS",
       "rootBrowserAfterPatch": 9
     },
-    "finalAllWorkspaceTests": 248,
-    "finalAllWorkspaceLintTypes": "PASS"
+    "finalAllWorkspaceTests": 256,
+    "finalAllWorkspaceLintTypes": "PASS",
+    "finalCitizenStatePatch": {
+      "sourceCommit": "b3eee17",
+      "lint": "PASS",
+      "typecheck": "PASS",
+      "allWorkspaceTests": 256,
+      "allDeclaredBuilds": "PASS",
+      "privateEnvironmentCopied": false,
+      "browserTests": 26
+    }
   },
   "realBrowserQa": [
     {
@@ -56,7 +66,7 @@
       "browserDirectDatabaseRequests": 0,
       "hydrationErrors": 0,
       "logoutGuard": "OK",
-      "temporaryUserId": "440706bf-a9fe-4578-9e0b-aa388e7cfdd1",
+      "temporaryUserId": "27d55c54-6a82-4a2a-9bcf-38dd3b0dc86c",
       "temporaryUserRemoved": true,
       "academicMutations": 0
     },
@@ -71,10 +81,10 @@
       "source": "RAES",
       "persistedByCredenly": false,
       "publicVerification": "AVAILABLE_REVOKED_NOT_FOUND_OK",
-      "temporaryUserId": "5dab7589-5715-4022-94cd-2d4dccab8cbc",
-      "temporaryVerificationId": "1aa9a3a0-ff9f-4df9-934f-6b284241a55f",
+      "temporaryUserId": "bdecb675-12a6-43c7-9bb8-4a1335fb10dc",
+      "temporaryVerificationId": "d89246c8-d1b5-405e-b02c-d66e5132c643",
       "temporaryShareIds": [
-        "11a6b98e-bd6e-47f3-afa0-88ba08199714"
+        "9459a2dd-3a06-4ee4-9f20-71bbf8ce43b7"
       ],
       "temporaryCitizenRemoved": true,
       "publicTablesAfterCleanup": "IDENTICAL_HASHES_5_TABLES",
@@ -140,12 +150,12 @@
     "raesAllJsChunks": {
       "files": 16,
       "bytes": 606125,
-      "gzipBytes": 189632
+      "gzipBytes": 190287
     },
     "credenlyAllJsChunks": {
       "files": 22,
       "bytes": 640434,
-      "gzipBytes": 203670
+      "gzipBytes": 204358
     },
     "tesseractOrPgliteRuntimeMarkersInBrowser": 0,
     "isInitialPageLoadMetric": false
@@ -185,5 +195,27 @@
       "shares": 5,
       "accesses": 9
     }
+  },
+  "citizenProfileAccess": {
+    "ownerApproved": true,
+    "restrictedStates": [
+      "SUSPENDIDO",
+      "CERRADO"
+    ],
+    "restrictedHttpStatus": 403,
+    "allowedForAuthAndOnboarding": [
+      "ACTIVO",
+      "PENDIENTE_VERIFICACION",
+      "NO_PROFILE"
+    ],
+    "lookupFailureOrUnknownState": 503,
+    "businessAccessBeforeDenial": 0,
+    "academicWrites": 0,
+    "existingAccountStateChanges": 0,
+    "newApiRegressionTests": 7,
+    "newHttpClientRegressionTests": 1,
+    "newBrowserTests": 1,
+    "webSessionCookiesAfterDeniedLogin": 0,
+    "publicShareLifecycle": "UNCHANGED"
   }
 }

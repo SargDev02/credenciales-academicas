@@ -19,6 +19,8 @@ exclusivamente en `chore/predeploy-quality-gate`, PR [#16](https://github.com/Sa
   aplicadas, cero TRUNCATE browser, separación de perfiles por UUID y conteos intactos.
 - [x] Política ciudadana aprobada: SUSPENDIDO/CERRADO bloqueados con 403; onboarding
   sin perfil/PENDIENTE_VERIFICACION conservado, sin alterar cuentas existentes.
+  Commit `b3eee17`, regresiones API/HTTP/browser y repetición ciudadana real C/D
+  con limpieza y consulta posterior de cero residuos.
 - [x] Auth mínimo 12 en RAES/Credenly y signup público RAES deshabilitado, aprobado.
 - [x] 22 migraciones históricas recuperadas + cinco correctivas; reconstrucción de
   cuatro esquemas en PostgreSQL/WASM con comparación de código/constraints/permisos.

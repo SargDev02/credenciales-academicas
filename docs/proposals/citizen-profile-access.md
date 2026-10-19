@@ -1,9 +1,9 @@
 # Decisión aprobada: estados del perfil ciudadano
 
-Inspección final del guard: `authenticateCitizen` valida Auth y excluye perfiles
-administrativos, pero no consulta `perfiles.estado`. El esquema admite ACTIVO,
+Hallazgo antes de corregir: `authenticateCitizen` validaba Auth y excluía perfiles
+administrativos, pero no consultaba `perfiles.estado`. El esquema admite ACTIVO,
 PENDIENTE_VERIFICACION, SUSPENDIDO y CERRADO. Una sesión Auth válida y vínculo RAES
-VERIFICADA siguen autorizando credenciales aunque el perfil esté SUSPENDIDO/CERRADO.
+VERIFICADA seguían autorizando credenciales aunque el perfil esté SUSPENDIDO/CERRADO.
 No existe actualmente una acción administrativa para cambiar esos estados en UI.
 
 Implementación aprobada por el propietario el 2026-10-19, sin esquema, RPC ni endpoint nuevo:

@@ -99,6 +99,12 @@ bloqueos públicos de la matriz: no se convierten en PASS por tener tests verdes
   persistedByCredenly false. Compartición/publicación temporal, consulta pública,
   revocación/404 y logout. Cuenta, perfil, verificación, vínculo, share y accesos
   temporales retirados; cinco tablas ciudadanas idénticas antes/después; JWT anterior 401.
+- Política ciudadana aprobada: 7 regresiones API y 1 de cliente HTTP añadidas;
+  SUSPENDIDO/CERRADO bloquean diez operaciones antes de negocio/RAES, metadata
+  manipulada no concede acceso, consulta fallida/estado desconocido fallan cerrado.
+  Browser real contra servicios con upstream local: ambos 403, login con mensaje
+  específico, cookies retiradas; ACTIVO vuelve a acceder. Onboarding sin perfil
+  probado además contra Auth/API reales. No se cambiaron estados de cuentas existentes.
 - Ninguna cuenta existente se convirtió o reutilizó para los logins. La persona
   maestra, fuentes y credenciales C/D institucionales permanecen. Los tests de API
   escriben auditoría operativa RAES de forma deliberada, sin escritura académica.
@@ -129,7 +135,7 @@ marca/blanco 7.76, muted/blanco 5.08, muted/fondo 4.73, badges éxito 6.07, revo
 4.64 y anulada 6.40. No hay un modal custom que requiera auditar trampa de foco.
 
 Chunks JS agregados (no carga inicial por página ni benchmark de red): RAES 16,
-606125 bytes /189632 gzip; Credenly 22,640434 bytes /203670 gzip. No contienen
+606125 bytes /190287 gzip; Credenly 22,640434 bytes /204358 gzip (Node 24, gzip por defecto). No contienen
 runtime Tesseract/PGlite. Inter se sirve localmente; sin analytics externo.
 No se afirma rendimiento bajo carga pública ni ausencia absoluta de vulnerabilidades.
 
