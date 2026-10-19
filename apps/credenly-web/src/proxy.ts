@@ -11,7 +11,9 @@ export async function proxy(request: NextRequest) {
   } catch {
     return response;
   }
-  const administrative = request.nextUrl.pathname === "/admin" || request.nextUrl.pathname.startsWith("/admin/");
+  const administrative =
+    request.nextUrl.pathname === "/admin" ||
+    request.nextUrl.pathname.startsWith("/admin/");
   const cookieName = administrative ? adminCookieName : config.cookieName;
   const auth = createServerClient(config.url, config.publishableKey, {
     cookieOptions: {
@@ -35,9 +37,7 @@ export async function proxy(request: NextRequest) {
       },
     },
   });
-  if (
-    request.cookies.getAll().some((c) => c.name.startsWith(cookieName))
-  )
+  if (request.cookies.getAll().some((c) => c.name.startsWith(cookieName)))
     await auth.auth.getClaims();
   return response;
 }

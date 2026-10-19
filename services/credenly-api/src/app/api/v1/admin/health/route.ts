@@ -7,6 +7,15 @@ export async function GET(request: Request) {
     const result = await readiness();
     const body = await result.json();
     const components = body.components ?? {};
-    return { checkedAt: new Date().toISOString(), httpStatus: result.status, status: body.status === "ready" ? "ready" : "not_ready", components: { database: components.database === "up" ? "up" : "down", auth: components.auth === "configured" ? "configured" : "unavailable", raes: components.raes === "up" ? "up" : "down" } };
+    return {
+      checkedAt: new Date().toISOString(),
+      httpStatus: result.status,
+      status: body.status === "ready" ? "ready" : "not_ready",
+      components: {
+        database: components.database === "up" ? "up" : "down",
+        auth: components.auth === "configured" ? "configured" : "unavailable",
+        raes: components.raes === "up" ? "up" : "down",
+      },
+    };
   });
 }

@@ -58,12 +58,25 @@ export async function authenticate(
   try {
     await apiRequest(getWebConfig().apiBase, "/api/v1/auth/me", {
       token: data.session.access_token,
-      validate: (value): value is { data: { id: string } } => !!value && typeof value === "object" && "data" in value && !!value.data && typeof value.data === "object" && "id" in value.data && value.data.id === data.user.id,
+      validate: (value): value is { data: { id: string } } =>
+        !!value &&
+        typeof value === "object" &&
+        "data" in value &&
+        !!value.data &&
+        typeof value.data === "object" &&
+        "id" in value.data &&
+        value.data.id === data.user.id,
     });
   } catch {
-    try { await auth.auth.signOut({ scope: "local" }); }
-    finally { await clearWebSessionCookies(); }
-    return { error: "No fue posible validar el acceso ciudadano. Si tu cuenta es administrativa, utiliza el acceso de administración." };
+    try {
+      await auth.auth.signOut({ scope: "local" });
+    } finally {
+      await clearWebSessionCookies();
+    }
+    return {
+      error:
+        "No fue posible validar el acceso ciudadano. Si tu cuenta es administrativa, utiliza el acceso de administración.",
+    };
   }
   redirect(safeReturnPath(form.get("next"), "/credentials"));
 }

@@ -5,7 +5,10 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import { getWebConfig } from "./env";
 
-export async function createScopedWebAuth(cookieName: string, writable = false) {
+export async function createScopedWebAuth(
+  cookieName: string,
+  writable = false,
+) {
   const config = getWebConfig();
   const jar = await cookies();
   return createServerClient(config.url, config.publishableKey, {
