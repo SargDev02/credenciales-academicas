@@ -167,3 +167,11 @@ Comprobaciones comunes: `pnpm typecheck`, `pnpm test`, `pnpm -r --if-present bui
 `pnpm test:frontend:browser` valida las galerías y teclado en Chrome sin crear
 datos remotos. La prueba autenticada opt-in y su limpieza se describen en
 `docs/frontend.md`; su proceso operador no forma parte del runtime web.
+
+Credenly incluye `/login`, `/register`, `/onboarding`, `/credentials`, `/shares` y
+`/verify/[token]`. La confirmación de correo requiere `CREDENLY_WEB_SITE_URL` y su
+callback permitido en Auth. No se habilitó autoconfirmación ni se alteró Auth remoto.
+Las pruebas de flujo opt-in separan API fixture (estados/errores) de APIs reales;
+requieren cuentas sintéticas temporales y limpieza verificada. Ver comandos, puertos
+y alcance preciso en `docs/frontend.md`. No ejecutar las pruebas remotas sin su
+flag explícito; no usan cuentas existentes ni insertan información académica.

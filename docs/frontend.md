@@ -39,157 +39,170 @@ rotulados de demostración y ninguna consulta académica.
 
 ## Variables y comandos
 
-Copiar el `.env.example` de cada app a su `.env.local` ignorado. URL Supabase y
-clave publishable/anon corresponden exclusivamente al proyecto de esa aplicación:
-`RAES_WEB_SUPABASE_URL`, `RAES_WEB_SUPABASE_PUBLISHABLE_KEY`, `RAES_API_BASE_URL`;
-y equivalentes `CREDENLY_*`. No se admiten claves service_role. Son variables del
-servidor web; no se exportan tokens al JavaScript del navegador.
+Copiar el `.env.example` de cada app a `.env.local` (ignorado). Cada aplicación usa
+su proyecto Auth independiente. Las webs solo aceptan URL Supabase y una clave
+publishable/anon; no hay service role, claves de integración ni `NEXT_PUBLIC_*`.
+
+| App | Variables exclusivas del servidor web |
+| --- | --- |
+| RAES | `RAES_WEB_SUPABASE_URL`, `RAES_WEB_SUPABASE_PUBLISHABLE_KEY`, `RAES_API_BASE_URL` |
+| Credenly | `CREDENLY_WEB_SUPABASE_URL`, `CREDENLY_WEB_SUPABASE_PUBLISHABLE_KEY`, `CREDENLY_API_BASE_URL`, `CREDENLY_WEB_SITE_URL` |
+
+`CREDENLY_WEB_SITE_URL` es el origen confiable para confirmar correo. Registrar
+su `/auth/callback` en los redirects permitidos del proyecto Auth antes de probar
+confirmaciones por correo. No se cambió la configuración remota de Auth.
 
 ```bash
-pnpm --filter @raes/web dev       # 3000; API RAES 3001
-pnpm --filter @credenly/web dev   # 3003; API Credenly 3002
+pnpm --filter @raes/api dev       # 3001
+pnpm --filter @credenly/api dev   # 3002
+pnpm --filter @raes/web dev       # 3000
+pnpm --filter @credenly/web dev   # 3003
 pnpm typecheck
 pnpm test
 pnpm lint
 pnpm -r --if-present build
-```
-
-## Contratos y limitaciones verificadas de RAES
-
-Disponibles: GET/POST `/api/v1/admin/institutions`, GET/POST
-`/api/v1/admin/api-clients`, POST `/api/v1/admin/institutions/{id}/integrations`.
-El detalle puede derivarse del listado sin inventar una ruta API.
-
-`GET /api/v1/admin/me` devuelve ahora el perfil/rol validado (cambio backend
-aprobado explícitamente). No existen GET de auditoría/integraciones ni scopes
-asignados en el listado de clientes. No hay acceso directo a esas tablas desde
-frontend, ni roles inferidos desde `user_metadata`.
-
-## RAES Web administrativa
-
-Rutas: `/login`, `/dashboard`, `/institutions`, `/institutions/[id]`,
-`/api-clients` y `/audit` (disponibilidad explicada, sin datos inventados).
-`/` redirige al resumen. Los listados/perfil se solicitan una vez por render mediante
-React cache; los filtros y el detalle usan el listado. Los contadores describen
-registros visibles, no totales globales no ofrecidos por API.
-
-SUPERADMIN/ADMIN pueden crear instituciones, clientes API e integraciones desde
-los endpoints POST existentes. AUDITOR solo ve consultas. Las Server Actions
-vuelven a comprobar el perfil antes del POST; RAES API autoriza cada operación.
-Los formularios conservan errores por campo y datos ante rechazo, muestran espera
-y bloquean envíos duplicados. No hay reintentos automáticos de mutaciones; ante
-resultado incierto se indica revisar el listado antes de volver a enviar.
-
-No existe catálogo de scopes consultable: los códigos se introducen explícitamente
-separados por comas y RAES valida los permitidos. No se simulan permisos asignados.
-En una integración, omitirlos usa el valor predeterminado del backend; el resultado
-muestra los permisos que RAES confirma. Para clientes son obligatorios.
-
-Las claves se proyectan de la respuesta de alta a memoria del componente únicamente;
-no se persisten ni se reenvía el bearer `authorization` completo de la API.
-Se pueden copiar y cerrar; cerrar, recargar o salir elimina la visualización.
-No se ofrece recuperar claves. Sin listado de integraciones no se presenta una
-lista falsa; su creación sigue disponible dentro del detalle institucional.
-
-### Sesión
-
-Login/logout son Server Actions. `@supabase/ssr` usa cookies con namespace
-`raes-web-auth`, HttpOnly, SameSite=Lax, Secure en producción y path `/`. No hay
-cliente Supabase en browser ni localStorage/sessionStorage para sesiones. El Proxy
-renueva tokens; el servidor verifica `getUser()` antes de usar el JWT de la sesión
-para consumir RAES API. No confía en el objeto de sesión sin verificación ni en
-metadata. La API vuelve a validar perfil activo y permisos. Los errores de acceso
-no muestran SQL ni mensajes internos. Las respuestas autenticadas no se cachean.
-Logout borra también las cookies locales aunque falle la revocación remota.
-
-Los Client Components específicos son formularios de login/alta, navegación
-activa y recuperación de errores. El resto es Server Components. No se serializan
-JWT ni claves de servidor al árbol del cliente. Solo la clave de integración/cliente
-recién creada se entrega para la visualización única autorizada. Credenly todavía
-no tiene integración de sesión ni flujo ciudadano; solo su Foundation visual.
-
-### Validación de navegador
-
-```bash
 pnpm test:frontend:browser
 ```
 
-Requiere Google Chrome instalado en macOS y builds previos. Playwright reutiliza
-o inicia las webs de QA en 3200/3203; las pruebas públicas no crean datos remotos.
-La prueba de teclado del login requiere el `.env.local` de RAES Web configurado.
-No se guardan traces, vídeo, HAR ni storageState. Las capturas públicas quedan en
-`test-results/` (ignorado). Se prueban galerías, labels, teclado/foco y ausencia de
-overflow en 360/768/1024/1440 px.
+Las galerías `/design-system` de ambas apps no requieren conexión a Supabase.
+Los flujos integrados sí requieren las APIs y variables reales.
 
-La comprobación real autenticada es un script **de operador**, fuera del runtime
-web y opt-in. Usa temporalmente la configuración backend solo en su proceso QA;
-ninguna clave de servidor se entrega al proceso de la web ni al browser:
+## Auth, permisos y límites de servidor
+
+Login/logout son Server Actions y usan `@supabase/ssr`. Cookies separadas
+`raes-web-auth` y `credenly-web-auth`, HttpOnly, SameSite=Lax, Secure en producción,
+path `/`. Proxy refresca las sesiones; los Server Components validan `getUser()`
+antes de extraer el access token. JWT solo en servidor para llamadas a la API.
+Sin Auth SDK en browser ni sesiones en localStorage/sessionStorage. Logout limpia
+las cookies aun si falla la llamada remota. Configuración incompleta produce un
+mensaje seguro, sin exponer variables o errores internos.
+
+Los Server Components consultan APIs sin caché y comparten lecturas con React cache
+en cada render. Los Client Components se limitan a formularios, navegación activa,
+confirmación/copia de resultados y recuperación de errores. El HTTP común valida
+payloads, sanitiza errores, limita esperas y admite cancelación; no reintenta
+mutaciones. Un resultado incierto indica revisar estado/listado antes de reenviar.
+No hay acceso frontend a tablas privadas ni persistencia de información académica.
+
+## RAES Web
+
+| Ruta | API utilizada / comportamiento |
+| --- | --- |
+| `/login` | Supabase Auth RAES + `GET /api/v1/admin/me` |
+| `/dashboard` | Métricas derivadas de listados reales, sin estadísticas inventadas |
+| `/institutions` | `GET/POST /api/v1/admin/institutions`, filtros locales |
+| `/institutions/[id]` | Detalle del listado + POST de integración existente |
+| `/api-clients` | `GET/POST /api/v1/admin/api-clients` |
+| `/audit` | Explica indisponibilidad de consulta; no accede a DB |
+
+Único cambio backend aprobado: `/admin/me`, cinco campos de perfil y tres roles
+explícitos con `authenticateAdmin`; sin cambiar su comportamiento por defecto.
+Ver contrato en `docs/api.md`. Login y layout usan ese perfil, nunca metadata.
+SUPERADMIN/ADMIN ven altas; AUDITOR solo consultas. Las Server Actions vuelven a
+comprobar el rol; cada POST en RAES API sigue siendo la autoridad de autorización.
+
+No existen GET de auditoría, integraciones ni scopes asignados/catálogo. Las pantallas
+adaptan la información disponible. Los scopes del alta se introducen explícitamente
+separados por comas y RAES valida los permitidos; no se simulan asignaciones. Una
+integración puede omitirlos para usar los defaults del backend, mostrando los
+permisos confirmados en la respuesta.
+
+Claves nuevas: la acción proyecta únicamente ID/clave/scopes a memoria del componente.
+No reenvía el bearer completo devuelto por API. Se muestra advertencia y permite
+copiar/cerrar; cerrar, recargar o salir descarta el resultado. No se pueden recuperar.
+
+## Credenly Web
+
+| Ruta | Integración existente |
+| --- | --- |
+| `/login`, `/register` | Auth Credenly; registro por correo con confirmación |
+| `/auth/callback` | Intercambio PKCE; destino fijo al onboarding |
+| `/onboarding` | GET/PUT perfil, GET/POST verificación, GET/POST vinculación RAES |
+| `/credentials` | `GET /api/v1/credentials`, source RAES y persistedByCredenly false |
+| `/credentials/[id]` | Detalle derivado del listado vivo, sin endpoint inventado |
+| `/shares` | GET/POST comparticiones y DELETE por ID |
+| `/verify/[token]` | GET público de Credenly API, sin sesión/JWT |
+
+Progreso: Cuenta → Perfil → Documento → Verificación → Vinculación → Credenciales.
+El OCR existente procesa multipart `documento` en el servidor. La web acepta
+JPEG/PNG/WEBP hasta 8 MB; Server Actions se limitan a 9 MB para incluir multipart.
+La aprobación documental no acredita autenticidad legal ni KYC. Estados visibles
+PENDIENTE/PROCESADA/APROBADA/RECHAZADA/REVISION, sin inventar aprobación o revisión.
+
+Tarjetas del Figma y detalle muestran VIGENTE/REVOCADA/ANULADA; un estado terminal
+es información histórica válida, con fecha/motivo disponible. Las fechas sin hora
+conservan el día calendario; timestamps se presentan en America/Bogota.
+
+Compartición: campos adicionales de la whitelist del contrato, duración de 1–720
+horas, enlace solo en la respuesta de alta para copiar/descartar, listado de estados
+y revocación con confirmación. Sin token completo persistido ni recuperación desde
+el listado. El link se construye con el origen de la web y la ruta `/verify`.
+
+La página pública traduce respuestas API 200/410 (revocada o expirada)/404 y fallos
+sanitizados a mensajes distintos. El estado terminal de la credencial sigue visible.
+Los códigos 410 corresponden a Credenly API; la página HTML Next.js muestra su estado
+semántico. No es un proxy HTTP que replique todos los códigos de la API.
+Información disponible rotulada «Información consultada desde RAES» y estado actual.
+Sin indexación, referencias externas, analytics ni referrer a terceros.
+
+## Verificación y evidencia
+
+`pnpm test:frontend:browser`: 12 pruebas públicas en Chrome instalado en macOS,
+cuatro anchos; galerías, badges, labels, teclado/focus y overflow. No crea datos.
+Los verificadores opt-in siguientes requieren build previo. El proceso operador
+recibe las claves de backend desde sus archivos ignorados; esas claves nunca pasan
+a Next/browser. Contraseñas aleatorias, JWT y enlaces solo en memoria; sin trazas,
+HAR, storageState, videos ni capturas de secretos/documentos.
+
+Desde `apps/raes-web`:
 
 ```bash
-# Backend RAES compilado en 3101, web compilada en 3200 con RAES_API_BASE_URL=...3101.
-# Desde apps/raes-web; solo para el dataset de desarrollo autorizado.
-RAES_WEB_TEST_BASE_URL=http://localhost:3200 RAES_TEST_API_BASE_URL=http://localhost:3101 \
+# API compilada 3101, web compilada 3200 con RAES_API_BASE_URL=http://localhost:3101
 node --env-file=.env.local --env-file=../../services/raes-api/.env.local --import=tsx scripts/verify-browser.ts --temporary-admin
-```
-
-Crea una cuenta Auth sintética, comprueba rechazo sin perfil, añade únicamente su
-perfil AUDITOR, inicia sesión real, compara filas contra la API, prueba filtros,
-detalle, logout/guard y los cuatro anchos. Contraseña y JWT permanecen en memoria.
-Después elimina únicamente su perfil/cuenta y exige Auth 404 y ausencia del perfil.
-Si falla la limpieza, se detiene sin forzar eliminaciones. No modifica instituciones,
-clientes, integraciones ni información académica. Diagnósticos de fallo sanitizados
-y capturas locales en `/tmp/frontend-qa`; sin claves ni contraseñas en los informes.
-
-En el desarrollo se corrigió un selector del verificador que confundía el
-anunciador de rutas Next.js con un error de acceso; se esperó el mensaje concreto
-antes de habilitar el perfil de prueba. Las cuentas de los intentos se limpiaron.
-
-### Perfil administrativo autorizado
-
-Implementado tras aprobación explícita: `GET /api/v1/admin/me` reutiliza
-`authenticateAdmin(request, ["SUPERADMIN", "ADMIN", "AUDITOR"])`, sin cambiar
-sus roles por defecto. Solo devuelve `id`, `nombres`, `apellidos`, `rol`, `estado`
-y no se almacena en caché. Login y layout lo consultan desde el servidor.
-El encabezado muestra nombre y rol de ese perfil; no se infiere desde metadata.
-Las altas solo se ofrecen a SUPERADMIN/ADMIN y sus endpoints siguen autorizando
-cada solicitud. AUDITOR continúa en lectura. Ver contrato y errores en `docs/api.md`.
-No se añadieron tablas, migraciones, RPC ni otros endpoints administrativos.
-Los gaps de auditoría/listados/scopes siguen explícitos.
-
-## Resultado de este bloque
-
-- Typecheck y builds de las dos webs, contratos y backends correctos.
-- Introspección aprobada: `pnpm test` **149/149**, incluyendo 10 tests de ruta
-  y un test adicional de perfil/permisos UI. Los 117 anteriores se conservan.
-- Playwright público: **12/12** en Chrome, cuatro resoluciones.
-- Verificador Auth/RAES real: sin perfil DENIED, AUDITOR OK; dos instituciones,
-  datos reales, logout correcto, cero storage sensible y cero errores de hidratación.
-- QA final `7f98bf61-89b4-45d0-ae35-3c3b39fee33d` eliminado: SQL independiente
-  confirmó cero usuarios/sesiones/perfiles; tampoco quedan cuentas Auth del prefijo QA.
-- Claves privadas, JWT, env privados y traineddata ausentes de archivos versionables;
-  los bundles de navegador de ambas apps no contienen secretos de los backends.
-- `pnpm lint` termina correctamente pero sigue sin scripts por paquete. No se
-  presenta como análisis estático. El código se formateó, sin introducir un framework UI.
-- PR #15 Draft; sin merge ni despliegue. Único cambio backend autorizado: introspección
-  administrativa; sin cambios de esquema/RPC.
-
-La consulta real de `/admin/me` se comprobó además con SUPERADMIN, ADMIN y AUDITOR
-activos (200), perfil inactivo (403), sin token/inválido (401), y las tres altas
-rechazadas como AUDITOR (403). La cuenta temporal de esta ejecución fue eliminada.
-
-### QA de altas sin cambios remotos persistentes
-
-Desde `apps/raes-web`, con build previo:
-
-```bash
+# Arranca API fixture 3401 + web 3204: solo las altas son locales
 node --env-file=.env.local --env-file=../../services/raes-api/.env.local --import=tsx scripts/verify-provisioning.ts --temporary-admin
 ```
 
-El proceso operador crea/elimina una cuenta Auth sintética temporal. Arranca una
-API **fixture local** en 3401 y una web compilada en 3204 con entorno explícitamente
-limitado a configuración pública de Auth; la service role nunca pasa a Next.
-Comprueba las tres altas, conflicto 409, permisos recibidos, cierre/recarga del
-secreto, rol cambiado antes de enviar, roles y responsive. No crea instituciones,
-clientes ni integraciones remotas. Esta prueba UI no se presenta como alta remota
-real; el verificador separado usa RAES API real para perfil/roles/listados y 403.
-No toma capturas, trazas ni logs con la clave mostrada. Limpieza Auth obligatoria.
+QA real: sin perfil rechazado, tres roles activos 200, inactivo 403, ausente/inválido
+401, tres altas 403 para AUDITOR y visibilidad correcta de formularios. Listados
+reales, detalle/filtros/logout/guard. Altas UI en fixture local: tres formularios,
+conflicto 409, proyección/descartado de secreto y cambio de rol antes del envío.
+Cero instituciones/clientes/integraciones remotas creadas.
+
+Desde `apps/credenly-web`:
+
+```bash
+# API fixture local 3402 + web compilada 3205, Auth real temporal
+node --env-file=.env.local --env-file=../../services/credenly-api/.env.local --import=tsx scripts/verify-browser.ts --temporary-citizen
+# APIs reales: RAES 3101, Credenly 3102 configurada hacia 3101; web 3206 hacia 3102
+node --env-file=.env.local --env-file=../../services/credenly-api/.env.local --import=tsx scripts/verify-real-citizen.ts --temporary-citizen
+```
+
+QA local: perfil, transporte documental multipart y estados, vinculación, tarjetas,
+detalle terminal/vacío, crear/revocar/descartar token, público 200/410/404/503.
+QA real: cuenta temporal y fixture documental MOCK_DESARROLLO para identidad C/D,
+perfil y vinculación mediante UI/endpoints normales, dos credenciales/instituciones,
+source RAES, sin persistencia académica, compartición/público/revocación.
+La verificación preparada no se presenta como OCR real. Confirmación de email no
+probada de extremo a extremo; no se enviaron correos de QA.
+
+Limpieza: se detiene ante errores, sin forzar FKs. Solo IDs creados por la ejecución.
+Se retiran accesos de su compartición, compartición, vínculo, verificación, perfil
+y Auth. Verificador real exige huellas idénticas de las cinco tablas Credenly,
+Auth 404 y sesión anterior 401. SQL independiente confirmó cero cuentas/sesiones
+Auth del prefijo QA en ambos proyectos. IDs/evidencia en `docs/progress.md`.
+
+Incidencias de QA corregidas: esperar contenido tras streaming antes de contar o
+capturar tarjetas y evitar revocar de nuevo una sesión ya cerrada por logout. El
+usuario residual de ese intento se eliminó normalmente tras comprobar por SQL cero
+sesiones/datos ciudadanos. No se forzaron eliminaciones.
+
+## Límites conservados
+
+- Lint raíz termina, pero no hay scripts por paquete: no constituye análisis lint.
+- Auditoría/listados administrativos ausentes se explican; sin endpoints extra.
+- No se cambió esquema, RPC, arquitectura de identidad o proveedor OCR.
+- Sin merge ni despliegues. PR #15 permanece Draft por instrucción explícita.
+- Continúan separados los pendientes de producción: autenticidad/identidad real,
+  recuperación/baselines, operación/retención/rotación, protección de contraseñas
+  filtradas y lint por paquete. No se declara listo para producción.

@@ -35,3 +35,8 @@ HTTP y validación de configuración, sin consultas a tablas de negocio. No se
 introduce almacenamiento académico en Credenly. El único cambio backend de esta
 etapa es la introspección administrativa `/admin/me`, aprobada explícitamente;
 no cambia permisos, esquema ni RPC.
+
+Credenly Web usa exclusivamente Credenly API para perfil/verificación/vinculación,
+lectura académica y comparticiones. La consulta pública permanece dinámica y llega
+a RAES por Credenly API. Las webs comparten presentación/transporte, conservando
+sesiones Auth y despliegues independientes; no se comparten claves de integraciones.

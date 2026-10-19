@@ -434,11 +434,11 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
   PR #14 **Ready for Review**, sin merge a `main`.
 
 ## Etapa 5 — Interfaces y despliegue
-- [ ] RAES Web completa.
+- [x] RAES Web para APIs administrativas disponibles (gaps GET documentados).
   - [x] Foundation, login SSR y primera consulta administrativa.
   - [x] Altas y aprovisionamiento según rol desde endpoints existentes.
-- [ ] Credenly Web integrada.
-  - [x] Foundation y galería visual; sin flujo ciudadano aún.
+- [x] Credenly Web integrada.
+  - [x] Auth, perfil, verificación, vinculación, credenciales y comparticiones.
 - [ ] Despliegues independientes.
 
 ## Frontend — Fases A/B/C (2026-10-18)
@@ -619,3 +619,38 @@ Validación adicional con APIs reales y fixture C/D se registra en el cierre.
   estados textuales; sin errores de hidratación. Revisión visual de capturas reales.
 - [x] Corregida la presentación de fechas calendario sin hora: se conserva su día
   original; solo timestamps se convierten a America/Bogota. Prueba de regresión.
+
+## Frontend — comprobaciones y cierre de este alcance / Fase H (2026-10-18)
+
+- [x] `pnpm typecheck` correcto y **166/166 tests**: los 117 previos, 10 nuevos de
+  introspección y 39 de UI/utilidades/apps. Las diez pruebas `/admin/me` también
+  pasan por separado, incluyendo comprobación de que solo hace lecturas.
+- [x] `pnpm -r --if-present build`: ambas webs, ambos backends y contratos correctos.
+- [x] `pnpm lint` termina en 0, sin scripts lint en los paquetes; no equivale a
+  análisis estático. Pendiente conservado explícitamente.
+- [x] Chrome público **12/12**; verificadores Auth/API reales y API fixture pasan.
+  Extensión final cubre onboarding, credenciales, comparticiones y público en los
+  cuatro anchos. Cuenta de esa ejecución `b82145f3-e7db-4943-9c36-983c12246549`
+  eliminada; ejecución anterior `07d44324-f9d7-4295-9eeb-0239b7bb90a8` también limpia.
+- [x] SQL independiente posterior: cero usuarios/sesiones del prefijo sintético
+  en RAES y Credenly. Sin vínculo residual a la persona C/D; verificación, enlace
+  de compartición y accesos temporales ausentes. Dataset académico preservado.
+- [x] Escaneo de 274 archivos versionables y 33 bundles JS: cero valores privados
+  detectados, cero `.env` privados y cero traineddata versionables. Sin claves de
+  backend en browser. Solo `/admin/me` y sus tests cambian el backend respecto a main.
+- [x] README, arquitectura, desarrollo, frontend y progreso actualizados.
+- [x] Revisión visual Figma y capturas; interfaces diferenciadas, sin framework UI
+  grande, servicios pagos, analytics externos, migraciones ni RPC adicionales.
+
+Alcance de implementación frontend del prototipo completado para las APIs
+existentes. Confirmación de email no probada extremo a extremo; OCR documental UI
+probado con transporte/estados fixture y prueba real C/D con aprobación sintética
+MOCK_DESARROLLO, sin afirmar autenticidad. Mantener los gaps GET administrativos y
+los pendientes de producción separados. No es una declaración de listo para producción.
+
+Commits de esta continuación: `450cecf` introspección; `cbc0909` altas RAES;
+`779630e` Auth/onboarding/credenciales; `969d957` comparticiones/público;
+`e47b2b6` pruebas adicionales. PR #15 se mantiene Draft por instrucción explícita.
+No se fusionó main ni se hizo despliegue. El siguiente paso es revisión del PR y
+validación de correo/OCR documental con el entorno autorizado antes de plantear
+despliegues o los trabajos de producción pendientes.
