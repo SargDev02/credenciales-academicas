@@ -50,7 +50,7 @@ metadata, no gestiona instituciones RAES ni obtiene acceso académico como ciuda
 Panel solo de lectura: cuentas mínimas, estados agregados, readiness e incidentes
 de auditoría. No accede a RAES DB ni presenta documentos/credenciales completas.
 
-La separación real de las cuentas actuales sigue pendiente: Valentina conserva su
-UUID y correo; falta confirmar una dirección ciudadana controlada antes de crear
-el administrador definitivo. Ver [autenticación](authentication.md),
+La separación ciudadana ya se validó: Valentina conserva su
+UUID y relaciones, con email actualizado a `valentina@yopmail.com`, buzón y login
+validados. No se crea el administrador definitivo hasta el siguiente paso autorizado. Ver [autenticación](authentication.md),
 [frontend](frontend.md) e [informe actualizado](reports/2026-10-18-credenly-administration.md).

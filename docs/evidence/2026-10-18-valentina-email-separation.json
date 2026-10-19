@@ -1,0 +1,293 @@
+{
+  "date": "2026-10-18",
+  "status": "CITIZEN_SEPARATION_VALIDATED_ADMINISTRATOR_NOT_CREATED",
+  "mutation": {
+    "api": "supabase.auth.admin.updateUserById",
+    "payloadFields": [
+      "email"
+    ],
+    "from": "admin@credenly.com",
+    "to": "valentina@yopmail.com",
+    "uuidBefore": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+    "uuidAfter": "0b0c1230-994a-4940-9c89-f330975ac9d6"
+  },
+  "before": {
+    "auth": {
+      "id": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+      "email": "admin@credenly.com",
+      "emailConfirmedAt": "2026-10-17T16:10:33.921256Z"
+    },
+    "identityIds": [
+      {
+        "id": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+        "identity_id": "d9cde9a2-8045-4175-b112-0ebbbfeaa2af",
+        "provider": "email",
+        "user_id": "0b0c1230-994a-4940-9c89-f330975ac9d6"
+      }
+    ],
+    "authAccountCount": 3,
+    "destinationEmailAvailable": true,
+    "tables": {
+      "perfiles": {
+        "count": 1,
+        "ids": [
+          "0b0c1230-994a-4940-9c89-f330975ac9d6"
+        ],
+        "sha256": "5b3288bdeae0e1e8102766a46cc2f9f47210bda52888f99e090c8652d2a7f943",
+        "allRowsCount": 2,
+        "allRowsSha256": "ff06d7d20367b5b1edbac24775ba312ff90c7d83ebfca8a85cc91810d3433e6a"
+      },
+      "verificaciones_identidad": {
+        "count": 1,
+        "ids": [
+          "6b8fc8e2-ac9d-4fa7-b421-22ffcf425373"
+        ],
+        "sha256": "96d85ebd47c758d785052c3a0797addc17b4c964401126d6b14079cbf087231d",
+        "allRowsCount": 1,
+        "allRowsSha256": "96d85ebd47c758d785052c3a0797addc17b4c964401126d6b14079cbf087231d"
+      },
+      "vinculaciones_raes": {
+        "count": 1,
+        "ids": [
+          "f27300d0-d0f9-4a36-ab7a-4d3d2ed67569"
+        ],
+        "sha256": "9f86ad204cb4777a89af3a333e578ffa2cfa1d78991f9f8d1ceb62ea4f13cc80",
+        "allRowsCount": 1,
+        "allRowsSha256": "9f86ad204cb4777a89af3a333e578ffa2cfa1d78991f9f8d1ceb62ea4f13cc80"
+      },
+      "comparticiones": {
+        "count": 5,
+        "ids": [
+          "11268939-d23e-416e-b6d0-f5ad72e43bc5",
+          "336602a8-ba92-4634-9356-d3a1716a4ffa",
+          "73714b1b-bf5c-433e-952a-84a48420c398",
+          "78a1f3f7-8054-40cd-a8ec-74335b7e5679",
+          "f7eaf485-0da9-41ef-9c60-3355c363c11a"
+        ],
+        "sha256": "76191fab6eff260196deb0b688d6d557e0424b7db8a10b6e28536f5a828e3d4f",
+        "allRowsCount": 5,
+        "allRowsSha256": "76191fab6eff260196deb0b688d6d557e0424b7db8a10b6e28536f5a828e3d4f"
+      },
+      "accesos_compartidos": {
+        "count": 9,
+        "ids": [
+          "08e7b485-4642-461f-98e8-6a993c15dbbe",
+          "14a9b693-b2fa-493f-aecd-c69a00e059e3",
+          "29dccf0f-7c7f-411e-b066-1031e337d00d",
+          "78209455-83d3-4f05-afda-b37984ab4dbf",
+          "98ab7ee6-17ee-420d-b869-3ad3d9eb2b38",
+          "993cbe74-5473-4cbd-b443-af4426a4fcc5",
+          "ccb7c096-8789-4e7d-9f79-35ca5fa89fdd",
+          "ee0bd756-5568-4000-83d5-01d7052e34a4",
+          "f4063d2f-3e74-40bf-b0a3-cb4d102ad898"
+        ],
+        "sha256": "417437c20fd87b058ec6c90059d754c412f3e597130859a05c445d58f8d6392e",
+        "allRowsCount": 9,
+        "allRowsSha256": "417437c20fd87b058ec6c90059d754c412f3e597130859a05c445d58f8d6392e"
+      }
+    }
+  },
+  "after": {
+    "auth": {
+      "id": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+      "email": "valentina@yopmail.com",
+      "emailConfirmedAt": "2026-10-17T16:10:33.921256Z"
+    },
+    "confirmationDelivery": {
+      "initialHttpStatus": 429,
+      "initialCode": "over_email_send_rate_limit",
+      "retryHttpStatus": 200,
+      "newMailboxProof": true,
+      "method": "YOPMAIL_DELIVERED_LINK_OFFICIAL_VERIFY_OTP"
+    },
+    "tables": {
+      "perfiles": {
+        "count": 1,
+        "ids": [
+          "0b0c1230-994a-4940-9c89-f330975ac9d6"
+        ],
+        "sha256": "5b3288bdeae0e1e8102766a46cc2f9f47210bda52888f99e090c8652d2a7f943",
+        "allRowsCount": 2,
+        "allRowsSha256": "ff06d7d20367b5b1edbac24775ba312ff90c7d83ebfca8a85cc91810d3433e6a",
+        "unchanged": true
+      },
+      "verificaciones_identidad": {
+        "count": 1,
+        "ids": [
+          "6b8fc8e2-ac9d-4fa7-b421-22ffcf425373"
+        ],
+        "sha256": "96d85ebd47c758d785052c3a0797addc17b4c964401126d6b14079cbf087231d",
+        "allRowsCount": 1,
+        "allRowsSha256": "96d85ebd47c758d785052c3a0797addc17b4c964401126d6b14079cbf087231d",
+        "unchanged": true
+      },
+      "vinculaciones_raes": {
+        "count": 1,
+        "ids": [
+          "f27300d0-d0f9-4a36-ab7a-4d3d2ed67569"
+        ],
+        "sha256": "9f86ad204cb4777a89af3a333e578ffa2cfa1d78991f9f8d1ceb62ea4f13cc80",
+        "allRowsCount": 1,
+        "allRowsSha256": "9f86ad204cb4777a89af3a333e578ffa2cfa1d78991f9f8d1ceb62ea4f13cc80",
+        "unchanged": true
+      },
+      "comparticiones": {
+        "count": 5,
+        "ids": [
+          "11268939-d23e-416e-b6d0-f5ad72e43bc5",
+          "336602a8-ba92-4634-9356-d3a1716a4ffa",
+          "73714b1b-bf5c-433e-952a-84a48420c398",
+          "78a1f3f7-8054-40cd-a8ec-74335b7e5679",
+          "f7eaf485-0da9-41ef-9c60-3355c363c11a"
+        ],
+        "sha256": "76191fab6eff260196deb0b688d6d557e0424b7db8a10b6e28536f5a828e3d4f",
+        "allRowsCount": 5,
+        "allRowsSha256": "76191fab6eff260196deb0b688d6d557e0424b7db8a10b6e28536f5a828e3d4f",
+        "unchanged": true
+      },
+      "accesos_compartidos": {
+        "count": 9,
+        "ids": [
+          "08e7b485-4642-461f-98e8-6a993c15dbbe",
+          "14a9b693-b2fa-493f-aecd-c69a00e059e3",
+          "29dccf0f-7c7f-411e-b066-1031e337d00d",
+          "78209455-83d3-4f05-afda-b37984ab4dbf",
+          "98ab7ee6-17ee-420d-b869-3ad3d9eb2b38",
+          "993cbe74-5473-4cbd-b443-af4426a4fcc5",
+          "ccb7c096-8789-4e7d-9f79-35ca5fa89fdd",
+          "ee0bd756-5568-4000-83d5-01d7052e34a4",
+          "f4063d2f-3e74-40bf-b0a3-cb4d102ad898"
+        ],
+        "sha256": "417437c20fd87b058ec6c90059d754c412f3e597130859a05c445d58f8d6392e",
+        "allRowsCount": 9,
+        "allRowsSha256": "417437c20fd87b058ec6c90059d754c412f3e597130859a05c445d58f8d6392e",
+        "unchanged": true
+      }
+    },
+    "noDuplication": {
+      "authBefore": 3,
+      "authAfter": 3,
+      "oldEmailMatches": 0,
+      "newEmailMatches": 1
+    },
+    "administrators": 0,
+    "allCitizenTableHashesStillIdenticalAfterLoginAndMailProof": true
+  },
+  "independentRaesApiCheck": {
+    "scope": "SERVER_RAES_API_INTEGRATION_ONLY_NOT_CITIZEN_LOGIN",
+    "httpStatus": 200,
+    "credentials": [
+      {
+        "id": "307a43bd-f9f3-4e1f-9b69-88ae75eb62ad",
+        "code": "RAES-CRD-00000002",
+        "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a",
+        "status": "ANULADA"
+      },
+      {
+        "id": "2921c117-d4ac-4132-9e4d-2c4d87f8c5fc",
+        "code": "RAES-CRD-00000001",
+        "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a",
+        "status": "REVOCADA"
+      }
+    ],
+    "academicWrites": 0
+  },
+  "definitiveAdministratorCreated": false,
+  "previousPasswordLoginFailure": {
+    "email": "valentina@yopmail.com",
+    "expectedId": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+    "accountMutations": 0,
+    "authError": {
+      "status": 400,
+      "code": "invalid_credentials"
+    },
+    "error": {
+      "phase": "password authentication",
+      "type": "Error"
+    },
+    "passwordCheckSessionClosed": true
+  },
+  "passwordReset": {
+    "subsequentlyAuthorizedByUser": true,
+    "completed": true,
+    "existingUuidPreserved": true,
+    "passwordPrintedOrStored": false
+  },
+  "passwordLoginVerification": {
+    "email": "valentina@yopmail.com",
+    "expectedId": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+    "accountMutations": 0,
+    "passwordAuthentication": "SUPABASE_REAL_LOGIN_OK",
+    "login": "REAL_WEB_PASSWORD_LOGIN_OK",
+    "id": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+    "authConfirmedAt": "2026-10-17T16:10:33.921256Z",
+    "routes": {
+      "auth/me": {
+        "httpStatus": 200
+      },
+      "profile": {
+        "httpStatus": 200
+      },
+      "identity-verifications": {
+        "httpStatus": 200
+      },
+      "raes/link": {
+        "httpStatus": 200
+      },
+      "credentials": {
+        "httpStatus": 200
+      },
+      "shares": {
+        "httpStatus": 200
+      }
+    },
+    "credentials": [
+      {
+        "id": "307a43bd-f9f3-4e1f-9b69-88ae75eb62ad",
+        "code": "RAES-CRD-00000002",
+        "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a"
+      },
+      {
+        "id": "2921c117-d4ac-4132-9e4d-2c4d87f8c5fc",
+        "code": "RAES-CRD-00000001",
+        "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a"
+      }
+    ],
+    "source": "RAES",
+    "persistedByCredenly": false,
+    "shares": {
+      "count": 5,
+      "ids": [
+        "78a1f3f7-8054-40cd-a8ec-74335b7e5679",
+        "f7eaf485-0da9-41ef-9c60-3355c363c11a",
+        "11268939-d23e-416e-b6d0-f5ad72e43bc5",
+        "336602a8-ba92-4634-9356-d3a1716a4ffa",
+        "73714b1b-bf5c-433e-952a-84a48420c398"
+      ]
+    },
+    "webRoutes": [
+      "/onboarding",
+      "/credentials",
+      "/shares",
+      "/credentials/[id]"
+    ],
+    "hydrationErrors": 0,
+    "testSessionClosed": true,
+    "passwordCheckSessionClosed": true
+  },
+  "mailRetry": {
+    "requested": true,
+    "httpStatus": 200,
+    "code": null,
+    "verified": false
+  },
+  "mailboxProof": {
+    "verified": true,
+    "httpStatus": 200,
+    "method": "YOPMAIL_DELIVERED_LINK_OFFICIAL_VERIFY_OTP",
+    "id": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+    "email": "valentina@yopmail.com",
+    "authConfirmedAt": "2026-10-17T16:10:33.921256Z",
+    "testSessionClosed": true
+  }
+}

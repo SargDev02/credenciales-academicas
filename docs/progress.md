@@ -798,3 +798,39 @@ El alcance administrativo mínimo del prototipo queda implementado y comprobado,
 con aprovisionamiento/separación de cuentas pendientes. No se declara preparación
 para producción. Siguen pendientes autenticidad/identidad real, recuperación y
 baselines, operación/retención/rotación, contraseñas filtradas y lint por paquete.
+
+## Separación ciudadana validada — email y recuperación autorizados (2026-10-18)
+
+- [x] Se comprobó que `valentina@yopmail.com` no existía en Auth y se registraron
+  UUID/email, IDs de relaciones, conteos y huellas antes de actuar.
+- [x] API oficial Supabase `auth.admin.updateUserById`, único campo email:
+  `admin@credenly.com` → `valentina@yopmail.com`. UUID conservado exactamente:
+  `0b0c1230-994a-4940-9c89-f330975ac9d6`. Sin SQL interno Auth o cuenta nueva.
+- [x] El primer login falló con invalid_credentials. El titular autorizó después
+  restablecer la contraseña y la introdujo/confirmó con entrada oculta en Terminal.
+  Se comprobó el restablecimiento sin imprimir ni guardar la contraseña.
+- [x] Login real Supabase y formulario web correctos. GET auth/me, profile,
+  identity-verifications, raes/link, credentials y shares: HTTP 200.
+- [x] Web onboarding, credenciales, detalle y comparticiones correctos; cero errores
+  de hidratación y cero sesión en localStorage/sessionStorage. Sesiones de prueba
+  cerradas, incluido logout web.
+- [x] Consulta ciudadana viva: RAES-CRD-00000001 (REVOCADA) y RAES-CRD-00000002
+  (ANULADA), source RAES y persistedByCredenly false. Sin escrituras académicas.
+- [x] Confirmación por Yopmail: envío inicial 429, único reintento posterior 200,
+  correo recibido y enlace consumido con verifyOtp oficial, mismo UUID/email.
+  Sin enlace administrativo, email_confirm forzado, cambios de SMTP o límites.
+  Timestamp Auth heredado conservado; prueba de buzón documentada por separado.
+- [x] Mismos IDs y SHA-256: perfil 1, verificación 1, vínculo 1, comparticiones 5,
+  accesos 9. Las cinco tablas completas conservan huellas después de todas las
+  comprobaciones. Tres cuentas Auth; una coincidencia del email nuevo y cero del viejo.
+- [ ] Administrador definitivo: no creado; tabla administrativa sigue vacía.
+  Se cumple la detención solicitada para reportar antes de ese siguiente paso.
+
+Evidencia de IDs/huellas, incidencias y comandos en
+`docs/reports/2026-10-18-valentina-email-separation.md` y
+`docs/evidence/2026-10-18-valentina-email-separation.json`.
+Operador de verificación de login con contraseña oculta y cierre de sesiones,
+sin mutaciones de cuenta. Sintaxis Node y verificación real correctas. Comprobador
+local temporal de enlace retirado al terminar; captura sin secretos en
+`/tmp/credenly-email-confirmed.png`. Sin cambios de esquema/RPC/lógica de negocio,
+merge o despliegue. Escaneo de secretos posterior antes del commit.

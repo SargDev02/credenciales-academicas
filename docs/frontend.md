@@ -293,9 +293,10 @@ se guardan únicamente en `/tmp/credenly-admin-qa`.
 **Límite de validación:** el esquema y RLS/grants se comprueban en Supabase real;
 el login administrativo 200 y navegación se prueban con fixtures locales. Las
 nuevas tablas remotas están vacías: no se crea un administrador remoto temporal
-ni definitivo para eludir la prohibición de mutar cuentas. La cuenta ciudadana de
-Valentina sigue intacta y su separación requiere confirmar primero un correo
-ciudadano controlado. Ver `docs/authentication.md` para el procedimiento pendiente.
+ni definitivo para eludir la prohibición de mutar cuentas. El email ciudadano de Valentina ya cambió a `valentina@yopmail.com` conservando
+su UUID/relaciones. Tras resolver las incidencias iniciales de correo/contraseña,
+se validaron entrega y consumo de enlace Yopmail, login real y rutas ciudadanas;
+no se aprovisiona aún un administrador definitivo. Ver `docs/authentication.md` para el procedimiento pendiente.
 
 Escaneo local posterior al build, desde la raíz:
 

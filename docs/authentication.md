@@ -243,44 +243,41 @@ comprueban el usuario en servidor y llaman su endpoint de introspección. No hay
 sesiones en localStorage ni service role en la web. El panel no permite altas o
 asignación de roles; el aprovisionamiento definitivo sigue pendiente.
 
-### Separación de cuentas: aún bloqueada
+### Separación ciudadana validada; administrador pendiente
 
-El UUID ciudadano `0b0c1230-994a-4940-9c89-f330975ac9d6` sigue siendo el de Valentina
-y conserva el correo `admin@credenly.com`. **No es una cuenta administrativa.**
-No se elevó su rol, renombró perfil, movió relaciones o duplicó identidad. Hace
-falta que el titular proporcione y confirme una dirección ciudadana bajo su control
-antes de modificar Auth o crear la cuenta administrativa definitiva.
+El UUID `0b0c1230-994a-4940-9c89-f330975ac9d6` sigue siendo el de Valentina,
+con email actualizado de `admin@credenly.com` a `valentina@yopmail.com` mediante
+la API administrativa oficial. No es administradora. No se crearon cuentas,
+perfiles ni identidades duplicadas, ni se transfirieron relaciones ciudadanas.
 
-Diagnóstico sin escrituras, desde `services/credenly-api` (el entorno queda local):
+Se conservan IDs y huellas de perfil, verificación, vínculo, cinco comparticiones
+y nueve accesos. El titular autorizó posteriormente restablecer la contraseña y
+la introdujo con entrada oculta. Pasaron login Supabase y formulario web reales,
+seis GET ciudadanos HTTP 200, consulta académica RAES sin persistencia y navegación.
+La contraseña y las sesiones no se imprimen ni documentan; las sesiones de prueba
+se cerraron.
+
+El primer envío de prueba fue rechazado por límite de correo 429. Un reintento
+posterior llegó a Yopmail y el enlace entregado se consumió mediante verifyOtp
+oficial, mismo UUID/email, sin email_confirm administrativo. El timestamp Auth de
+confirmación sigue siendo heredado; la entrega/consumo constituyen la comprobación
+del nuevo buzón. No se relajaron límites ni se cambió SMTP.
+
+La cuenta administrativa definitiva **no se ha creado**, aun estando libre el
+email anterior: el titular pidió detenerse y reportar al completar la separación
+ciudadana. Ese aprovisionamiento requiere el siguiente paso autorizado, con UUID
+independiente, perfil ADMIN_CREDENLY y comprobación de aislamiento. No reutilizar
+el UUID ciudadano ni copiar sus relaciones.
+
+Evidencia completa: `docs/reports/2026-10-18-valentina-email-separation.md`.
+Diagnóstico de relaciones sin escrituras, desde `services/credenly-api`:
 
 ```bash
 node --env-file=.env.local --import=tsx scripts/diagnose-account-separation.ts --user-id <UUID-ciudadano-existente>
 ```
 
-Comprueba presencia Auth, confirmación de correo y conteos de perfil/verificaciones/
-vínculos/comparticiones; exige ausencia de perfil administrativo. No imprime correo,
-documentos, contraseña, hashes Auth o tokens. No acepta un correo de destino ni
-incluye operaciones de mutación.
-
-Procedimiento pendiente, que **no se ejecuta en esta entrega**:
-
-1. Confirmar por el titular la nueva dirección ciudadana y su control; comprobar
-   unicidad Auth, proveedor/identidades y referencias FK antes de cualquier cambio.
-2. Guardar evidencia privada de UUID y huellas/conteos de relaciones, sin copiar
-   información académica ni credenciales. Preparar recuperación del acceso.
-3. Cambiar únicamente el correo de la cuenta ciudadana con el mismo UUID mediante
-   el flujo Auth aprobado y comprobar confirmación/login. No modificar tablas
-   ciudadanas ni desactivar restricciones FK/unicidad.
-4. Solo tras liberar y verificar el correo administrativo, crear una cuenta Auth
-   independiente y su perfil `ADMIN_CREDENLY` autorizado. No reutilizar ni duplicar
-   el UUID ciudadano. Verificar admin/me 200 y rutas ciudadanas 403.
-5. Repetir huellas/conteos y confirmar que vínculos, verificaciones y comparticiones
-   siguen asociados al UUID original. Ante diferencias, detenerse; sin transferir
-   ni borrar relaciones como reparación automática.
-
-Recuperación: si falla confirmación o login después del futuro cambio, detener el
-aprovisionamiento del administrador, conservar el UUID y relaciones y recuperar el
-acceso mediante Auth y un correo previamente confirmado/controlado. Si hay conflicto
-de unicidad, no borrar la cuenta conflictiva ni forzar actualizaciones; solicitar
-revisión antes de revertir email. Ninguna recuperación se presenta aquí como ya
-probada o ejecutada. No se cambia contraseña en esta entrega.
+El verificador de login de `scripts/verify-citizen-login.mjs` se documenta en el
+informe. No cambia cuentas. Para un restablecimiento futuro, usar la utilidad
+ciudadana existente solo con autorización específica y el email actual; no pasar
+la contraseña en argumentos o por chat. Nunca borrar cuentas, desactivar FKs ni
+mover relaciones como mecanismo de recuperación.

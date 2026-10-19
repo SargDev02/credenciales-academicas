@@ -13,8 +13,10 @@ correo ciudadano. El diagnóstico previo y la propuesta que siguen se conservan
 como contexto; los contratos y límites vigentes están en `docs/frontend.md`,
 `docs/authentication.md`, `docs/database.md` y `docs/api.md`.
 
-Valentina conserva su UUID, correo y relaciones. La cuenta administrativa definitiva
-no existe todavía; requiere primero confirmar un correo ciudadano controlado.
+Valentina conserva su UUID y relaciones. La separación posterior actualizó su
+correo a `valentina@yopmail.com` y validó buzón/login; ver
+`2026-10-18-valentina-email-separation.md`. El administrador definitivo no existe
+todavía: el titular pidió detenerse y reportar antes de aprovisionarlo.
 
 ## 1. Objetivo
 
