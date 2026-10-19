@@ -20,6 +20,12 @@ importers:
       '@raes/web-core':
         specifier: workspace:*
         version: link:../../packages/web-core
+      '@supabase/ssr':
+        specifier: 0.12.7
+        version: 0.12.7(@supabase/supabase-js@2.117.2)
+      '@supabase/supabase-js':
+        specifier: 2.117.2
+        version: 2.117.2
       next:
         specifier: 16.3.8
         version: 16.3.8(@playwright/test@1.64.1)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -29,6 +35,9 @@ importers:
       react-dom:
         specifier: 19.2.8
         version: 19.2.8(react@19.2.8)
+      server-only:
+        specifier: 0.0.1
+        version: 0.0.1
     devDependencies:
       '@types/node':
         specifier: ^20

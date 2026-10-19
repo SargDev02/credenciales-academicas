@@ -24,11 +24,11 @@ export async function apiRequest<T>(
   base: string,
   path: string,
   options: {
-    token: string;
+    token?: string;
     signal?: AbortSignal;
     timeoutMs?: number;
     validate: (value: unknown) => value is T;
-    method?: "GET" | "POST";
+    method?: "GET" | "POST" | "PUT" | "DELETE";
     body?: unknown;
   },
 ): Promise<T> {
@@ -42,12 +42,17 @@ export async function apiRequest<T>(
     const response = await fetch(new URL(path, base), {
       method: options.method ?? "GET",
       ...(options.body !== undefined
-        ? { body: JSON.stringify(options.body) }
+        ? {
+            body:
+              options.body instanceof FormData
+                ? options.body
+                : JSON.stringify(options.body),
+          }
         : {}),
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${options.token}`,
-        ...(options.body !== undefined
+        ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+        ...(options.body !== undefined && !(options.body instanceof FormData)
           ? { "Content-Type": "application/json" }
           : {}),
       },
@@ -55,9 +60,19 @@ export async function apiRequest<T>(
       redirect: "error",
       signal,
     });
-    if (!response.ok)
-      throw new WebApiError(response.status, "API_REQUEST_FAILED");
-    const payload: unknown = await response.json();
+    const payload: unknown = await response.json().catch(() => null);
+    if (!response.ok) {
+      const code =
+        payload &&
+        typeof payload === "object" &&
+        "error" in payload &&
+        ["SHARE_REVOKED", "SHARE_EXPIRED", "RAES_LINK_REQUIRED"].includes(
+          String(payload.error),
+        )
+          ? String(payload.error)
+          : "API_REQUEST_FAILED";
+      throw new WebApiError(response.status, code);
+    }
     if (!options.validate(payload))
       throw new WebApiError(502, "INVALID_RESPONSE");
     return payload;

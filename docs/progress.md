@@ -561,3 +561,28 @@ Validación RAES real posterior a las altas: cuenta
 obtenidos de `/admin/me`, formularios presentes para ADMIN/SUPERADMIN y ausentes
 para AUDITOR, lectura de dos instituciones reales, 403 de las altas para AUDITOR,
 logout/guard, cuatro anchos y cero errores de hidratación/storage sensible.
+
+## Frontend — Credenly Web / Fase E (2026-10-18)
+
+- [x] Auth SSR separado de RAES: login/logout y registro por correo con confirmación
+  (settings reales: signup habilitado, email activo, autoconfirm deshabilitado).
+  Callback PKCE con destino configurado y fijo, cookies HttpOnly aisladas.
+- [x] Perfil y onboarding con seis pasos, imagen multipart al OCR existente del
+  backend (hasta 8 MB), estados reales, aprobación documental y vinculación RAES.
+  No hay OCR en browser ni afirmación de autenticidad legal/KYC.
+- [x] Credenciales desde Credenly API → RAES, tarjetas/detalle, estados terminales
+  visibles con fecha/motivo disponible, vacío/error/loading y guard ciudadano.
+  Sin snapshots académicos, tokens en storage ni acceso web a tablas privadas.
+- [x] Modelo/contratos con 4 pruebas nuevas; typecheck y build Credenly pasan.
+- [x] Chrome con Auth real y API fixture local: perfil/documento/vinculación,
+  estados PENDIENTE/REVISION/RECHAZADA/APROBADA y VIGENTE/REVOCADA/ANULADA,
+  responsive 360/768/1024/1440; cero errores de hidratación.
+- [x] Corrección de QA: tras logout se evitó una segunda revocación de la misma
+  sesión. Consulta SQL independiente confirmó cero sesiones y datos ciudadanos;
+  usuario temporal `4f16c3f5-793f-4eb7-9278-3c4c0e3960e5` eliminado normalmente
+  (Auth 404), sin forzar FKs. Ejecución posterior limpia elimina la cuenta
+  `504fffe0-321a-4b28-a8c3-b2539f45774c` y sus datos.
+
+La prueba local de estados no sustituye OCR real: prueba el transporte multipart y
+la UI; el backend conserva sus tests/verificación local Tesseract anteriores.
+Validación adicional con APIs reales y fixture C/D se registra en el cierre.

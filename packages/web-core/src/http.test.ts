@@ -178,3 +178,57 @@ test("POST uses JSON and never retries an uncertain mutation", async () => {
     globalThis.fetch = original;
   }
 });
+
+test("document uploads preserve multipart boundaries and the authenticated PUT path is supported", async () => {
+  const original = globalThis.fetch;
+  const body = new FormData();
+  body.set(
+    "documento",
+    new Blob(["synthetic"], { type: "image/png" }),
+    "synthetic.png",
+  );
+  globalThis.fetch = async (_input, init) => {
+    assert.equal(init?.body, body);
+    assert.equal(new Headers(init?.headers).has("content-type"), false);
+    return Response.json({ data: [] });
+  };
+  try {
+    await apiRequest("https://api.example", "/api/v1/identity-verifications", {
+      token: "fixture",
+      method: "POST",
+      body,
+      validate: valid,
+    });
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+test("public requests omit Authorization and preserve only known error codes", async () => {
+  const original = globalThis.fetch;
+  for (const code of [
+    "SHARE_EXPIRED",
+    "SHARE_REVOKED",
+    "secret-private-detail",
+  ]) {
+    globalThis.fetch = async (_input, init) => {
+      assert.equal(new Headers(init?.headers).has("authorization"), false);
+      return Response.json(
+        { error: code, message: "private detail" },
+        { status: 410 },
+      );
+    };
+    try {
+      await assert.rejects(
+        apiRequest("https://api.example", "/api/v1/public/shares/fixture", {
+          validate: valid,
+        }),
+        (e) =>
+          e instanceof WebApiError &&
+          e.status === 410 &&
+          e.code === (code.startsWith("SHARE_") ? code : "API_REQUEST_FAILED"),
+      );
+    } finally {
+      globalThis.fetch = original;
+    }
+  }
+});
