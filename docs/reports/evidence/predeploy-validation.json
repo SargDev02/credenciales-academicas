@@ -1,0 +1,159 @@
+{
+  "reviewDate": "2026-10-19",
+  "sourceCommit": "9c6cb88",
+  "runtime": {
+    "node": "24.22.0",
+    "pnpm": "12.8.1"
+  },
+  "baseline": {
+    "tests": 208,
+    "browserTests": 20,
+    "lint": "NO_OP",
+    "declaredBuilds": 5
+  },
+  "current": {
+    "unitIntegrationToolingTests": 248,
+    "browserTests": 25,
+    "declaredBuilds": 5,
+    "lint": "PASS_10_WORKSPACES_AND_TOOLS",
+    "types": "PASS_10_WORKSPACES_AND_TOOLS",
+    "schemaReconstructions": 4,
+    "postOcrPatchBrowserAdminTests": 9
+  },
+  "cleanBuild": {
+    "copiedIgnoredEnv": false,
+    "preexistingNodeModulesDistNext": false,
+    "frozenInstall": "PASS",
+    "lint": "PASS",
+    "types": "PASS",
+    "tests": "PASS",
+    "allDeclaredBuilds": "PASS",
+    "browser": "PASS_25_AFTER_ISOLATED_RERUN",
+    "interruptedAttempt": "MAC_SLEEP_NETWORK_IO_SUSPENDED_TIMEOUT_NOT_HIDDEN",
+    "finalOcrPatch": {
+      "typecheck": "PASS",
+      "apiTests": 72,
+      "apiBuild": "PASS",
+      "rootBrowserAfterPatch": 9
+    }
+  },
+  "realBrowserQa": [
+    {
+      "realLogin": "OK",
+      "noAdminProfile": "DENIED",
+      "role": "AUDITOR",
+      "institutionRows": 2,
+      "widths": [
+        360,
+        768,
+        1024,
+        1440
+      ],
+      "source": "RAES_API",
+      "privateBrowserStorage": 0,
+      "browserDirectDatabaseRequests": 0,
+      "hydrationErrors": 0,
+      "logoutGuard": "OK",
+      "temporaryUserId": "440706bf-a9fe-4578-9e0b-aa388e7cfdd1",
+      "temporaryUserRemoved": true,
+      "academicMutations": 0
+    },
+    {
+      "citizenBrowser": "REAL_API_OK",
+      "authenticatedCredentials": 200,
+      "credentials": [
+        "981200b3-a30c-4088-ae09-84b27beab01b",
+        "b80fb8d4-6a6c-4453-948a-62018be8b7b6"
+      ],
+      "institutions": 2,
+      "source": "RAES",
+      "persistedByCredenly": false,
+      "publicVerification": "AVAILABLE_REVOKED_NOT_FOUND_OK",
+      "temporaryUserId": "5dab7589-5715-4022-94cd-2d4dccab8cbc",
+      "temporaryVerificationId": "1aa9a3a0-ff9f-4df9-934f-6b284241a55f",
+      "temporaryShareIds": [
+        "11a6b98e-bd6e-47f3-afa0-88ba08199714"
+      ],
+      "temporaryCitizenRemoved": true,
+      "publicTablesAfterCleanup": "IDENTICAL_HASHES_5_TABLES",
+      "sessionAfterCleanup": 401,
+      "verificationFixture": "MOCK_DESARROLLO_NOT_REAL_OCR",
+      "widths": [
+        360,
+        768,
+        1024,
+        1440
+      ],
+      "hydrationErrors": 0
+    }
+  ],
+  "localOcr": {
+    "localOcr": "PASS",
+    "provider": "TESSERACT_LOCAL",
+    "imagePreflight": "PASS",
+    "dimensions": [
+      900,
+      280
+    ],
+    "databaseWrites": 0,
+    "authenticIdentityClaim": false
+  },
+  "developmentLogging": {
+    "syntheticShareUrlTokenLogged": false,
+    "httpStatus": 200
+  },
+  "dependencies": {
+    "productionVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "fullAuditHigh": 1,
+    "gate": "PASS_WITH_DOCUMENTED_LIMIT",
+    "exceptionGhsa": "GHSA-vfj7-8cjw-p6xm",
+    "expiresAt": "2026-11-18T23:59:59-05:00"
+  },
+  "dataProtection": {
+    "academicWritesByCredenly": 0,
+    "academicFixtureModified": false,
+    "citizenTablesUnchangedAfterQa": 5,
+    "temporaryUsersRemoved": true
+  },
+  "visualInspection": {
+    "widthsTested": [
+      360,
+      768,
+      1024,
+      1440
+    ],
+    "screenshotsInspected": [
+      360,
+      1440
+    ],
+    "sensitiveScreenshotsVersioned": false
+  },
+  "performance": {
+    "raesAllJsChunks": {
+      "files": 16,
+      "bytes": 606125,
+      "gzipBytes": 189632
+    },
+    "credenlyAllJsChunks": {
+      "files": 22,
+      "bytes": 640434,
+      "gzipBytes": 203670
+    },
+    "tesseractOrPgliteRuntimeMarkersInBrowser": 0,
+    "isInitialPageLoadMetric": false
+  },
+  "deploymentReadiness": "BLOCKED",
+  "deployed": false,
+  "mergedToMain": false,
+  "pullRequest": {
+    "number": 16,
+    "state": "OPEN",
+    "draft": true
+  }
+}

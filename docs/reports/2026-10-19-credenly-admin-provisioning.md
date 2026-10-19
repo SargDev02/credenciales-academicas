@@ -1,5 +1,8 @@
 # Administrador definitivo de Credenly — prototipo
 
+> Informe histórico de su fase. El estado actual de lint, migraciones, PRs y
+> validaciones está en [el gate pre-deploy](predeploy-quality-gate.md).
+
 Operación autorizada del 19 de octubre de 2026, 00:42–00:44 America/Bogota.
 Repositorio `SargDev02/credenciales-academicas`, rama `feat/frontend-platform`,
 PR #15 abierto. Sin merge ni despliegue.

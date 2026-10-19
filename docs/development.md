@@ -2,8 +2,8 @@
 
 ## Requisitos
 
-- Node.js 20 o superior.
-- pnpm.
+- Node.js 24.22.0 LTS recomendado (`.nvmrc`); mínimo de tooling 22.13.0.
+- pnpm 12.8.1 (`packageManager`).
 - Acceso autorizado a los proyectos Supabase.
 
 ## Secretos
@@ -44,8 +44,10 @@ rechazo de actores desconocidos y aislamiento de `anon`/`authenticated`. Toda
 fila de prueba se revierte dentro de la transacción. Ejecutarlo en RAES mediante
 una conexión SQL autorizada; no requiere nuevas claves.
 
-`pnpm lint` existe en la raíz, pero actualmente ningún paquete declara un script
-`lint`: su salida exitosa no constituye una revisión estática de estilo.
+`pnpm lint` ejecuta ESLint real en los diez workspaces y en tooling/tests/config.
+El guard falla si falta un script crítico. Configuración flat con reglas de
+TypeScript, promesas tipadas, Next y React/hooks; cero warnings permitidos.
+El estado anterior de lint como no-op queda registrado solo en evidencia histórica.
 
 ## Operación de conectores
 
@@ -178,3 +180,27 @@ Las pruebas de flujo opt-in separan API fixture (estados/errores) de APIs reales
 requieren cuentas sintéticas temporales y limpieza verificada. Ver comandos, puertos
 y alcance preciso en `docs/frontend.md`. No ejecutar las pruebas remotas sin su
 flag explícito; no usan cuentas existentes ni insertan información académica.
+
+## Gate reproducible local / CI
+
+Con Node/pnpm fijados: `pnpm install --frozen-lockfile`, `pnpm security:scan`,
+`node scripts/verify-schema-archive.mjs`, `pnpm lint`, `pnpm typecheck`, `pnpm test`,
+`pnpm audit:gate`, `pnpm -r --if-present build`, `pnpm test:frontend:browser`.
+En Linux instalar previamente `pnpm exec playwright install --with-deps chromium`.
+Las pruebas canónicas usan solo fixtures locales, nunca secretos ni datos remotos.
+PGlite es dev-only y reconstruye los cuatro esquemas desde el historial versionado.
+El build no requiere .env ni contratos dist preexistentes. Next genera next-env.d.ts
+con `next typegen`; ahora se ignora, al igual que .next/dist/traineddata.
+
+CI se ejecuta en PR hacia main y push a main con acciones fijadas por SHA, permisos
+contents:read, lockfile estricto, sin secretos remotos. `pnpm audit` mantiene un
+HIGH dev visible; el gate aplica únicamente la excepción temporal aprobada y
+vence el 18-11-2026. Ver [dependencias](reports/predeploy-dependencies.md).
+
+[Variables](environment.md), [reconstrucción](../supabase/bootstrap/README.md),
+[operación/retención/rotación](operations.md) y [gate pre-deploy](reports/predeploy-quality-gate.md).
+
+Prueba manual OCR sin cuentas ni DB:
+`pnpm --filter @credenly/api exec tsx scripts/verify-local-ocr.ts`.
+Genera píxeles sintéticos en memoria, valida preflight y ejecuta Tesseract local.
+El modelo se puede descargar en el primer arranque; ningún traineddata se versiona.

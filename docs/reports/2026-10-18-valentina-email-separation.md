@@ -1,5 +1,8 @@
 # Separación ciudadana de Valentina — resultado verificado
 
+> Informe histórico de su fase. El estado actual de lint, migraciones, PRs y
+> validaciones está en [el gate pre-deploy](predeploy-quality-gate.md).
+
 Fecha de inicio: 18 de octubre de 2026. Rama: `feat/frontend-platform`. PR #15 abierto.
 **Estado: separación ciudadana validada. Administrador definitivo no creado.**
 

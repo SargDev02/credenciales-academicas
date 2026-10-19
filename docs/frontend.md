@@ -1,5 +1,10 @@
 # Frontend del prototipo
 
+Estado actual 2026-10-19: frontend integrado en main por el squash del PR #15.
+La revisión pre-deploy continúa en el PR Draft #16; estado verificable en el
+[gate](reports/predeploy-quality-gate.md). Las cifras y QA de fases anteriores
+se conservan como evidencia histórica; no sustituyen la validación actual.
+
 ## Arquitectura y alcance
 
 `apps/raes-web` y `apps/credenly-web`: Next.js 16.3.8, React 19, App Router y
@@ -197,15 +202,18 @@ capturar tarjetas y evitar revocar de nuevo una sesión ya cerrada por logout. E
 usuario residual de ese intento se eliminó normalmente tras comprobar por SQL cero
 sesiones/datos ciudadanos. No se forzaron eliminaciones.
 
-## Límites conservados
+## Límites actuales
 
-- Lint raíz termina, pero no hay scripts por paquete: no constituye análisis lint.
-- Los gaps administrativos de RAES se mantienen; el alcance Credenly Admin aprobado se documenta debajo.
-- Credenly Admin añade dos tablas autorizadas. Sin RPC nueva, cambio de identidad académica ni proveedor OCR.
-- Sin merge ni despliegues. PR #15 sigue abierto; su estado actual se registra en `docs/progress.md`.
-- Continúan separados los pendientes de producción: autenticidad/identidad real,
-  recuperación/baselines, operación/retención/rotación, protección de contraseñas
-  filtradas y lint por paquete. No se declara listo para producción.
+- Lint real en los diez paquetes y tooling, CI y 248 tests; la limitación histórica
+  de scripts ausentes se resolvió. No se borran sus registros de validación previos.
+- Los gaps administrativos de RAES (auditoría, listado de integraciones y scopes)
+  continúan explícitos; no se crearon endpoints ni accesos directos a DB para UI.
+- El PR #15 fue fusionado por squash. PR #16 permanece Draft, sin despliegue ni merge.
+- DDL de cuatro proyectos recuperado y reconstruido en PostgreSQL/WASM. Sigue
+  pendiente un restore completo de plataforma/datos y la política operativa final.
+- Identidad real/KYC, control público de abuso, HIBP gratuito/alternativa autorizada,
+  retención aprobada y rotación ensayada siguen separados de la calidad funcional
+  del prototipo. No se declara listo para producción.
 
 ## Desarrollo mediante IP de la red local
 
@@ -350,7 +358,8 @@ sin valores privados, env/traineddata indexados ni persistencia manual en browse
 Validación del refinamiento administrativo (2026-10-19): `pnpm typecheck` y build
 recursivo correctos; `pnpm test` **199/199** (192 anteriores conservados, seis casos
 de presentación y uno de MetricCard nuevos); navegador **20/20**. `pnpm lint`
-termina con exit 0 por `--if-present`, pero ningún paquete define lint: no se
+terminaba con exit 0 por `--if-present`, pero ningún paquete definía lint (evidencia
+histórica; corregido en la revisión pre-deploy): no se
 presenta como análisis estático. Sin cambios de API, Auth remoto, esquema o RPC.
 
 ## Controles HTTP revisados en pre-deploy (2026-10-19)
