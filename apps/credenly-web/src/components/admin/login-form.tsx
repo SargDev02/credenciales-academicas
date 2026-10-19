@@ -10,7 +10,7 @@ export function AdminLoginForm() {
       <Input
         id="admin-email"
         name="email"
-        label="Correo administrativo"
+        label="Correo"
         type="email"
         autoComplete="username"
         required
@@ -33,7 +33,7 @@ export function AdminLoginForm() {
         </Alert>
       )}
       <Button type="submit" busy={pending}>
-        {pending ? "Validando acceso…" : "Acceder a administración"}
+        {pending ? "Validando acceso…" : "Iniciar sesión"}
       </Button>
     </form>
   );

@@ -1,39 +1,54 @@
-import { Alert, PageHeading } from "@raes/ui";
+import { Alert } from "@raes/ui";
 import { getOverview } from "../../lib/admin-api";
 import { sectionStates } from "../../lib/admin-model";
-import { date } from "../../lib/citizen-model";
+import { AdminHeading } from "./heading";
 import { StateCounts } from "./counts";
-
-const descriptions = {
-  verifications:
-    "Estados del proceso documental existente. La aprobación OCR no acredita autenticidad legal ni constituye KYC. Este panel no permite revisión manual y no muestra documentos ni texto OCR.",
-  links:
-    "Estado de las vinculaciones ciudadanas con RAES. Solo se consultan conteos; no se transfieren relaciones ni se resuelven identidades desde administración.",
-  shares:
-    "Las comparticiones revocadas se cuentan como revocadas aunque su fecha haya vencido. Las demás se clasifican por su expiración actual. No se recuperan tokens ni se accede al contenido académico.",
+const sections = {
+  verifications: {
+    description:
+      "Estado del procesamiento documental de las cuentas ciudadanas.",
+    title: "Sobre la aprobación documental",
+    note: "La aprobación refleja el procesamiento documental del prototipo; no constituye una validación legal de identidad. Este panel muestra conteos, sin documentos, imágenes ni texto OCR.",
+  },
+  links: {
+    description:
+      "Estado actual de las referencias ciudadanas a identidades RAES.",
+    title: "Identidades vinculadas, sin copia académica",
+    note: "Credenly referencia identidades RAES, pero no almacena credenciales académicas. La administración observa los estados; no puede editar identidades ni forzar vinculaciones.",
+  },
+  shares: {
+    description: "Estado de los enlaces de acceso creados por los ciudadanos.",
+    title: "Los enlaces pertenecen al ciudadano",
+    note: "Admin no puede recuperar tokens completos ni acceder a una credencial usando este panel. Las comparticiones revocadas se cuentan como revocadas aunque su fecha haya vencido; las demás se clasifican por su expiración actual.",
+  },
 };
 export async function OperationalStatePage({
   section,
 }: {
-  section: keyof typeof descriptions;
+  section: keyof typeof sections;
 }) {
   const data = await getOverview();
   const definition = sectionStates[section]!;
+  const content = sections[section];
   return (
     <>
-      <PageHeading eyebrow="ESTADOS OPERATIVOS" title={definition.title}>
-        Distribución actual del proceso, sin acceso a información personal.
-      </PageHeading>
+      <AdminHeading
+        title={definition.title}
+        description={content.description}
+        observedAt={data.observedAt}
+      />
       <StateCounts
         title="Distribución por estado"
         labels={definition.labels}
         counts={data[section]}
       />
-      <p className="live-note">
-        Consulta: {date(data.observedAt)}. Los conteos se consultan por separado
-        y pueden variar durante la lectura.
+      <p className="operations-data-note">
+        Conteos actuales consultados por separado. No representan una
+        instantánea transaccional.
       </p>
-      <Alert title="Alcance de esta consulta">{descriptions[section]}</Alert>
+      <div className="operations-help">
+        <Alert title={content.title}>{content.note}</Alert>
+      </div>
     </>
   );
 }

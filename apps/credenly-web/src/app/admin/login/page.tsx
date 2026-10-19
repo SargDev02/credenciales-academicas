@@ -13,31 +13,43 @@ export default function AdminLogin() {
   }
   return (
     <main id="main-content" className="operations-login">
-      <div>
-        <Link className="citizen-wordmark" href="/admin">
-          Credenly<span>ADMINISTRACIÓN OPERATIVA</span>
+      <div className="operations-login-intro">
+        <Link className="operations-brand" href="/admin">
+          Credenly<span>Administración</span>
         </Link>
-        <p className="ui-eyebrow">ACCESO RESTRINGIDO</p>
-        <h1>Supervisión del servicio ciudadano.</h1>
-        <p>
-          Consulta disponibilidad y estados operativos con permisos
-          administrativos independientes.
-        </p>
-        <Link href="/login">Volver al acceso ciudadano</Link>
+        <h1>Administración de Credenly</h1>
+        <p>Acceso exclusivo para operación del servicio.</p>
+        <ul className="operations-login-scope">
+          <li>
+            <span aria-hidden="true">01</span>Estados de los procesos ciudadanos
+          </li>
+          <li>
+            <span aria-hidden="true">02</span>Disponibilidad y conexión con RAES
+          </li>
+          <li>
+            <span aria-hidden="true">03</span>Supervisión operativa de solo
+            lectura
+          </li>
+        </ul>
       </div>
-      <Card>
-        <h2>Acceso administrativo</h2>
-        <p className="ui-muted">
-          El acceso depende del perfil y rol de tu cuenta, no del nombre de tu
-          correo.
-        </p>
+      <Card className="operations-login-card">
+        <div>
+          <p className="ui-eyebrow">ACCESO RESTRINGIDO</p>
+          <h2>Iniciar sesión</h2>
+        </div>
         {configured ? (
           <AdminLoginForm />
         ) : (
           <Alert title="Acceso pendiente de configuración" tone="warning">
-            Configura Auth y Credenly API para continuar.
+            El acceso administrativo no está disponible en este entorno.
           </Alert>
         )}
+        <p className="operations-login-notice">
+          El acceso administrativo es independiente de las cuentas ciudadanas.
+        </p>
+        <Link href="/login" className="operations-login-return">
+          Ir al acceso ciudadano<span aria-hidden="true"> →</span>
+        </Link>
       </Card>
     </main>
   );
