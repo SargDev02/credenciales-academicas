@@ -2,6 +2,29 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { apiRequest, WebApiError, safeReturnPath } from "./http";
 import { readWebConfig } from "./config";
+test("structured query parameters are encoded without changing the endpoint or leaking authorization", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async (input, init) => {
+    const url = new URL(String(input));
+    assert.equal(url.pathname, "/api/v1/admin/users");
+    assert.equal(url.searchParams.get("page"), "2&notAnotherParameter=secret");
+    assert.equal(url.searchParams.has("notAnotherParameter"), false);
+    assert.equal(
+      new Headers(init?.headers).get("authorization"),
+      "Bearer local-only",
+    );
+    return Response.json({ data: [] });
+  };
+  try {
+    await apiRequest("https://api.example", "/api/v1/admin/users", {
+      token: "local-only",
+      query: { page: "2&notAnotherParameter=secret" },
+      validate: valid,
+    });
+  } finally {
+    globalThis.fetch = original;
+  }
+});
 const valid = (v: unknown): v is { data: string[] } =>
   !!v &&
   typeof v === "object" &&

@@ -11,7 +11,9 @@ begin
       end loop;
       if has_any_column_privilege(role_name,format('public.%I',table_name),'INSERT,UPDATE,SELECT') then raise exception 'Unexpected column grant: % %',role_name,table_name; end if;
     end loop;
-    if not has_table_privilege('service_role',format('public.%I',table_name),'SELECT,INSERT') then raise exception 'Missing backend grant: %',table_name; end if;
+    foreach operation in array array['SELECT','INSERT'] loop
+      if not has_table_privilege('service_role',format('public.%I',table_name),operation) then raise exception 'Missing backend grant: % %',table_name,operation; end if;
+    end loop;
     if has_table_privilege('service_role',format('public.%I',table_name),'DELETE') then raise exception 'Runtime delete not needed: %',table_name; end if;
   end loop;
   if not has_table_privilege('service_role','public.perfiles_admin','UPDATE') then raise exception 'Missing backend profile update grant'; end if;

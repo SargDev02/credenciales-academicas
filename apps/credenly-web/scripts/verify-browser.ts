@@ -112,6 +112,7 @@ const api = createServer(async (req, res) => {
   }
   if (req.method === "GET") {
     const payloads: Record<string, unknown> = {
+      "/api/v1/auth/me": { id: userId },
       "/api/v1/profile": profile,
       "/api/v1/identity-verifications": verification,
       "/api/v1/raes/link": link,
