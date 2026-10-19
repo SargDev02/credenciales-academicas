@@ -15,6 +15,7 @@ test("Credenly entrega credenciales de dos instituciones mediante API y sin pers
   globalThis.fetch = async (input, init) => {
     const url = new URL(String(input)); requests.push(url.href);
     assert.ok(!init?.method || init.method === "GET", "Citizen read must never persist academic data");
+    if (url.pathname === "/rest/v1/perfiles_admin") return Response.json([]);
     if (url.hostname === "credenly-fixture.supabase.co" && url.pathname === "/auth/v1/user") return Response.json({ id: "citizen", aud: "authenticated", role: "authenticated", created_at: "2025-01-01" });
     if (url.hostname === "credenly-fixture.supabase.co" && url.pathname === "/rest/v1/vinculaciones_raes") {
       assert.equal(url.searchParams.get("usuario_id"), "eq.citizen");
