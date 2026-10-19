@@ -5,7 +5,8 @@ Auditoría, conectores A/B, C/D multiinstitución, hardening y revisión técnic
 La ruta ciudadana HTTP real recupera ambas credenciales; la cuenta sintética temporal
 se eliminó completamente. La legacy se preserva por decisión explícita. **No listo
 para producción**: los cinco pendientes de producción se mantienen separados abajo.
-No se han iniciado interfaces ni despliegues frontend.
+Se inició la Foundation frontend y la primera RAES Web de lectura; las altas por
+rol esperan aprobación de la consulta de identidad administrativa. Sin despliegues.
 
 ## Etapa 0 — Infraestructura de datos
 - [x] Institución A.
@@ -433,8 +434,11 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
   PR #14 **Ready for Review**, sin merge a `main`.
 
 ## Etapa 5 — Interfaces y despliegue
-- [ ] RAES Web.
-- [ ] Credenly Web.
+- [ ] RAES Web completa.
+  - [x] Foundation, login SSR y primera consulta administrativa.
+  - [ ] Altas y aprovisionamiento según rol (gap API documentado).
+- [ ] Credenly Web integrada.
+  - [x] Foundation y galería visual; sin flujo ciudadano aún.
 - [ ] Despliegues independientes.
 
 ## Frontend — Fases A/B/C (2026-10-18)
@@ -451,8 +455,56 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
   pantallas integradas. Variantes compactas y ajustes AA documentados.
 - [x] Foundation: typecheck, 132 pruebas y builds de ambas apps/backends pasan;
   los 117 tests anteriores siguen pasando. No hay linter por paquete.
-- [ ] RAES Web: login, sesión y lectura administrativa se implementan a continuación.
+- [x] RAES Web inicial: login, sesión y lectura administrativa implementados; ver Fase D.
 - [ ] Rol del administrador: la API aún no devuelve perfil/rol autenticado. Se
   requiere decisión antes de habilitar altas según rol. No se consulta la tabla
   privada ni se confía en metadata del usuario.
 - [ ] Credenly funcional: pendiente del reporte/decisión tras la primera RAES Web.
+
+## Frontend — Fase D: primera RAES Web (2026-10-18)
+
+- [x] Login/logout SSR con JWT solo en servidor y cookies HttpOnly aisladas.
+  Sin service role en las webs, sin tokens en localStorage/sessionStorage.
+- [x] Layout administrativo, navegación activa y skip link; resumen con métricas
+  derivadas únicamente de listados reales, instituciones, filtros/detalle y clientes API.
+- [x] Loading, empty, error, estados y vista de auditoría que explica el gap.
+  No se simula actividad ni se inventan scopes/listados.
+- [x] Se mantienen UI y permisos en lectura para cualquier rol válido hasta poder
+  confirmar el rol real vía API. Ni metadata ni tablas privadas se consultan para inferirlo.
+- [x] Chrome real: cuenta sintética rechazada sin perfil y aceptada como AUDITOR,
+  dos instituciones leídas desde RAES API, detalle/filtros/clientes/logout y guard.
+  Cookies HttpOnly/Lax, cero storage de sesión y cero peticiones browser a bases
+  de datos; sin errores de hidratación. Perfil/cuenta de QA eliminados.
+- [x] Responsive real del resumen y las tablas en 360/768/1024/1440; las tablas
+  cambian a fichas en móvil, conservando labels/acciones. Correo largo truncado
+  visualmente con nombre completo accesible. Ver capturas de QA locales.
+- [ ] Auditoría consultable, integraciones listables y scopes asignados: no existen
+  endpoints GET suficientes; se documenta y no se modifica backend.
+- [ ] Altas institucionales y clientes/integraciones: necesitan la consulta del
+  perfil/rol administrativo. Propuesta mínima `GET /api/v1/admin/me` en
+  `docs/frontend.md`, pendiente de aprobación antes de modificar backend.
+- [ ] Continuar Credenly y comparticiones después del reporte de este bloque,
+  según la secuencia acordada. Sin despliegue ni merge.
+
+### Resultado y punto de revisión frontend
+
+- [x] Verificación final: `pnpm typecheck`, **138/138 tests**, `pnpm lint` y
+  `pnpm -r --if-present build` terminan correctamente. Lint conserva el límite
+  conocido: ningún paquete tiene script de análisis. Los 117 tests previos pasan.
+- [x] Chrome: **12/12** tests públicos de componentes, teclado y responsive;
+  prueba Auth/RAES real adicional pasa para el código compilado final.
+- [x] QA `7f98bf61-89b4-45d0-ae35-3c3b39fee33d`: SQL independiente confirma cero
+  Auth users, sesiones y perfiles; cero cuentas del prefijo sintético de todos
+  los intentos. Ninguna institución/cliente/integración ni dato académico alterado.
+- [x] Cero env privados, JWT/claves privadas o traineddata versionables detectados;
+  cero secretos de backend en los bundles JS de las dos webs.
+- [x] Revisión visual: referencia Figma y capturas reales a los cuatro anchos.
+- [x] PR #15 abierto **Draft**, base `main`, rama `feat/frontend-platform`.
+- [ ] Aprobar o rechazar la propuesta mínima `GET /api/v1/admin/me` antes de
+  habilitar altas por rol y continuar el siguiente bloque, según la instrucción
+  de reportar una limitación material al completar Foundation + primera RAES Web.
+
+Commits de implementación: `41afe24` Foundation y `ccb5153` RAES Web/QA.
+No se modifica el backend ni se inicia Credenly integrado mientras se resuelve
+ese punto. El prototipo backend sigue cerrado funcionalmente, sin declaración
+de preparación para producción.
