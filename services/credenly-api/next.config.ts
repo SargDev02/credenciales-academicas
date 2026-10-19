@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Share tokens / Auth callback codes can be present in URLs. Keep incoming
+  // paths and Server Action invocations out of Next's development console.
+  logging: { incomingRequests: false, serverFunctions: false, browserToTerminal: false },
   transpilePackages: ["@raes/web-core"],
   async headers() {
     return [{ source: "/api/:path*", headers: [
