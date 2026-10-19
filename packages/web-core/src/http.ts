@@ -26,6 +26,7 @@ export async function apiRequest<T>(
   options: {
     token?: string;
     signal?: AbortSignal;
+    query?: Record<string, string>;
     timeoutMs?: number;
     validate: (value: unknown) => value is T;
     method?: "GET" | "POST" | "PUT" | "DELETE";
@@ -39,7 +40,9 @@ export async function apiRequest<T>(
     ? AbortSignal.any([timeout, options.signal])
     : timeout;
   try {
-    const response = await fetch(new URL(path, base), {
+    const url = new URL(path, base);
+    for (const [key, value] of Object.entries(options.query ?? {})) url.searchParams.set(key, value);
+    const response = await fetch(url, {
       method: options.method ?? "GET",
       ...(options.body !== undefined
         ? {

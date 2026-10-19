@@ -1,6 +1,7 @@
 "use server";
 import { redirect } from "next/navigation";
-import { safeReturnPath } from "@raes/web-core";
+import { apiRequest, safeReturnPath } from "@raes/web-core";
+import { getWebConfig } from "./env";
 import { createWebAuth, clearWebSessionCookies } from "./auth";
 export type AuthState = { error?: string; message?: string };
 export async function authenticate(
@@ -54,6 +55,16 @@ export async function authenticate(
       error:
         "No pudimos iniciar sesión. Revisa tus datos y confirma tu correo si acabas de registrarte.",
     };
+  try {
+    await apiRequest(getWebConfig().apiBase, "/api/v1/auth/me", {
+      token: data.session.access_token,
+      validate: (value): value is { data: { id: string } } => !!value && typeof value === "object" && "data" in value && !!value.data && typeof value.data === "object" && "id" in value.data && value.data.id === data.user.id,
+    });
+  } catch {
+    try { await auth.auth.signOut({ scope: "local" }); }
+    finally { await clearWebSessionCookies(); }
+    return { error: "No fue posible validar el acceso ciudadano. Si tu cuenta es administrativa, utiliza el acceso de administración." };
+  }
   redirect(safeReturnPath(form.get("next"), "/credentials"));
 }
 export async function logout() {

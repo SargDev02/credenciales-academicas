@@ -5,12 +5,12 @@ import { redirect } from "next/navigation";
 import { createServerClient } from "@supabase/ssr";
 import { getWebConfig } from "./env";
 
-export async function createWebAuth(writable = false) {
+export async function createScopedWebAuth(cookieName: string, writable = false) {
   const config = getWebConfig();
   const jar = await cookies();
   return createServerClient(config.url, config.publishableKey, {
     cookieOptions: {
-      name: config.cookieName,
+      name: cookieName,
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
@@ -31,6 +31,9 @@ export async function createWebAuth(writable = false) {
     },
   });
 }
+export async function createWebAuth(writable = false) {
+  return createScopedWebAuth(getWebConfig().cookieName, writable);
+}
 export const requireSession = cache(async () => {
   const auth = await createWebAuth();
   const { data, error } = await auth.auth.getUser();
@@ -49,9 +52,8 @@ export const requireSession = cache(async () => {
   };
 });
 
-export async function clearWebSessionCookies() {
+export async function clearScopedWebSessionCookies(cookieName: string) {
   const jar = await cookies();
-  const { cookieName } = getWebConfig();
   for (const cookie of jar.getAll()) {
     if (
       cookie.name === cookieName ||
@@ -60,4 +62,8 @@ export async function clearWebSessionCookies() {
       jar.delete(cookie.name);
     }
   }
+}
+
+export async function clearWebSessionCookies() {
+  return clearScopedWebSessionCookies(getWebConfig().cookieName);
 }

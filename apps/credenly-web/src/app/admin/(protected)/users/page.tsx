@@ -1,0 +1,13 @@
+import Link from "next/link";
+import { Alert, Card, EmptyState, PageHeading } from "@raes/ui";
+import { getAdminAccounts, getOverview } from "../../../../lib/admin-api";
+import { sectionStates } from "../../../../lib/admin-model";
+import { date } from "../../../../lib/citizen-model";
+import { StateCounts } from "../../../../components/admin/counts";
+export const metadata = { title: "Cuentas · Administración" };
+export default async function Accounts({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+  const { page = "1" } = await searchParams;
+  if (!/^[1-9]\d{0,3}$/.test(page)) return <Alert title="Página no válida" tone="danger"><Link href="/admin/users">Volver al listado de cuentas</Link></Alert>;
+  const [accounts, overview] = await Promise.all([getAdminAccounts(page), getOverview()]);
+  return <><PageHeading eyebrow="REGISTRO DE CUENTAS" title="Cuentas y perfiles">Información mínima de Auth y estados de los perfiles ciudadanos. Solo lectura.</PageHeading><StateCounts title={sectionStates.profiles!.title} labels={sectionStates.profiles!.labels} counts={overview.profiles} /><section className="citizen-section"><Card><h2>Cuentas Auth · página {accounts.page}</h2><p className="ui-hint">UUID, confirmación de correo y fechas operativas. No se muestran correos, identidades documentales ni sesiones. Una cuenta Auth no implica un perfil ciudadano ni un permiso administrativo.</p>{accounts.items.length ? <div className="operations-table-scroll" role="region" aria-label="Cuentas Auth" tabIndex={0}><table className="operations-table"><thead><tr><th scope="col">UUID de cuenta</th><th scope="col">Correo confirmado</th><th scope="col">Registro</th><th scope="col">Último acceso</th></tr></thead><tbody>{accounts.items.map((account) => <tr key={account.id}><th scope="row"><code>{account.id}</code></th><td>{account.emailConfirmed ? "Sí" : "No"}</td><td>{date(account.createdAt)}</td><td>{account.lastSignInAt ? date(account.lastSignInAt) : "Sin acceso registrado"}</td></tr>)}</tbody></table></div> : <EmptyState title="Sin cuentas en esta página">Puedes volver a la página anterior.</EmptyState>}<nav className="operations-pagination" aria-label="Páginas de cuentas">{accounts.page > 1 && <Link href={`/admin/users?page=${accounts.page - 1}`}>Página anterior</Link>}<span>Página {accounts.page} · hasta {accounts.pageSize} cuentas</span>{accounts.hasMore && accounts.page < 9999 && <Link href={`/admin/users?page=${accounts.page + 1}`}>Página siguiente</Link>}</nav></Card></section><Alert title="Sin cambios de cuenta">Este panel no cambia correos, roles ni relaciones ciudadanas. La separación de las cuentas actuales sigue pendiente de una dirección ciudadana confirmada.</Alert></>;
+}
