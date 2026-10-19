@@ -369,7 +369,7 @@ export async function syncPerson(
 
   const now = new Date().toISOString();
 
-  const { data: createdSourceData, error: createSourceError } =
+  const { error: createSourceError } =
     await supabase
       .from("persona_fuentes")
       .upsert(
@@ -387,10 +387,9 @@ export async function syncPerson(
         },
         {
           onConflict: "institucion_id,identificador_origen",
+          ignoreDuplicates: true,
         },
-      )
-      .select("id,persona_id")
-      .single();
+      );
 
   if (createSourceError) {
     throwDatabaseError(
@@ -399,11 +398,31 @@ export async function syncPerson(
     );
   }
 
-  const createdSource = createdSourceData;
+  // The unique source key is claimed by INSERT ... ON CONFLICT DO NOTHING.
+  // Another request may have claimed it since the first lookup. Never upsert
+  // persona_id: a concurrent conflicting document must not reassign identity.
+  const { data: claimedSource, error: claimedSourceError } = await supabase
+    .from("persona_fuentes")
+    .select("id,persona_id")
+    .eq("institucion_id", identity.institutionId)
+    .eq("identificador_origen", input.identificadorOrigen)
+    .single();
+
+  if (claimedSourceError || !claimedSource) {
+    throwDatabaseError("resolver la fuente institucional registrada", claimedSourceError?.code);
+  }
+
+  if (claimedSource.persona_id !== master.id) {
+    throw new ApiError(
+      409,
+      "PERSON_SOURCE_IDENTITY_CONFLICT",
+      "El identificador institucional ya está vinculado a otra identidad documental",
+    );
+  }
 
   return {
-    personId: createdSource.persona_id,
-    sourceId: createdSource.id,
+    personId: claimedSource.persona_id,
+    sourceId: claimedSource.id,
     matchedExistingMaster,
   };
 }
