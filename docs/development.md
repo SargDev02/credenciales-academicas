@@ -150,3 +150,16 @@ script revoca el enlace en `finally`. No imprime el token ni identidades.
 
 Las pruebas SQL de `supabase/credenly/tests` comprueban ejecución exclusiva del
 servidor para vinculación, permisos de columnas del perfil y RLS de propiedad.
+
+## Frontend
+
+Ver `docs/frontend.md` para configuración por aplicación, referencia Figma y gaps
+de las APIs. La base visual puede ejecutarse sin conexión a Supabase:
+
+```bash
+pnpm --filter @raes/web dev
+pnpm --filter @credenly/web dev
+```
+
+Puertos 3000/3003; la galería `/design-system` usa datos explícitamente de demo.
+Comprobaciones comunes: `pnpm typecheck`, `pnpm test`, `pnpm -r --if-present build`.

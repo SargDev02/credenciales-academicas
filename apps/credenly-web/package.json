@@ -1,0 +1,26 @@
+{
+  "name": "@credenly/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3003",
+    "build": "next build",
+    "start": "next start -p 3003",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@raes/ui": "workspace:*",
+    "@raes/web-core": "workspace:*",
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5.9.3",
+    "tsx": "^4.20.0"
+  }
+}

@@ -21,3 +21,14 @@ Credenly contiene autenticación, perfil, verificación OCR, vinculación con RA
 **Credenly no tiene tabla de credenciales.**
 
 El perfil académico, el detalle de una credencial y la verificación pública consultan RAES para obtener el estado actual.
+
+## Interfaces del prototipo
+
+RAES Web y Credenly Web son aplicaciones App Router independientes en `apps/`.
+La integración se hace en el servidor web usando el JWT del usuario y la API de
+cada producto; el browser no recibe service role ni credenciales de integraciones.
+Supabase Auth se mantiene separado por producto.
+
+`packages/ui` contiene solo presentación; `packages/web-core` contiene transporte
+HTTP y validación de configuración, sin consultas a tablas de negocio. No se
+introduce almacenamiento académico en Credenly ni se modifica el backend.

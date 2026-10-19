@@ -15,3 +15,10 @@ coverage/
 
 *.credentials.local
 supabase/**/.temp/
+
+# Local OCR language downloads are generated data.
+*.traineddata
+*.traineddata.gz
+# Browser QA output (no sessions or secrets).
+playwright-report/
+test-results/

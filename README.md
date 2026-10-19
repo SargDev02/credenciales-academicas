@@ -30,3 +30,10 @@ Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 7. RAES Web y Credenly se desplegarán como aplicaciones independientes.
 
 Consulta [docs/progress.md](docs/progress.md) para el estado del proyecto.
+
+## Interfaces
+
+`apps/raes-web` (3000) y `apps/credenly-web` (3003) son aplicaciones Next.js
+independientes. Comparten tokens/primitives Figma en `packages/ui` y utilidades
+HTTP/configuración en `packages/web-core`. Comandos y alcance en
+[docs/frontend.md](docs/frontend.md). Sin despliegue ni certificación de producción.

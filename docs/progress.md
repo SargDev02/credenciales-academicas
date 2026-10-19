@@ -436,3 +436,23 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
 - [ ] RAES Web.
 - [ ] Credenly Web.
 - [ ] Despliegues independientes.
+
+## Frontend — Fases A/B/C (2026-10-18)
+
+- [x] Working tree limpio; `main` actualizado por fast-forward al squash
+  `50c28c2457276e79043eb21bf8a0484c458a966c`. No se volvió a fusionar PR #14
+  ni su rama. Nueva rama `feat/frontend-platform`.
+- [x] Inspección de monorepo, APIs, contratos, variables y siete componentes Figma
+  mediante MCP, con código/contexto y screenshots de referencia.
+- [x] Dos apps Next.js independientes, `packages/ui` y `packages/web-core`.
+- [x] Tokens, Inter local, Button Primary/Secondary, Input, Badge, CredentialCard,
+  Card, Alert, Spinner, Skeleton, EmptyState, FormField y PageHeading.
+- [x] Galería de demostración en ambas apps; sin datos académicos simulados en
+  pantallas integradas. Variantes compactas y ajustes AA documentados.
+- [x] Foundation: typecheck, 132 pruebas y builds de ambas apps/backends pasan;
+  los 117 tests anteriores siguen pasando. No hay linter por paquete.
+- [ ] RAES Web: login, sesión y lectura administrativa se implementan a continuación.
+- [ ] Rol del administrador: la API aún no devuelve perfil/rol autenticado. Se
+  requiere decisión antes de habilitar altas según rol. No se consulta la tabla
+  privada ni se confía en metadata del usuario.
+- [ ] Credenly funcional: pendiente del reporte/decisión tras la primera RAES Web.

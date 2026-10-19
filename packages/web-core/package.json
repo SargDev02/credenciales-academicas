@@ -1,0 +1,19 @@
+{
+  "name": "@raes/web-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/http.ts",
+    "./config": "./src/config.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.3"
+  }
+}
