@@ -264,6 +264,20 @@ try {
     .getByRole("button", { name: "Iniciar sesión", exact: true })
     .click();
   await page.waitForURL("**/onboarding");
+  await page
+    .getByRole("heading", { name: "Conecta tu historia académica" })
+    .waitFor();
+  for (const width of [360, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+      `Onboarding overflows at ${width}`,
+    );
+  }
+
   await page.getByLabel("Nombres", { exact: true }).fill("Prueba");
   await page.getByLabel("Apellidos", { exact: true }).fill("Sintética");
   await page.getByRole("button", { name: "Guardar perfil" }).click();
@@ -332,6 +346,22 @@ try {
     .waitFor();
   empty = false;
   await page.goto(`${base}/shares?credential=${credentialId}`);
+  await page.getByRole("heading", { name: "Tus comparticiones" }).waitFor();
+  for (const width of [360, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 1000 });
+    assert.equal(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+      true,
+      `Shares overflow at ${width}`,
+    );
+    await page.screenshot({
+      path: `/tmp/frontend-qa/credenly-shares-${width}.png`,
+      fullPage: true,
+    });
+  }
+
   await page.getByRole("button", { name: "Crear enlace", exact: true }).click();
   await page.getByLabel("Enlace de verificación").waitFor();
   assert.equal(
@@ -372,6 +402,18 @@ try {
       ),
       false,
     );
+    if (mode === "active") {
+      for (const width of [360, 768, 1024, 1440]) {
+        await page.setViewportSize({ width, height: 1000 });
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+          true,
+          `Public view overflows at ${width}`,
+        );
+      }
+    }
     if (mode === "active")
       assert.equal(
         await page
