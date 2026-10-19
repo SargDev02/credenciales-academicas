@@ -234,7 +234,7 @@ metadata editada no concede permisos. No existe registro público de administrad
 | Ruta web | Consulta backend Credenly |
 | --- | --- |
 | `/admin/login` | Auth Credenly + `GET /api/v1/admin/me` |
-| `/admin` | `GET /api/v1/admin/overview` |
+| `/admin` | `GET /api/v1/admin/overview` + `GET /api/v1/admin/health` en paralelo |
 | `/admin/users` | `GET /api/v1/admin/users?page=1` + overview |
 | `/admin/verifications` | Conteos documentales de overview |
 | `/admin/links` | Conteos de vinculaciones de overview |
@@ -249,10 +249,35 @@ a validar perfil/rol en API. Cerrar administración no cierra la sesión ciudada
 independiente. El login ciudadano valida `/api/v1/auth/me`; una cuenta con perfil
 administrativo, incluso inactivo, recibe 403 en todas las rutas ciudadanas protegidas.
 
-Diseño operativo compacto: navegación lateral en escritorio y rejilla de enlaces
-en móvil, tablas con scroll accesible dentro del panel, conteos con labels, errores,
-vacíos, loading y foco visible. Conserva Inter, tokens y primitives del Figma; no
-se modifica el archivo Figma ni se introduce un framework visual adicional.
+Diseño operativo compacto: sidebar de 232px desde 768px, contexto de sección y
+nombre/rol del administrador en el header. Por debajo de 768px, navegación
+desplegable con las seis rutas; Enter abre y Escape cierra devolviendo el foco al
+botón. Los enlaces activos usan `aria-current`. El aviso de solo lectura permanece
+visible. El CSS administrativo se carga en `/admin` y no redefine el portal ciudadano.
+
+El resumen muestra cuatro `MetricCard` compartidas de `packages/ui`: título,
+total, desglose de estados de la API y enlace de detalle. Columnas: cuatro desde
+1200px, dos desde 480px y una por debajo de 480px. La salud global exige readiness
+200/ready y las tres dependencias disponibles/configuradas; una consulta de salud
+fallida conserva los conteos obtenidos y muestra «Salud no disponible». Las
+incidencias conservan su alcance limitado a auditoría administrativa. Cada consulta
+muestra hora de Bogotá y permite actualizar manualmente, sin polling ni tendencias.
+
+Las secciones muestran el total y todos sus estados reales, incluidos los ceros.
+La tabla de cuentas conserva el UUID completo, botón de copia con feedback, fechas,
+confirmación del correo y paginación. El scroll queda dentro de una región
+enfocable con instrucciones, `caption` y encabezados `th/scope`; no se infiere
+actividad a partir del último acceso. Se mantienen labels, estados con texto y
+color, loading y errores sanitizados. «Volver a intentar» refresca la consulta del
+servidor antes de restablecer el error boundary. El login administrativo no ofrece
+registro ni recuperación por correo.
+
+Se inspeccionaron directamente en Figma Button Primary `1:26`, Input `1:30`, Badge
+Vigente `1:34` y Card Credencial `1:40`, incluidas sus capturas. Se reutilizan
+Button/Input/Card/Badge, Inter local y los tokens oficiales. Los componentes de
+dominio (salud, incidencias, encabezado, navegación, estados y copia de UUID) viven
+en `components/admin`; `MetricCard` no contiene lógica de Credenly. Sin framework
+visual, dependencias nuevas, assets externos ni modificaciones del archivo Figma.
 
 El panel solo lee: UUID Auth, confirmación de correo y fechas; estados agregados;
 salud y hasta diez errores de `auditoria_admin`. No muestra correos, documentos,
@@ -275,7 +300,15 @@ Los errores mostrados solo cubren esta fuente de auditoría; no representan todo
 los errores del sistema.
 
 Prueba reproducible **sin cuentas ni escrituras remotas**, después del build,
-desde `apps/credenly-web`:
+desde la raíz:
+
+```bash
+pnpm test:frontend:browser --project=credenly-admin
+```
+
+El comando completo `pnpm test:frontend:browser` incluye las doce pruebas públicas
+previas y ocho administrativas. El comando anterior de compatibilidad, desde
+`apps/credenly-web`, delega en la misma suite:
 
 ```bash
 pnpm exec tsx scripts/verify-admin-isolation.ts
@@ -285,10 +318,14 @@ Arranca API/Web reales compiladas en 3312/3313 y fixtures HTTPS locales en 3433.
 Auth/DB/RAES son simulados exclusivamente en memoria. TLS con certificado temporal
 confiado solo por esos procesos, sin desactivar validación. Comprueba guards HTTP,
 rol/estado, redacción, sesión ciudadana, seis rutas, cookies/logout independientes,
-ready/dependencia caída, errores/vacíos y cuatro anchos. No carga `.env` en el
+KPIs, estados, paginación, copia de UUID, ready/dependencia caída, fallos parciales,
+loading/error/reintento/vacíos y cuatro anchos. No carga `.env` en el
 operador ni crea usuarios en Supabase. Contraseña de fixture solo en memoria;
-sin trazas/HAR/storageState/videos/capturas de sesión. Capturas de panel sintético
-se guardan únicamente en `/tmp/credenly-admin-qa`.
+sin trazas/HAR/storageState/videos/capturas de secretos. Las capturas explícitas
+del login vacío y del panel con datos sintéticos se guardan únicamente en
+`/tmp/credenly-admin-polish-qa` (360 y 1440px). Los errores del proyecto admin no
+generan capturas automáticas. La suite comprueba cero escrituras privadas
+inesperadas; la auditoría administrativa normal se simula en memoria local.
 
 **Límite de validación:** el esquema y RLS/grants se comprueban en Supabase real;
 el login administrativo 200 y navegación se prueban con fixtures locales. Las
@@ -307,5 +344,11 @@ node scripts/verify-web-boundaries.mjs
 Lee valores privados de los env ignorados solo en memoria, compara con archivos
 versionables y bundles públicos y reporta únicamente conteos. Exige env locales
 presentes para que la comprobación no pase vacía. No sustituye un escáner de secretos
-histórico ni un análisis lint. Resultado de esta entrega: 310 archivos / 36 bundles,
+histórico ni un análisis lint. Resultado de esta entrega: 324 archivos / 38 bundles,
 sin valores privados, env/traineddata indexados ni persistencia manual en browser.
+
+Validación del refinamiento administrativo (2026-10-19): `pnpm typecheck` y build
+recursivo correctos; `pnpm test` **199/199** (192 anteriores conservados, seis casos
+de presentación y uno de MetricCard nuevos); navegador **20/20**. `pnpm lint`
+termina con exit 0 por `--if-present`, pero ningún paquete define lint: no se
+presenta como análisis estático. Sin cambios de API, Auth remoto, esquema o RPC.

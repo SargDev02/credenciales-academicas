@@ -164,8 +164,11 @@ pnpm --filter @credenly/web dev
 Puertos 3000/3003; la galería `/design-system` usa datos explícitamente de demo.
 Comprobaciones comunes: `pnpm typecheck`, `pnpm test`, `pnpm -r --if-present build`.
 
-`pnpm test:frontend:browser` valida las galerías y teclado en Chrome sin crear
-datos remotos. La prueba autenticada opt-in y su limpieza se describen en
+`pnpm test:frontend:browser` valida las galerías, teclado y Credenly Admin en Chrome
+sin crear datos remotos: doce casos públicos y ocho administrativos. El proyecto
+`--project=credenly-admin` usa API/Web compiladas con fixtures Auth/DB/RAES locales
+y prueba seis rutas a 360/768/1024/1440px. La prueba autenticada remota opt-in y su
+limpieza se describen en
 `docs/frontend.md`; su proceso operador no forma parte del runtime web.
 
 Credenly incluye `/login`, `/register`, `/onboarding`, `/credentials`, `/shares` y

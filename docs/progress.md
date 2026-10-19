@@ -834,3 +834,86 @@ sin mutaciones de cuenta. Sintaxis Node y verificación real correctas. Comproba
 local temporal de enlace retirado al terminar; captura sin secretos en
 `/tmp/credenly-email-confirmed.png`. Sin cambios de esquema/RPC/lógica de negocio,
 merge o despliegue. Escaneo de secretos posterior antes del commit.
+
+## Credenly Admin — refinamiento visual y funcional (2026-10-19)
+
+Continúa en `feat/frontend-platform`, PR #15 abierto. Esta fase no modifica APIs,
+esquemas, RPC, cuentas remotas ni datos ciudadanos/académicos. `admin@credenly.com`
+queda reservado; no se crea todavía. Se conserva la separación ciudadana de
+Valentina ya validada en el bloque anterior.
+
+- [x] Inspección del panel existente, contratos administrativos, UI compartida y
+  Figma oficial. Contexto y capturas de Button Primary `1:26`, Input `1:30`, Badge
+  Vigente `1:34` y Card Credencial `1:40`. Inter y ocho colores oficiales conservados;
+  sin librería visual, dependencia nueva ni modificación del archivo Figma.
+- [x] Shell administrativo separado: sidebar estable de 232px, navegación activa,
+  contexto, nombre/rol y logout. Navegación móvil desplegable con las seis rutas,
+  Enter/Escape y retorno de foco; aviso permanente de solo lectura. CSS acotado
+  al árbol `/admin`, sin reemplazar la experiencia ciudadana.
+- [x] `/admin`: «Resumen operativo», cuatro KPIs con totales/desgloses reales y
+  enlaces, hora de consulta y actualización manual. Overview y salud en paralelo;
+  sin polling, tendencias, porcentajes o historia inventada. Salud parcial fallida
+  muestra indisponibilidad sin descartar los conteos obtenidos ni fabricar ceros.
+- [x] Componente genérico `MetricCard` en `packages/ui`; componentes específicos
+  de encabezado, refresco, salud, incidencias, estados y copia de UUID en la app.
+  Primitives existentes Button/Input/Card/Badge/Alert/Skeleton reutilizados.
+- [x] `/admin/users`: perfiles agregados, tabla de cuatro campos mínimos, UUID
+  completo/copiar con feedback, confirmación de correo, fechas y paginación real.
+  Página inválida/vacía explícita, sin emails o actividad inferida. Tabla dentro de
+  una región enfocable con desplazamiento horizontal y `caption`/`th scope`.
+- [x] Verificaciones con los cinco estados y advertencia de procesamiento
+  documental sin autenticidad legal; vínculos con cuatro estados; comparticiones
+  con tres. Sin PII, OCR, imágenes, tokens completos, acceso académico ni controles
+  de modificación. No se amplía la API para mejorar la presentación.
+- [x] `/admin/health`: tres dependencias, badges con texto, descripciones, hora y
+  HTTP readiness. Auth «Configurado» no equivale a login probado. Incidencias
+  limitadas a registros administrativos reales; vacío con su alcance explicado.
+- [x] `/admin/login` diferenciado del ciudadano, campos Correo/Contraseña y CTA
+  Iniciar sesión; sin registro ni recuperación por email. Loading/error/empty
+  coherentes. Defecto real corregido: el reintento de error boundary ahora refresca
+  los Server Components; `reset()` solo no volvía a consultar el backend.
+- [x] Responsive 360/768/1024/1440px: KPIs 1/2/2/4, todas las rutas disponibles,
+  sin overflow del viewport. Teclado, foco visible, `aria-current`, labels y estados
+  expresados con texto y color. Sin errores de hidratación detectados.
+
+### Validación de esta fase
+
+- `pnpm typecheck`: correcto en todos los paquetes.
+- `pnpm test`: **199/199**, incluidos los 192 previos. Seis casos nuevos de
+  presentación (conteos, readiness, tonos, fechas y página) y uno de MetricCard.
+- `pnpm -r --if-present build`: correcto en todo el monorepo.
+- `pnpm lint`: exit 0, pero siguen sin existir scripts lint por paquete; no se
+  ejecuta análisis lint real.
+- `pnpm test:frontend:browser`: **20/20**, doce públicos previos y ocho admin.
+  API/Web compiladas reales con fixtures HTTPS de Auth/PostgREST/RAES únicamente
+  locales: login/errores, seis rutas, KPIs, todos los estados, ceros, cuentas/copia/
+  paginación, salud caída/parcial, streaming loading, fallo sanitizado/reintento,
+  incidencias y aislamiento ciudadano/admin. Guards 401/403/200, perfil inactivo
+  403, email/metadata sin elevación, cookies HttpOnly/logout independientes,
+  consulta ciudadana source RAES y persistedByCredenly false. Sin storage manual,
+  requests browser a dependencias privadas ni escrituras privadas inesperadas.
+- Typecheck estricto adicional del fixture y spec Playwright: correcto. La prueba
+  anterior `scripts/verify-admin-isolation.ts` delega en la suite canónica, sin
+  duplicar lógica. Se puede ejecutar el proyecto `credenly-admin` aisladamente.
+- Capturas locales revisadas: `/tmp/credenly-admin-polish-qa/{login,admin,
+  admin-users,admin-verifications,admin-health}-{360,1440}.png`. Son datos sintéticos
+  de QA, no evidencia de una cuenta administrativa remota creada. Sin contraseñas,
+  tokens, trazas, HAR, videos o storageState guardados.
+- `node scripts/verify-web-boundaries.mjs`: **324 archivos versionables / 38
+  bundles**, cero secretos backend/claves privadas, env privados/traineddata
+  indexados o persistencia manual de sesión. No sustituye escaneo histórico o lint.
+- Cuatro `next-env.d.ts` inspeccionados: solo importaciones/comentarios generados
+  por Next. Restaurados según autorización explícita, sin `reset --hard`.
+
+**Límites conservados:** no se ejecuta login contra un administrador remoto porque
+su aprovisionamiento pertenece a la próxima operación separada. No fue necesario
+crear endpoints o modificar backend. El panel es observacional, no KYC, editor de
+identidad ni visor académico. Añadir sus pantallas al Figma sería documentación
+visual útil para otra fase; no bloquea esta entrega. Continúan los pendientes de
+producción ya identificados: autenticidad/identidad real, recuperación/baselines,
+operación/retención/rotación, protección de contraseñas filtradas y lint por paquete.
+Sin merge ni despliegue; no se declara listo para producción.
+
+Commits: `d87b3d3` shell/resumen y componentes; `1336b05` secciones administrativas;
+`ca3b331` regresión de interfaz. Documentación en commit separado. PR #15 conserva
+su estado previo **Ready for Review**, abierto; no se cambia a Draft ni se fusiona.

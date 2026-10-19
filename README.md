@@ -41,7 +41,10 @@ pública mediante las APIs existentes. Comandos, evidencia y límites en
 [docs/frontend.md](docs/frontend.md). Sin despliegue ni certificación de producción.
 
 Credenly incluye un panel operativo separado en `/admin/login` y `/admin`, con rol
-`ADMIN_CREDENLY` validado por backend y consultas mínimas de solo lectura. La cuenta
+`ADMIN_CREDENLY` validado por backend y consultas mínimas de solo lectura.
+El panel reúne KPIs con datos actuales, estados de procesos, cuentas paginadas,
+incidencias y salud, con navegación compacta en móvil. Su QA autenticada usa
+fixtures locales y forma parte de `pnpm test:frontend:browser`. La cuenta
 administrativa definitiva aún no está aprovisionada: el email ciudadano ya cambió
 a `valentina@yopmail.com` y se validaron el buzón y el login. El titular pidió
 detenerse antes de crear el administrador. Ver
