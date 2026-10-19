@@ -512,3 +512,19 @@ test("citizen/admin isolation, active role and scoped logout remain enforced by 
     page.getByText("No pudimos abrir la administración", { exact: true }),
   ).toBeVisible();
 });
+
+test("API security headers cover auth errors and local OCR admission rejects excess before processing", async () => {
+  const denied = await api("credentials");
+  expect(denied.status).toBe(401);
+  expect(denied.headers.get("cache-control")).toBe("private, no-store");
+  expect(denied.headers.get("x-content-type-options")).toBe("nosniff");
+  expect(denied.headers.get("content-security-policy")).toContain("default-src 'none'");
+  const attempts = [];
+  for (let index = 0; index < 7; index++) attempts.push(await fetch(`${qa.apiBase}/api/v1/identity-verifications`, { method: "POST" }));
+  expect(attempts.slice(0, 6).map(response => response.status)).toEqual([401, 401, 401, 401, 401, 401]);
+  const limited = attempts[6]!;
+  expect(limited.status).toBe(429);
+  expect(Number(limited.headers.get("retry-after"))).toBeGreaterThan(0);
+  expect(limited.headers.get("cache-control")).toBe("private, no-store");
+  expect(await limited.json()).toEqual({ error: "RATE_LIMITED", message: "Demasiadas solicitudes. Intenta más tarde" });
+});

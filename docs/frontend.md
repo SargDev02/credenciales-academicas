@@ -352,3 +352,23 @@ recursivo correctos; `pnpm test` **199/199** (192 anteriores conservados, seis c
 de presentación y uno de MetricCard nuevos); navegador **20/20**. `pnpm lint`
 termina con exit 0 por `--if-present`, pero ningún paquete define lint: no se
 presenta como análisis estático. Sin cambios de API, Auth remoto, esquema o RPC.
+
+## Controles HTTP revisados en pre-deploy (2026-10-19)
+
+Las dos webs generan CSP con nonce por respuesta, scripts sin unsafe-inline/eval
+(en desarrollo se permite eval para Next), frame-ancestors none, form-action self y
+connect-src self. Auth y llamadas a APIs permanecen server-side; no se permite una
+conexión browser directa a Supabase. style-src conserva unsafe-inline para los
+atributos de presentación usados por React/Next. HTML se renderiza dinámicamente
+con `private, no-store`; assets `_next/static` y fuentes quedan fuera del proxy.
+Se comprobó en navegador que sus scripts reciben el nonce y los assets mantienen
+caché immutable. HSTS se emite en producción y solo tiene efecto sobre HTTPS; no
+se incluye includeSubDomains ni preload sin decidir el dominio de despliegue.
+
+Ambas APIs emiten cabeceras de seguridad y `private, no-store` para sus respuestas,
+incluidos errores. La admisión local por proceso limita OCR POST a 6/min,
+verificación pública a 120/min, altas administrativas a 20/min, health a 120/min y
+resto de API a 600/min, con Retry-After y 429. No se interpreta x-forwarded-for como
+identidad confiable. Es una protección local de recursos, no un límite por persona
+ni una defensa distribuida. La instancia OCR admite un worker, sin cola, y un
+plazo de 45 segundos; un worker que arranca tarde se termina sin procesar.

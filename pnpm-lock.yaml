@@ -404,6 +404,9 @@ importers:
 
   services/credenly-api:
     dependencies:
+      '@raes/web-core':
+        specifier: workspace:*
+        version: link:../../packages/web-core
       '@supabase/supabase-js':
         specifier: ^2.117.2
         version: 2.117.2
@@ -444,6 +447,9 @@ importers:
       '@raes/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts
+      '@raes/web-core':
+        specifier: workspace:*
+        version: link:../../packages/web-core
       '@supabase/supabase-js':
         specifier: ^2.117.2
         version: 2.117.2
