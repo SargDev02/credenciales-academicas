@@ -21,16 +21,16 @@ Las dos webs conservan su lenguaje Figma; no se introdujo un framework visual.
 | @raes/connector-poli | No declara; CLI TS | PASS | 5 | Config/wiring propio; historial real A conservado |
 | @raes/connector-udea | No declara; CLI TS | PASS | 5 | Nuevo script explícito; config aislada, CLI y wiring real contra transporte local |
 | @raes/api | PASS | PASS | 73 | Auth/roles/scopes/tenant/auditoría; HTTP real y SQL real con rollback |
-| @credenly/api | PASS | PASS | 72 | Ciudadano/admin/público; HTTP C/D real, limpieza; OCR local real |
+| @credenly/api | PASS | PASS | 79 | Ciudadano/admin/público; HTTP C/D real, limpieza; OCR local real |
 | @raes/web | PASS | PASS | 10 | Browser local y login/roles/lecturas reales con cuenta temporal |
 | @credenly/web | PASS | PASS | 19 | Admin local + ciudadano/API real, shares/verificación y limpieza |
 | @raes/ui | No declara; consumido por Next | PASS | 8 | Estados, labels, contraste; galerías en cuatro anchos |
-| @raes/web-core | No declara; consumido por Next | PASS | 17 | HTTP/config/errores/abort, CSP y límites locales |
+| @raes/web-core | No declara; consumido por Next | PASS | 18 | HTTP/config/errores/abort, CSP y límites locales |
 | Tooling raíz | N/A | PASS | 13 | Guards de scripts, audit policy, secretos, browser launch y 4 reconstrucciones SQL |
 
 Todos los diez workspaces ejecutan **lint real**. Baseline: 208 tests, cinco builds,
 types y 20 browser PASS; lint era no-op, UdeA no declaraba test, no existía CI.
-Actual: **248 tests**, cinco builds declarados, types/lint reales y **25/25 browser**.
+Actual: **256 tests**, cinco builds declarados, types/lint reales y **26/26 browser**.
 Los tests raíz fallan si falta test/lint/typecheck en cualquiera de los diez paquetes;
 no se ocultan mediante --if-present. --if-present build solo cubre los cinco builds
 declarados que corresponden a contracts y las cuatro aplicaciones Next.
@@ -39,11 +39,11 @@ declarados que corresponden a contracts y las cuatro aplicaciones Next.
 
 | Área | Estado | Evidencia | Riesgo residual |
 | --- | --- | --- | --- |
-| Build | PASS | Cinco builds; Credenly API reconstruida tras último ajuste OCR | No se ha elegido hosting |
+| Build | PASS | Cinco builds posteriores al guard de estado ciudadano | No se ha elegido hosting |
 | Types | PASS | Diez paquetes + tooling/configs/operadores; next typegen | TS 5.9.3 se mantiene compatible con lint |
 | Lint | PASS | ESLint flat tipado/Next/React; cero warnings | ESLint 9 deprecated por compatibilidad publicada de plugins |
-| Tests | PASS | 248 unit/integration/tooling; incluye 4 DDL y UdeA explícito | No es cobertura porcentual ni prueba externa |
-| Browser | PASS WITH DOCUMENTED LIMIT | 25 locales; QA real RAES y C/D a 360/768/1024/1440 | Confirmación de correo/SMTP no repetida; sin lectores de pantalla reales |
+| Tests | PASS | 256 unit/integration/tooling; incluye 4 DDL y UdeA explícito | No es cobertura porcentual ni prueba externa |
+| Browser | PASS WITH DOCUMENTED LIMIT | 26 locales; QA real RAES y C/D a 360/768/1024/1440 | Confirmación de correo/SMTP no repetida; sin lectores de pantalla reales |
 | Dependencies | PASS WITH DOCUMENTED LIMIT | [Análisis y excepción](predeploy-dependencies.md); prod audit 0 | Un HIGH dev exacto aprobado, vence 18-11-2026; audit completo sigue exit 1 |
 | Secrets | PASS WITH DOCUMENTED LIMIT | Fuentes/25 commits recientes/bundles; comparación con secretos locales en memoria | Heurísticas y alcance reciente; no prueba de todo el historial/proveedor |
 | Auth | PASS WITH DOCUMENTED LIMIT | Login real, cookies HttpOnly/SameSite/Secure; mínimo 12 y signup RAES cerrado, aprobado | HIBP y CAPTCHA deshabilitados; Auth de instituciones no usado por producto |
@@ -73,6 +73,7 @@ declarados que corresponden a contracts y las cuatro aplicaciones Next.
 | HIGH | DDL inicial ausente para cuatro proyectos | Recuperado desde historial real, checksums/mapeo, 4/4 reconstrucción y comparación semántica; restore completo sigue separado |
 | HIGH dev | braces GHSA-vfj7-8cjw-p6xm introducido por lint oficial | Excepción precisa aprobada, visible, temporal y probada; ningún override global |
 | MEDIUM | RLS no elimina grants de TRUNCATE/otros privilegios | Corregido y validado remotamente, sin TRUNCATE real ni cambios de filas |
+| MEDIUM | Perfiles SUSPENDIDO/CERRADO no restringían la API ciudadana | Política aprobada: 403 antes de negocio/RAES; estado actual por UUID, onboarding conservado, errores 503 saneados y login web sin sesión residual |
 | MEDIUM | Exclusión admin/ciudadano ausente en Data API | Corregido por triggers DB aprobados; UUIDs y relaciones intactos |
 | MEDIUM | Carrera de upsert podía reasignar fuente | ON CONFLICT DO NOTHING + comparación del ganador; 409, no reasignación |
 | MEDIUM | Sin lint/CI/test propio UdeA/runtime reproducible | Resuelto; CI ejecutada realmente en Linux sin secretos |
@@ -82,7 +83,7 @@ declarados que corresponden a contracts y las cuatro aplicaciones Next.
 | INFORMATIONAL | Versiones más nuevas sin advisory relevante | Revisadas; sin upgrades indiscriminados ni force |
 
 El propietario autorizó por separado: excepción dev, cinco correcciones DB,
-mínimo Auth 12/cierre signup RAES y PGlite dev-only. No autorizó un proveedor KYC,
+mínimo Auth 12/cierre signup RAES, PGlite dev-only y bloqueo ciudadano por estado. No autorizó un proveedor KYC,
 servicio pago, purga, rotación de claves reales ni despliegue. Permanecen los
 bloqueos públicos de la matriz: no se convierten en PASS por tener tests verdes.
 

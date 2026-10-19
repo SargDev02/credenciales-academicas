@@ -204,7 +204,7 @@ sesiones/datos ciudadanos. No se forzaron eliminaciones.
 
 ## Límites actuales
 
-- Lint real en los diez paquetes y tooling, CI y 248 tests; la limitación histórica
+- Lint real en los diez paquetes y tooling, CI y 256 tests; la limitación histórica
   de scripts ausentes se resolvió. No se borran sus registros de validación previos.
 - Los gaps administrativos de RAES (auditoría, listado de integraciones y scopes)
   continúan explícitos; no se crearon endpoints ni accesos directos a DB para UI.
@@ -381,3 +381,13 @@ resto de API a 600/min, con Retry-After y 429. No se interpreta x-forwarded-for 
 identidad confiable. Es una protección local de recursos, no un límite por persona
 ni una defensa distribuida. La instancia OCR admite un worker, sin cola, y un
 plazo de 45 segundos; un worker que arranca tarde se termina sin procesar.
+
+
+### Estados de acceso ciudadano (decisión aprobada 2026-10-19)
+
+La API consulta el estado actual del perfil por UUID en cada solicitud ciudadana.
+SUSPENDIDO/CERRADO reciben 403 antes de consultar RAES o datos ciudadanos. El login
+rechazado elimina sus cookies de sesión y muestra un mensaje de cuenta restringida;
+no lo confunde con una identidad administrativa. ACTIVO, perfil ausente y
+PENDIENTE_VERIFICACION conservan onboarding. La verificación pública mantiene el
+ciclo propio del enlace. [Decisión y alcance](proposals/citizen-profile-access.md).

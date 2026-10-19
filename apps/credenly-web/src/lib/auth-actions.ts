@@ -1,6 +1,6 @@
 "use server";
 import { redirect } from "next/navigation";
-import { apiRequest, safeReturnPath } from "@raes/web-core";
+import { apiRequest, safeReturnPath, WebApiError } from "@raes/web-core";
 import { getWebConfig } from "./env";
 import { createWebAuth, clearWebSessionCookies } from "./auth";
 export type AuthState = { error?: string; message?: string };
@@ -67,7 +67,7 @@ export async function authenticate(
         "id" in value.data &&
         value.data.id === data.user.id,
     });
-  } catch {
+  } catch (error) {
     try {
       await auth.auth.signOut({ scope: "local" });
     } finally {
@@ -75,7 +75,9 @@ export async function authenticate(
     }
     return {
       error:
-        "No fue posible validar el acceso ciudadano. Si tu cuenta es administrativa, utiliza el acceso de administración.",
+        error instanceof WebApiError && error.code === "CITIZEN_ACCOUNT_RESTRICTED"
+          ? "El estado de tu cuenta no permite el acceso ciudadano. Contacta con el administrador de Credenly."
+          : "No fue posible validar el acceso ciudadano. Si tu cuenta es administrativa, utiliza el acceso de administración.",
     };
   }
   redirect(safeReturnPath(form.get("next"), "/credentials"));

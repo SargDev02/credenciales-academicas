@@ -82,6 +82,7 @@ export async function startAdminFixture() {
   const tokenFor = (id: string) =>
     [...sessions].find(([, user]) => user.id === id)![0];
   const state = {
+    citizenState: "ACTIVO",
     inactive: false,
     metricsError: false,
     raesDown: false,
@@ -223,7 +224,7 @@ export async function startAdminFixture() {
             id: citizenId,
             nombres: "Ciudadana",
             apellidos: "Sintética",
-            estado: "ACTIVO",
+            estado: state.citizenState,
             created_at: now,
             updated_at: now,
           },
@@ -333,6 +334,7 @@ export async function startAdminFixture() {
     stop,
     reset() {
       Object.assign(state, {
+        citizenState: "ACTIVO",
         inactive: false,
         metricsError: false,
         raesDown: false,

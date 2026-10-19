@@ -10,13 +10,15 @@ exclusivamente en `chore/predeploy-quality-gate`, PR [#16](https://github.com/Sa
 
 - [x] Inventario/baseline y matriz de los diez workspaces.
 - [x] Lint real, CI, Node/pnpm fijados y test propio de connector-udea.
-- [x] 248 tests, typecheck, builds declarados y 25 pruebas browser locales.
+- [x] 256 tests, typecheck, builds declarados y 26 pruebas browser locales.
 - [x] Instalación/build sin .env, dist ni next-env tracked; repetición browser
   aislada PASS tras suspensión de la Mac (sin relajar timeouts/retries de tests).
 - [x] Excepción HIGH dev exacta GHSA-vfj7-8cjw-p6xm aprobada hasta 18-11-2026;
   audit completo conserva el advisory, producción sin vulnerabilidades reportadas.
 - [x] RLS/grants/Advisor de cuatro proyectos; cinco correcciones DB aprobadas y
   aplicadas, cero TRUNCATE browser, separación de perfiles por UUID y conteos intactos.
+- [x] Política ciudadana aprobada: SUSPENDIDO/CERRADO bloqueados con 403; onboarding
+  sin perfil/PENDIENTE_VERIFICACION conservado, sin alterar cuentas existentes.
 - [x] Auth mínimo 12 en RAES/Credenly y signup público RAES deshabilitado, aprobado.
 - [x] 22 migraciones históricas recuperadas + cinco correctivas; reconstrucción de
   cuatro esquemas en PostgreSQL/WASM con comparación de código/constraints/permisos.

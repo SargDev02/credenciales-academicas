@@ -57,6 +57,7 @@ async function fixture(
               internal: "sensitive-fixture",
             },
           });
+    if (url.pathname === "/rest/v1/perfiles" && (!init?.method || init.method === "GET")) return Response.json([{ estado: "ACTIVO" }]);
     if (url.pathname === "/rest/v1/perfiles_admin")
       return options.lookupError
         ? Response.json(

@@ -37,8 +37,8 @@ control. GET no parsea bodies. No se devuelven errores SQL, claves o payloads cr
 | POST /persons/resolve | Cliente API + persons:resolve | Tipo+número normalizados; consumidor autorizado multiinstitución | Solo resuelve; auditoría mínima CLIENTE_API |
 | GET /persons/[personId]/credentials | Cliente API + credentials:read | UUID válido; no es un JWT ciudadano ni acceso directo DB | Lectura viva multiinstitución + auditoría; versiones actuales en lotes de 50 |
 
-401: secreto/JWT ausente, inválido, expirado/revocado o actor inactivo.
-403: actor válido sin rol/scope requerido. Las referencias institucionales ajenas
+401: secreto/JWT ausente, inválido, expirado/revocado o cliente/integración inactivo.
+403: actor válido sin rol/scope requerido o perfil administrativo inactivo. Las referencias institucionales ajenas
 no se resuelven y no permiten asignar programas/personas de otro tenant.
 Los secretos de servicio se generan aleatoriamente, se verifican mediante hash y
 comparación segura; sin secreto original en listados. Service-role permanece en
@@ -66,6 +66,16 @@ su servidor de origen. No se confía en email ni user_metadata para autorizar.
 | GET /admin/overview | Mismo guard admin | Conteos/estados, incidentes mínimos; no PII/OCR/academia | Auditoría; conteos no son snapshot transaccional |
 | GET /admin/users | Mismo guard admin | Página entera 1–9999, 20 filas mínimas; sin email/metadata/hashes | Auditoría |
 | GET /admin/health | Mismo guard admin | Dependencias por API, nunca RAES DB | Auditoría; HTTP wrapper 200 puede proyectar readiness 503 |
+
+Todas las rutas ciudadanas autenticadas consultan `perfiles.estado` por UUID después
+de excluir administradores. Por decisión explícita del propietario, SUSPENDIDO y
+CERRADO reciben **403 CITIZEN_ACCOUNT_RESTRICTED** antes de leer o modificar datos
+ciudadanos o consultar RAES. ACTIVO, PENDIENTE_VERIFICACION y ausencia de perfil
+conservan Auth/onboarding; las credenciales siguen exigiendo vínculo VERIFICADA.
+Fallo de consulta o estado desconocido: 503 saneado. No se autoriza por metadata.
+No hay cambios de estado de cuentas existentes ni esquema/RPC/endpoints nuevos.
+La verificación pública conserva su autorización por token, revocación y expiración;
+esta política no revoca automáticamente comparticiones existentes.
 
 Un ciudadano no puede /admin. Una cuenta administrativa, incluso inactiva, no
 puede flujo ciudadano. DB ahora impide ambos tipos de perfil para el mismo UUID.

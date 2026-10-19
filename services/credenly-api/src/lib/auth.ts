@@ -69,6 +69,38 @@ export async function authenticateCitizen(request: Request): Promise<User> {
       "CITIZEN_ACCESS_DENIED",
       "Esta cuenta administrativa no tiene acceso al flujo ciudadano",
     );
+  // Read the current profile state on every citizen request. JWT metadata is
+  // editable/stale and cannot override a suspended or closed account.
+  const profile = await supabase
+    .from("perfiles")
+    .select("estado")
+    .eq("id", data.user.id)
+    .maybeSingle();
+  if (profile.error)
+    throw new CitizenAuthError(
+      503,
+      "CITIZEN_ACCESS_UNAVAILABLE",
+      "No fue posible validar el acceso ciudadano",
+    );
+  if (
+    profile.data &&
+    ["SUSPENDIDO", "CERRADO"].includes(profile.data.estado)
+  )
+    throw new CitizenAuthError(
+      403,
+      "CITIZEN_ACCOUNT_RESTRICTED",
+      "El estado de tu cuenta no permite el acceso ciudadano",
+    );
+  if (
+    profile.data &&
+    !["ACTIVO", "PENDIENTE_VERIFICACION"].includes(profile.data.estado)
+  )
+    throw new CitizenAuthError(
+      503,
+      "CITIZEN_ACCESS_UNAVAILABLE",
+      "No fue posible validar el acceso ciudadano",
+    );
+  // Missing profiles and pending verification must retain onboarding access.
   return data.user;
 }
 
