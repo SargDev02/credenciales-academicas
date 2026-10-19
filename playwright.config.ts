@@ -16,10 +16,19 @@ export default defineConfig({
     video: "off",
     screenshot: "only-on-failure",
   },
-  projects: [360, 768, 1024, 1440].map((width) => ({
-    name: `width-${width}`,
-    use: { viewport: { width, height: 1000 } },
-  })),
+  projects: [
+    ...[360, 768, 1024, 1440].map((width) => ({
+      testIgnore: "admin.spec.ts",
+      name: `width-${width}`,
+      use: { viewport: { width, height: 1000 } },
+    })),
+    {
+      name: "credenly-admin",
+      testMatch: "admin.spec.ts",
+      timeout: 60000,
+      use: { viewport: { width: 1440, height: 1000 }, screenshot: "off" },
+    },
+  ],
   webServer: [
     {
       command: "pnpm --filter @raes/web exec next start -p 3200",

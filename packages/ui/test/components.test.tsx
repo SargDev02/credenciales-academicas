@@ -9,7 +9,24 @@ import {
   Alert,
   EmptyState,
   Skeleton,
+  MetricCard,
 } from "../src/index";
+
+test("metric card keeps a real zero visible with a labeled detail action", () => {
+  const html = render(
+    <MetricCard
+      title="Indicador operativo"
+      value={0}
+      action={<a href="/detail">Ver detalle</a>}
+    >
+      <p>Sin registros en esta consulta</p>
+    </MetricCard>,
+  );
+  assert.match(html, /<h2[^>]*>Indicador operativo<\/h2>/);
+  assert.match(html, /class="ui-metric-value">0<\/p>/);
+  assert.match(html, /href="\/detail"/);
+  assert.ok(!html.includes("%"));
+});
 
 test("buttons have native semantics and pending disables duplicate submission", () => {
   const html = render(
