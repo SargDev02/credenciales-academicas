@@ -436,7 +436,7 @@ ninguna adopción, creación, corrección o transición; filas, historial y even
 ## Etapa 5 — Interfaces y despliegue
 - [ ] RAES Web completa.
   - [x] Foundation, login SSR y primera consulta administrativa.
-  - [ ] Altas y aprovisionamiento según rol (gap API documentado).
+  - [x] Altas y aprovisionamiento según rol desde endpoints existentes.
 - [ ] Credenly Web integrada.
   - [x] Foundation y galería visual; sin flujo ciudadano aún.
 - [ ] Despliegues independientes.
@@ -533,3 +533,31 @@ las tres altas para AUDITOR. Cookie HttpOnly, cero storage sensible/peticiones
 browser a DB y cero errores de hidratación. Cuenta QA
 `716c6a99-aa6e-422d-9cc7-c3d614bd0b94` y perfil eliminados (Auth 404, perfil 0).
 Sin mutaciones institucionales, de clientes/integraciones ni académicas.
+
+## Frontend — altas RAES Web según rol (2026-10-18)
+
+- [x] Formularios para institución, cliente API e integración institucional dentro
+  de las rutas existentes. Solo SUPERADMIN/ADMIN; AUDITOR no recibe formularios.
+- [x] Revalidación del rol antes de POST en servidor y autorización independiente
+  de RAES API. Inputs tipados/validados, errores, espera y bloqueo de doble envío.
+- [x] Scopes introducidos explícitamente; sin inventar catálogo/asignaciones.
+  Integración sin scopes usa defaults de backend y muestra la respuesta real.
+- [x] Secreto solo al crear, en memoria temporal, copiar/cerrar; no recuperable al
+  recargar. No se persiste ni se devuelve el bearer completo desde Server Actions.
+- [x] QA de altas con API fixture local + Auth real: tres formularios, 409, cierre
+  y recarga, rol cambiado antes del envío, cuatro anchos y cero errores de hidratación.
+  Cero instituciones/clientes/integraciones remotas creadas. Auth temporal
+  `e8a84223-9ca1-4fd7-95e5-068d6ae62b6f` eliminado (404).
+- [x] Typecheck y build RAES Web; tests globales **155/155** tras añadir validación
+  de formularios/proyección y POST sin reintentos. Sin cambios backend adicionales.
+- [ ] Credenly funcional, comparticiones y verificación pública: siguiente bloque.
+
+El gap de perfil quedó resuelto; permanecen documentados los GET no disponibles
+(auditoría, integraciones y scopes asignados). No son necesarios para las altas
+implementadas. PR #15 sigue Draft, sin merge ni despliegues.
+
+Validación RAES real posterior a las altas: cuenta
+`f7fac53e-f590-4ff9-87ec-b89587080c60`, perfil y sesiones eliminados; tres roles
+obtenidos de `/admin/me`, formularios presentes para ADMIN/SUPERADMIN y ausentes
+para AUDITOR, lectura de dos instituciones reales, 403 de las altas para AUDITOR,
+logout/guard, cuatro anchos y cero errores de hidratación/storage sensible.

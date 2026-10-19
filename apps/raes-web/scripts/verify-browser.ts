@@ -66,7 +66,14 @@ try {
   );
   userId = created.data.user.id;
   assert.equal((await fetch(`${api}/api/v1/admin/me`)).status, 401);
-  assert.equal((await fetch(`${api}/api/v1/admin/me`, { headers: { authorization: "Bearer invalid-fixture-token" } })).status, 401);
+  assert.equal(
+    (
+      await fetch(`${api}/api/v1/admin/me`, {
+        headers: { authorization: "Bearer invalid-fixture-token" },
+      })
+    ).status,
+    401,
+  );
   await page.goto(`${base}/institutions`);
   await page.waitForURL("**/login");
   await page.screenshot({
@@ -108,29 +115,54 @@ try {
   assert.equal(me.status, 200);
   const adminPayload: unknown = await me.json();
   assert.ok(isAdminProfile(adminPayload));
-  assert.deepEqual(Object.keys(adminPayload.data).sort(), ["id", "nombres", "apellidos", "rol", "estado"].sort());
+  assert.deepEqual(
+    Object.keys(adminPayload.data).sort(),
+    ["id", "nombres", "apellidos", "rol", "estado"].sort(),
+  );
   assert.equal(adminPayload.data.rol, "AUDITOR");
   assert.equal(adminPayload.data.id, userId);
   assert.equal(me.headers.get("cache-control"), "private, no-store");
-  for (const path of ["institutions", "api-clients", `institutions/${payloadInstitutionId()}/integrations`]) {
+  for (const path of [
+    "institutions",
+    "api-clients",
+    "institutions/00000000-0000-4000-8000-000000000000/integrations",
+  ]) {
     // Authentication denies AUDITOR before body validation or any mutation.
-    const denied = await fetch(`${api}/api/v1/admin/${path}`, { method: "POST", headers: authHeaders });
+    const denied = await fetch(`${api}/api/v1/admin/${path}`, {
+      method: "POST",
+      headers: authHeaders,
+    });
     assert.equal(denied.status, 403);
   }
-  function payloadInstitutionId() { return "00000000-0000-4000-8000-000000000000"; }
-  const inactive = await db.from("perfiles_admin").update({ estado: "INACTIVO" }).eq("id", userId);
+  const inactive = await db
+    .from("perfiles_admin")
+    .update({ estado: "INACTIVO" })
+    .eq("id", userId);
   assert.ok(!inactive.error);
-  assert.equal((await fetch(`${api}/api/v1/admin/me`, { headers: authHeaders })).status, 403);
+  assert.equal(
+    (await fetch(`${api}/api/v1/admin/me`, { headers: authHeaders })).status,
+    403,
+  );
   for (const rol of ["ADMIN", "SUPERADMIN", "AUDITOR"]) {
-    const updated = await db.from("perfiles_admin").update({ rol, estado: "ACTIVO" }).eq("id", userId);
+    const updated = await db
+      .from("perfiles_admin")
+      .update({ rol, estado: "ACTIVO" })
+      .eq("id", userId);
     assert.ok(!updated.error);
-    const response = await fetch(`${api}/api/v1/admin/me`, { headers: authHeaders });
+    const response = await fetch(`${api}/api/v1/admin/me`, {
+      headers: authHeaders,
+    });
     assert.equal(response.status, 200);
     const value: unknown = await response.json();
     assert.ok(isAdminProfile(value));
     assert.equal(value.data.rol, rol);
     await page.goto(`${base}/dashboard`);
     await page.getByText(rol, { exact: true }).waitFor();
+    for (const path of ["institutions", "api-clients"]) {
+      await page.goto(`${base}/${path}`);
+      const visibleForms = await page.locator("summary").count();
+      assert.equal(visibleForms, rol === "AUDITOR" ? 0 : 1);
+    }
   }
 
   const response = await fetch(`${api}/api/v1/admin/institutions`, {

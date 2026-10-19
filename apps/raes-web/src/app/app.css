@@ -502,3 +502,45 @@
     max-width: 100%;
   }
 }
+
+.creation-card summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-brand-600);
+  padding: 6px 0;
+}
+.creation-form {
+  margin-top: 24px;
+  max-width: 640px;
+}
+.creation-form fieldset {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.creation-form fieldset:disabled {
+  opacity: 0.7;
+}
+.creation-form .ui-button {
+  justify-self: start;
+}
+.creation-result:empty {
+  display: none;
+}
+.creation-result {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+  overflow-wrap: anywhere;
+}
+.secret-result {
+  display: grid;
+  gap: 18px;
+  max-width: 640px;
+}
+.secret-result > .ui-button {
+  justify-self: start;
+}

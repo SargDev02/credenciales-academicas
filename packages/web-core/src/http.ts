@@ -8,6 +8,7 @@ export class WebApiError extends Error {
   }
 }
 export function publicErrorMessage(status: number): string {
+  if (status === 400) return "Revisa los datos y los permisos solicitados.";
   if (status === 401) return "Tu sesión terminó. Vuelve a iniciar sesión.";
   if (status === 403)
     return "Tu cuenta no tiene permiso para acceder a esta sección.";
@@ -27,6 +28,8 @@ export async function apiRequest<T>(
     signal?: AbortSignal;
     timeoutMs?: number;
     validate: (value: unknown) => value is T;
+    method?: "GET" | "POST";
+    body?: unknown;
   },
 ): Promise<T> {
   if (!path.startsWith("/api/v1/") || path.includes("\\") || path.includes("?"))
@@ -37,9 +40,16 @@ export async function apiRequest<T>(
     : timeout;
   try {
     const response = await fetch(new URL(path, base), {
+      method: options.method ?? "GET",
+      ...(options.body !== undefined
+        ? { body: JSON.stringify(options.body) }
+        : {}),
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${options.token}`,
+        ...(options.body !== undefined
+          ? { "Content-Type": "application/json" }
+          : {}),
       },
       cache: "no-store",
       redirect: "error",

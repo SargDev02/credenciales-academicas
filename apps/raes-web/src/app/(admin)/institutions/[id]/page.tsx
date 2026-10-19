@@ -1,7 +1,9 @@
+import { CreationForm } from "../../../../components/creation-form";
+import { canManage } from "../../../../lib/admin-model";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, PageHeading, Alert } from "@raes/ui";
-import { getInstitutions } from "../../../../lib/admin-api";
+import { getInstitutions, getAdminProfile } from "../../../../lib/admin-api";
 import { Status } from "../../../../components/status";
 import { formatDate } from "../../../../lib/admin-model";
 export const metadata = { title: "Detalle institucional" };
@@ -11,6 +13,7 @@ export default async function InstitutionDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const profile = await getAdminProfile();
   const institution = (await getInstitutions()).find((i) => i.id === id);
   if (!institution) notFound();
   return (
@@ -42,10 +45,15 @@ export default async function InstitutionDetail({
           ))}
         </dl>
       </Card>
+      {canManage(profile) && (
+        <div className="admin-section">
+          <CreationForm kind="integration" institutionId={id} />
+        </div>
+      )}
       <div className="admin-section">
         <Alert title="Integraciones institucionales">
-          El listado de integraciones y su gestión no están disponibles en esta
-          versión de la interfaz.
+          El listado de integraciones existentes no está disponible. Las claves
+          secretas no pueden recuperarse después de su creación.
         </Alert>
       </div>
     </>

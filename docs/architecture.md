@@ -26,9 +26,12 @@ El perfil académico, el detalle de una credencial y la verificación pública c
 
 RAES Web y Credenly Web son aplicaciones App Router independientes en `apps/`.
 La integración se hace en el servidor web usando el JWT del usuario y la API de
-cada producto; el browser no recibe service role ni credenciales de integraciones.
+cada producto; el browser no recibe service role. Una clave de cliente/integración recién creada
+solo se muestra una vez al administrador autorizado, sin persistencia web.
 Supabase Auth se mantiene separado por producto.
 
 `packages/ui` contiene solo presentación; `packages/web-core` contiene transporte
 HTTP y validación de configuración, sin consultas a tablas de negocio. No se
-introduce almacenamiento académico en Credenly ni se modifica el backend.
+introduce almacenamiento académico en Credenly. El único cambio backend de esta
+etapa es la introspección administrativa `/admin/me`, aprobada explícitamente;
+no cambia permisos, esquema ni RPC.

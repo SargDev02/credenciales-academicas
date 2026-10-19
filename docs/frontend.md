@@ -60,25 +60,36 @@ Disponibles: GET/POST `/api/v1/admin/institutions`, GET/POST
 `/api/v1/admin/api-clients`, POST `/api/v1/admin/institutions/{id}/integrations`.
 El detalle puede derivarse del listado sin inventar una ruta API.
 
-No hay endpoint de perfil/rol del administrador: `/auth/whoami` corresponde a
-integraciones institucionales, no a usuarios administrativos. El backend consulta
-`perfiles_admin` internamente. Tampoco existen GET de auditoría/integraciones ni
-scopes asignados en el listado de clientes. No hay acceso directo a esas tablas
-desde frontend, ni roles inferidos desde `user_metadata`.
+`GET /api/v1/admin/me` devuelve ahora el perfil/rol validado (cambio backend
+aprobado explícitamente). No existen GET de auditoría/integraciones ni scopes
+asignados en el listado de clientes. No hay acceso directo a esas tablas desde
+frontend, ni roles inferidos desde `user_metadata`.
 
-La primera RAES Web permite lectura a los tres roles válidos. Las altas según rol
-esperan la decisión de API descrita al final; no se modifica backend sin aprobación.
-Auditoría e integraciones no consultables se explican en pantalla; no se inventan
-estadísticas, scopes ni listados. Credenly integrado espera el reporte de este bloque.
+## RAES Web administrativa
 
-## Primera RAES Web de lectura
+Rutas: `/login`, `/dashboard`, `/institutions`, `/institutions/[id]`,
+`/api-clients` y `/audit` (disponibilidad explicada, sin datos inventados).
+`/` redirige al resumen. Los listados/perfil se solicitan una vez por render mediante
+React cache; los filtros y el detalle usan el listado. Los contadores describen
+registros visibles, no totales globales no ofrecidos por API.
 
-Rutas reales: `/login`, `/dashboard`, `/institutions`, `/institutions/[id]`,
-`/api-clients` y `/audit` (disponibilidad explicada, sin consulta de datos inexistente).
-`/` redirige al resumen. Los listados se solicitan una vez por render mediante
-React cache; los filtros usan los datos recibidos y el detalle se deriva del listado.
-Los contadores describen registros visibles, no totales globales no ofrecidos por API.
-No existen formularios de alta activos mientras no se conozca el rol desde la API.
+SUPERADMIN/ADMIN pueden crear instituciones, clientes API e integraciones desde
+los endpoints POST existentes. AUDITOR solo ve consultas. Las Server Actions
+vuelven a comprobar el perfil antes del POST; RAES API autoriza cada operación.
+Los formularios conservan errores por campo y datos ante rechazo, muestran espera
+y bloquean envíos duplicados. No hay reintentos automáticos de mutaciones; ante
+resultado incierto se indica revisar el listado antes de volver a enviar.
+
+No existe catálogo de scopes consultable: los códigos se introducen explícitamente
+separados por comas y RAES valida los permitidos. No se simulan permisos asignados.
+En una integración, omitirlos usa el valor predeterminado del backend; el resultado
+muestra los permisos que RAES confirma. Para clientes son obligatorios.
+
+Las claves se proyectan de la respuesta de alta a memoria del componente únicamente;
+no se persisten ni se reenvía el bearer `authorization` completo de la API.
+Se pueden copiar y cerrar; cerrar, recargar o salir elimina la visualización.
+No se ofrece recuperar claves. Sin listado de integraciones no se presenta una
+lista falsa; su creación sigue disponible dentro del detalle institucional.
 
 ### Sesión
 
@@ -91,9 +102,10 @@ metadata. La API vuelve a validar perfil activo y permisos. Los errores de acces
 no muestran SQL ni mensajes internos. Las respuestas autenticadas no se cachean.
 Logout borra también las cookies locales aunque falle la revocación remota.
 
-Los únicos Client Components específicos son formulario de login, navegación
-activa y botón de recuperación de errores. El resto es Server Components. No se
-serializan JWT ni claves al árbol de componentes del cliente. Credenly todavía
+Los Client Components específicos son formularios de login/alta, navegación
+activa y recuperación de errores. El resto es Server Components. No se serializan
+JWT ni claves de servidor al árbol del cliente. Solo la clave de integración/cliente
+recién creada se entrega para la visualización única autorizada. Credenly todavía
 no tiene integración de sesión ni flujo ciudadano; solo su Foundation visual.
 
 ### Validación de navegador
@@ -164,3 +176,20 @@ Los gaps de auditoría/listados/scopes siguen explícitos.
 La consulta real de `/admin/me` se comprobó además con SUPERADMIN, ADMIN y AUDITOR
 activos (200), perfil inactivo (403), sin token/inválido (401), y las tres altas
 rechazadas como AUDITOR (403). La cuenta temporal de esta ejecución fue eliminada.
+
+### QA de altas sin cambios remotos persistentes
+
+Desde `apps/raes-web`, con build previo:
+
+```bash
+node --env-file=.env.local --env-file=../../services/raes-api/.env.local --import=tsx scripts/verify-provisioning.ts --temporary-admin
+```
+
+El proceso operador crea/elimina una cuenta Auth sintética temporal. Arranca una
+API **fixture local** en 3401 y una web compilada en 3204 con entorno explícitamente
+limitado a configuración pública de Auth; la service role nunca pasa a Next.
+Comprueba las tres altas, conflicto 409, permisos recibidos, cierre/recarga del
+secreto, rol cambiado antes de enviar, roles y responsive. No crea instituciones,
+clientes ni integraciones remotas. Esta prueba UI no se presenta como alta remota
+real; el verificador separado usa RAES API real para perfil/roles/listados y 403.
+No toma capturas, trazas ni logs con la clave mostrada. Limpieza Auth obligatoria.

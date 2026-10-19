@@ -1,5 +1,7 @@
+import { CreationForm } from "../../../components/creation-form";
+import { canManage } from "../../../lib/admin-model";
 import { PageHeading, Card, Input, Button, EmptyState, Alert } from "@raes/ui";
-import { getApiClients } from "../../../lib/admin-api";
+import { getApiClients, getAdminProfile } from "../../../lib/admin-api";
 import { Status } from "../../../components/status";
 import { filterRecords, formatDate } from "../../../lib/admin-model";
 export const metadata = { title: "Clientes API" };
@@ -9,6 +11,7 @@ export default async function ApiClients({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
+  const profile = await getAdminProfile();
   const clients = filterRecords(await getApiClients(), q, "");
   return (
     <>
@@ -74,10 +77,14 @@ export default async function ApiClients({
           </EmptyState>
         </Card>
       )}
+      {canManage(profile) && (
+        <div className="admin-section">
+          <CreationForm kind="client" />
+        </div>
+      )}
       <div className="admin-section">
         <Alert title="Consulta de clientes">
-          Los permisos asignados no se incluyen en esta consulta. Las altas
-          todavía no están habilitadas en la interfaz.
+          Los permisos asignados no se incluyen en el listado disponible.
         </Alert>
       </div>
     </>

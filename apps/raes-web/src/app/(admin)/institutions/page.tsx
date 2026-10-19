@@ -1,3 +1,5 @@
+import { CreationForm } from "../../../components/creation-form";
+import { canManage } from "../../../lib/admin-model";
 import {
   Card,
   PageHeading,
@@ -7,7 +9,7 @@ import {
   Alert,
   FormField,
 } from "@raes/ui";
-import { getInstitutions } from "../../../lib/admin-api";
+import { getInstitutions, getAdminProfile } from "../../../lib/admin-api";
 import { InstitutionTable } from "../../../components/institution-table";
 import { filterRecords } from "../../../lib/admin-model";
 export const metadata = { title: "Instituciones" };
@@ -17,6 +19,7 @@ export default async function Institutions({
   searchParams: Promise<{ q?: string; estado?: string }>;
 }) {
   const query = await searchParams;
+  const profile = await getAdminProfile();
   const rows = filterRecords(await getInstitutions(), query.q, query.estado);
   return (
     <>
@@ -59,12 +62,11 @@ export default async function Institutions({
           </EmptyState>
         </Card>
       )}
-      <div className="admin-section">
-        <Alert title="Consulta institucional">
-          Las altas y la gestión de integraciones todavía no están habilitadas
-          en esta interfaz.
-        </Alert>
-      </div>
+      {canManage(profile) && (
+        <div className="admin-section">
+          <CreationForm kind="institution" />
+        </div>
+      )}
     </>
   );
 }

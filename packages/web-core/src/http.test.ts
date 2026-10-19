@@ -149,3 +149,32 @@ test("slow requests time out once with a sanitized error", async () => {
     globalThis.fetch = original;
   }
 });
+
+test("POST uses JSON and never retries an uncertain mutation", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async (_input, init) => {
+    calls++;
+    assert.equal(init?.method, "POST");
+    assert.equal(
+      new Headers(init?.headers).get("Content-Type"),
+      "application/json",
+    );
+    assert.deepEqual(JSON.parse(String(init?.body)), { nombre: "Sintético" });
+    return Response.json({ message: "internal detail" }, { status: 500 });
+  };
+  try {
+    await assert.rejects(
+      apiRequest("https://api.example", "/api/v1/items", {
+        token: "fixture",
+        method: "POST",
+        body: { nombre: "Sintético" },
+        validate: valid,
+      }),
+      (e) => e instanceof WebApiError && e.status === 500,
+    );
+    assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
