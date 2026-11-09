@@ -323,3 +323,16 @@ Comprobador final sin nuevas cuentas ni contraseña:
 `pnpm --filter @raes/api exec node scripts/verify-academic-review-postcheck.mjs`.
 No repetir creación/resume: el dataset ya está en B. La revisión académica queda
 funcionalmente validada para el prototipo; sin declaración de producción.
+
+## Investigación posterior del operador
+
+Para verificar el fixture ya terminado en B sin volver a incorporar datos:
+
+```bash
+pnpm --filter @raes/api exec node scripts/verify-academic-review-live.mjs --verify-completed
+```
+
+El postcheck comparte las mismas aserciones finales; ambos conservan diagnóstico
+por etapa y escriben evidencias nuevas sin reemplazar las históricas. El FAIL
+antiguo carece de excepción registrada y no puede atribuirse causalmente con
+certeza. Véase [la investigación y sus límites](reports/academic-review-operator-incident-2026-11-09.md).

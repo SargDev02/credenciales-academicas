@@ -1,0 +1,37 @@
+{
+  "verifiedAt": "2026-11-09T18:37:28.934Z",
+  "clientResolve": "PASS",
+  "personId": "e9e8a688-a337-4be9-b965-0eb59be0cdb5",
+  "existingCitizenCredentials": [
+    {
+      "id": "307a43bd-f9f3-4e1f-9b69-88ae75eb62ad",
+      "code": "RAES-CRD-00000002",
+      "state": "ANULADA",
+      "version": 2
+    },
+    {
+      "id": "2921c117-d4ac-4132-9e4d-2c4d87f8c5fc",
+      "code": "RAES-CRD-00000001",
+      "state": "REVOCADA",
+      "version": 3
+    }
+  ],
+  "syntheticMultiInstitutionCredentials": [
+    {
+      "id": "b80fb8d4-6a6c-4453-948a-62018be8b7b6",
+      "code": "RAES-CRD-00000032",
+      "state": "VIGENTE",
+      "institutionId": "6d6a4b44-db0b-40a3-9863-0fc12f9f0d8b"
+    },
+    {
+      "id": "981200b3-a30c-4088-ae09-84b27beab01b",
+      "code": "RAES-CRD-00000031",
+      "state": "VIGENTE",
+      "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a"
+    }
+  ],
+  "raesApiRequests": 3,
+  "raesDatabaseRequests": 0,
+  "institutionDatabaseRequests": 0,
+  "academicWrites": 0
+}

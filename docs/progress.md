@@ -1092,3 +1092,24 @@ continúa Draft/open, head5c244cfb163094d121fb5315448e173bfca03601, sin merge ni
 modificación. Main remoto sigue09e977562a11ec305f191ed885185174c5423458.
 Sin despliegue. Informe de20puntos y limitación del operador:
 [academic-review-status-2026-11-09.md](reports/academic-review-status-2026-11-09.md).
+
+### 2026-11-09 — Investigación aislada de la incidencia del operador
+
+No se repitieron fixtures, baseline, incorporaciones, cambios institucionales ni
+creación Auth. La investigación confirmó pérdida de excepción en el catch antiguo
+y etiqueta APPROVAL_B compartida por todo el bloque final; cuatro errores locales
+distintos reproducen exactamente el mismo artefacto histórico. No se atribuye
+retrospectivamente una causa no registrada. El disparador histórico sigue
+indeterminado; el postcheck exitoso no permite reconstruirlo.
+
+`--resume --check` sobre B/v2 reproduce además una expectativa actual de versión A;
+se agregó `--verify-completed` para comprobación segura, sin relajar ni rebobinar A.
+Operador y postcheck corregidos: PASS/exit0; 12 regresiones, 282/282 suite completa,
+lint/typecheck correctos. Diagnósticos por etapa/código/cause/exit/status sin secretos;
+archivos nuevos con nombres únicos. Tres evidencias históricas intactas por SHA.
+
+Cero pendientes inesperadas/residuos Auth y ninguna mutación canónica no aprobada;
+huellas canónicas, perfiles e identidad conservadas. Conectores canonicalWrites0,
+Credenly consulta RAES vivo, Valentina/admin intactos y Sergio sin perfil deliberadamente.
+Sin merge/deploy ni cambios en PR#16. El límite causal pendiente está documentado en
+[el informe de incidencia](reports/academic-review-operator-incident-2026-11-09.md).

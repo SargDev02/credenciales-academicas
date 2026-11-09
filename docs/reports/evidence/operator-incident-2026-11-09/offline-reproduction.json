@@ -1,0 +1,49 @@
+{
+  "mode": "OFFLINE_HISTORICAL_FINAL_BLOCK",
+  "historicalCommit": "7636a2c",
+  "sourceSha256": "698df719c1657426561764662dda99a6695d2ba6eb7411f678e50728869f4e87",
+  "rootCauseAttribution": "Original exception not retained: distinct causes produce identical historical evidence. No exact historic trigger can be asserted.",
+  "cases": [
+    {
+      "name": "valid",
+      "result": {
+        "result": "PASS"
+      },
+      "allDependenciesLocalStubs": true
+    },
+    {
+      "name": "detector-process-failure",
+      "result": {
+        "result": "FAIL",
+        "failedStage": "APPROVAL_B"
+      },
+      "allDependenciesLocalStubs": true
+    },
+    {
+      "name": "http-replay-failure",
+      "result": {
+        "result": "FAIL",
+        "failedStage": "APPROVAL_B"
+      },
+      "allDependenciesLocalStubs": true
+    },
+    {
+      "name": "unexpected-proposal",
+      "result": {
+        "result": "FAIL",
+        "failedStage": "APPROVAL_B"
+      },
+      "allDependenciesLocalStubs": true
+    },
+    {
+      "name": "count-mismatch",
+      "result": {
+        "result": "FAIL",
+        "failedStage": "APPROVAL_B"
+      },
+      "allDependenciesLocalStubs": true
+    }
+  ],
+  "remoteRequests": 0,
+  "writes": 0
+}

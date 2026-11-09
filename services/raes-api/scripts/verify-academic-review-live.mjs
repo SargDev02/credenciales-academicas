@@ -6,6 +6,8 @@ import {createHash,randomBytes} from 'node:crypto';
 import {resolve} from 'node:path';
 import {parse} from 'dotenv';
 import {createClient} from '@supabase/supabase-js';
+import {detectFixture,verifyIdempotence,safeDiagnostic,OperatorError} from './lib/academic-review-idempotence.mjs';
+import {verifyCompletedReview} from './lib/academic-review-completed.mjs';
 import {renderSyntheticReviewDocument} from './lib/synthetic-review-document.mjs';
 
 // Explicitly authorized, permanent synthetic fixture + temporary citizen account.
@@ -17,8 +19,9 @@ const options={auth:{persistSession:false,autoRefreshToken:false,detectSessionIn
 const db=createClient(env.RAES_SUPABASE_URL,env.RAES_SUPABASE_SERVICE_ROLE_KEY,options),citizens=createClient(credEnv.CREDENLY_SUPABASE_URL,credEnv.CREDENLY_SUPABASE_SERVICE_ROLE_KEY,options),adminSession=createClient(env.RAES_SUPABASE_URL,env.RAES_SUPABASE_SERVICE_ROLE_KEY,options),citizenSession=createClient(credEnv.CREDENLY_SUPABASE_URL,credEnv.CREDENLY_SUPABASE_SERVICE_ROLE_KEY,options);
 const evidence={startedAt:new Date().toISOString(),fixture:manifest,stages:[],academicWritesCredenly:0};let originals;let stage='PRECHECK',temporaryId=null,adminToken,citizenToken,password;
 const args=process.argv.slice(2);
-if(args.some(arg=>!['--check','--resume'].includes(arg))||new Set(args).size!==args.length)throw Error('Usage: verify-academic-review-live [--resume] [--check]');
-const checkOnly=args.includes('--check'),resume=args.includes('--resume');
+if(args.some(arg=>!['--check','--resume','--verify-completed'].includes(arg))||new Set(args).size!==args.length)throw Error('Usage: verify-academic-review-live [--resume] [--check] | --verify-completed');
+const checkOnly=args.includes('--check'),resume=args.includes('--resume'),completedOnly=args.includes('--verify-completed');
+if(completedOnly&&args.length!==1)throw Error('Use --verify-completed alone');
 let resumedFixture;
 const email='review-20261109@fixture.invalid';
 const source=createClient(sourceEnv.POLI_SUPABASE_URL,sourceEnv.POLI_SUPABASE_SERVICE_ROLE_KEY,options);
@@ -26,16 +29,18 @@ async function state(client,tables){const result={};for(const table of tables){c
 function rowHash(row){return createHash('sha256').update(JSON.stringify(row)).digest('hex');}
 async function unchanged(client,before){const after=await state(client,Object.keys(before));for(const table of Object.keys(before))for(const row of before[table])check(after[table].some(current=>current.id===row.id&&rowHash(current)===rowHash(row)));}
 
-function check(ok){if(!ok)throw Error('LIVE_CHECK_FAILED');}
-function save(){writeFileSync('/tmp/academic-review-live-result.json',JSON.stringify(evidence,null,2)+'\n',{mode:0o600});}
+function check(ok,code='LIVE_CHECK_FAILED'){if(!ok)throw new OperatorError(code);}
+const runOutputPath=`/tmp/academic-review-run-${Date.now()}-${process.pid}.json`;
+let runOutputCreated=false;
+function save(){writeFileSync(runOutputPath,JSON.stringify(evidence,null,2)+'\n',{mode:0o600,flag:runOutputCreated?'w':'wx'});runOutputCreated=true;}
 function done(name,data={}){evidence.stages.push({name,...data});save();console.log(name);}
 async function sql(query){let token=execFileSync('security',['find-generic-password','-a','instituciones','-s','Supabase CLI','-w'],{encoding:'utf8',stdio:['ignore','pipe','ignore']}).trim();if(token.startsWith('go-keyring-base64:'))token=Buffer.from(token.slice(18),'base64').toString();const r=await fetch('https://api.supabase.com/v1/projects/'+manifest.sourceProject+'/database/query',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({query,read_only:false}),signal:AbortSignal.timeout(30000)});check(r.ok);return r.json();}
-async function request(base,path,token,{method='GET',body}={}){const r=await fetch(base+'/api/v1/'+path,{method,headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(30000)});const data=await r.json();check(r.ok);return {body:data,status:r.status,cache:r.headers.get('cache-control')};}
-async function detect(){const out=execFileSync('pnpm',['--filter','@raes/connector-poli','detect','--','--credential-code='+manifest.credentialCode],{cwd:root,encoding:'utf8',stdio:['ignore','pipe','pipe'],timeout:120000});const summary=out.split('\n').map(line=>{try{return JSON.parse(line);}catch{return null;}}).find(v=>v?.operation==='DETECT_AND_SUBMIT');check(summary?.canonicalWrites===0);return summary;}
+async function request(base,path,token,{method='GET',body}={}){const r=await fetch(base+'/api/v1/'+path,{method,headers:{Authorization:'Bearer '+token,...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(30000)});const data=await r.json();if(!r.ok)throw new OperatorError('HTTP_STATUS_UNEXPECTED',{httpStatus:r.status});return {body:data,status:r.status,cache:r.headers.get('cache-control')};}
+async function detect(){return detectFixture({root,credentialCode:manifest.credentialCode});}
 async function pending(type){const result=await db.from('solicitudes_revision_academica').select('id,estado,tipo').eq('persona_identificador_origen',manifest.ids.student).eq('tipo',type).eq('estado','PENDIENTE');check(!result.error&&result.data?.length===1);return result.data[0].id;}
 async function approve(id){return (await request('http://localhost:3001',`admin/academic-reviews/${id}/approve`,adminToken,{method:'POST',body:{motivo:'Prueba sintética controlada autorizada por el propietario'}})).body.data;}
 async function live(){const result=await request('http://localhost:3002','credentials',citizenToken);check(result.status===200&&result.cache==='private, no-store'&&result.body.source==='RAES'&&result.body.persistedByCredenly===false&&result.body.data.length===1);return result.body.data[0];}
-async function counts(){const tables=['personas_maestra','persona_fuentes','credenciales','credencial_versiones','credencial_eventos','operaciones_api'];return Object.fromEntries(await Promise.all(tables.map(async table=>{const r=await db.from(table).select('id',{count:'exact',head:true});check(!r.error);return [table,r.count];})));}
+async function counts(){const tables=['personas_maestra','persona_fuentes','credenciales','credencial_versiones','credencial_eventos','operaciones_api'];return Object.fromEntries(await Promise.all(tables.map(async table=>{const r=await db.from(table).select('id',{count:'exact',head:true});if(r.error)throw new OperatorError('COUNTER_READ_FAILED',{table,httpStatus:r.status});return [table,r.count];})));}
 async function main(){
  check((checkOnly||process.stdin.isTTY)&&new URL(env.RAES_SUPABASE_URL).hostname==='askqizcwemmydwcgrewp.supabase.co'&&new URL(credEnv.CREDENLY_SUPABASE_URL).hostname==='xvzylegwuxmxqcgdjjrq.supabase.co'&&new URL(sourceEnv.POLI_SUPABASE_URL).hostname===manifest.sourceProject+'.supabase.co');
  check((await db.from('cortes_revision_academica').select('id',{count:'exact',head:true})).count===2);
@@ -48,7 +53,8 @@ async function main(){
   const request=await db.from('solicitudes_revision_academica').select('id,estado,tipo,recurso_raes_id,institucion_id,persona_identificador_origen').eq('id',approved.requestId).single();
   check(!request.error&&request.data.estado==='APROBADA'&&request.data.tipo==='NUEVO_ESTUDIANTE'&&request.data.recurso_raes_id===approved.personId&&request.data.persona_identificador_origen===manifest.ids.student);
   const canonical=await db.from('credenciales').select('id,codigo_raes,estado_actual,version_actual,persona_id').eq('institucion_id',request.data.institucion_id).eq('codigo_origen',manifest.credentialCode).single();
-  check(!canonical.error&&canonical.data.persona_id===approved.personId&&canonical.data.estado_actual==='VIGENTE'&&canonical.data.version_actual===1);
+  check(!canonical.error&&canonical.data.persona_id===approved.personId&&canonical.data.estado_actual==='VIGENTE');
+  check(canonical.data.version_actual===1,'RESUME_EXPECTS_VERSION_A_USE_VERIFY_COMPLETED');
   const version=await db.from('credencial_versiones').select('titulo').eq('credencial_id',canonical.data.id).eq('numero_version',1).single();check(!version.error&&version.data.titulo===manifest.titleA);
   resumedFixture={personId:approved.personId,requestId:approved.requestId,credentialId:canonical.data.id};
   evidence.firstAttempt={startedAt:prior.startedAt,before:prior.before,incorporation:approved,cleanup:prior.cleanup};
@@ -88,10 +94,8 @@ async function main(){
  stage='SOURCE_CHANGE_B';await sql(`begin;do $$begin if (select count(*) from public.credenciales where id='${manifest.ids.credential}' and codigo='${manifest.credentialCode}' and titulo='${manifest.titleA}')<>1 then raise exception 'FIXTURE_STATE_CHANGED';end if;update public.credenciales set titulo='${manifest.titleB}' where id='${manifest.ids.credential}';end $$;commit;`);
  const second=await detect();check(second.proposalsCreated===1);const correction=await pending('ACTUALIZACION_CREDENCIAL');check((await live()).version.titulo===manifest.titleA);done('B_PENDING_CITIZEN_STILL_A',{requestId:correction,detection:second});
  stage='APPROVAL_B';await approve(correction);const b=await live();check(b.id===a.id&&b.version.titulo===manifest.titleB&&b.versionActual===2);done('NEXT_GET_RETURNS_APPROVED_B',{requestId:correction,credentialId:b.id,httpStatus:200,version:2,source:'RAES',persistedByCredenly:false});
- stage='IDEMPOTENCE_COUNTS_BEFORE';const stable=await counts();
- stage='IDEMPOTENCE_DETECTION';const repeat=await detect();evidence.idempotenceDetection=repeat;save();check(repeat.proposalsCreated===0);
- stage='IDEMPOTENCE_REPLAY';const replay=await approve(correction);evidence.idempotenceReplay=replay;save();check(replay.replayed===true);
- stage='IDEMPOTENCE_COUNTS_AFTER';check(JSON.stringify(await counts())===JSON.stringify(stable));done('REPEATED_DETECTION_AND_APPROVAL_IDEMPOTENT',{detection:repeat});
+ const idempotence=await verifyIdempotence({counts,detect,replay:()=>approve(correction),onStage:name=>{stage=name;},record:(name,data)=>{(evidence.idempotenceTrace??=[]).push({name,data});save();}});
+ done('REPEATED_DETECTION_AND_APPROVAL_IDEMPOTENT',{detection:idempotence.detection});
  evidence.after=await counts();evidence.result='PASS';evidence.finishedAt=new Date().toISOString();
 }
 async function cleanup(){
@@ -104,5 +108,12 @@ async function cleanup(){
   evidence.cleanup={authAbsent:true,citizenRows:remaining,sessionsClosed:true};done('TEMPORARY_ACCOUNT_AND_CITIZEN_ROWS_REMOVED');
  }
 }
-try{await main();}catch(error){evidence.diagnostic={...(Number.isInteger(error?.status)?{status:error.status}:{}),...(typeof error?.code==='string'&&/^[A-Z0-9_]{1,80}$/.test(error.code)?{code:error.code}:{})};evidence.result='FAIL';evidence.failedStage=stage;console.error('La prueba se detuvo en la etapa '+stage+'; no se imprimen detalles privados.');process.exitCode=1;}finally{try{await cleanup();}catch{evidence.cleanupFailed=true;console.error('Limpieza no confirmada. No se fuerzan eliminaciones.');process.exitCode=1;}save();}
+if(completedOnly){
+const outputPath=`/tmp/academic-review-completed-${Date.now()}-${process.pid}.json`;
+try{const result=await verifyCompletedReview({outputPath,mode:'operator-completed'});console.log(JSON.stringify({...result,outputPath}));}
+catch(error){console.error(JSON.stringify({result:'FAIL',diagnostic:error.operatorDiagnostic??safeDiagnostic(error,'COMPLETED'),outputPath}));process.exitCode=1;}
+}else{
+try{await main();}catch(error){evidence.diagnostic=error.operatorDiagnostic??safeDiagnostic(error,stage);evidence.result='FAIL';evidence.failedStage=stage;console.error('La prueba se detuvo en la etapa '+stage+'; no se imprimen detalles privados.');process.exitCode=1;}finally{try{await cleanup();}catch{evidence.cleanupFailed=true;console.error('Limpieza no confirmada. No se fuerzan eliminaciones.');process.exitCode=1;}save();console.log(JSON.stringify({result:evidence.result??'CHECK',outputPath:runOutputPath}));}
 if(!checkOnly&&evidence.result==='PASS'&&!evidence.cleanupFailed)console.log('Prueba completa correcta; cuenta temporal eliminada.');
+
+}
