@@ -14,13 +14,13 @@ Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 
 Las bases institucionales representan sistemas académicos naturales y no conocen RAES.
 
-RAES administra instituciones e integraciones, pero la información académica de sedes, programas, personas y credenciales llega desde las instituciones.
+RAES administra instituciones e integraciones. Las instituciones proponen cambios académicos; solo ADMIN/SUPERADMIN incorporan el contenido mediante una decisión transaccional. AUDITOR consulta. El baseline conserva los registros previos aprobados. [Flujo de revisión](academic-review.md).
 
 Credenly contiene autenticación, perfil, verificación OCR, vinculación con RAES y comparticiones.
 
 **Credenly no tiene tabla de credenciales.**
 
-El perfil académico, el detalle de una credencial y la verificación pública consultan RAES para obtener el estado actual.
+El perfil académico, el detalle de una credencial y la verificación pública consultan RAES para obtener el último estado aprobado actual, nunca solicitudes pendientes.
 
 ## Interfaces del prototipo
 

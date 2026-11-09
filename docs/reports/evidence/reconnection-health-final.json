@@ -1,0 +1,53 @@
+{
+  "checkedAt": "2026-11-09T16:35:19.716Z",
+  "results": [
+    {
+      "port": 3001,
+      "path": "health",
+      "httpStatus": 200,
+      "body": {
+        "status": "ok",
+        "service": "raes-api",
+        "timestamp": "2026-11-09T16:35:16.726Z"
+      }
+    },
+    {
+      "port": 3001,
+      "path": "health/ready",
+      "httpStatus": 200,
+      "body": {
+        "status": "ready",
+        "service": "raes-api",
+        "components": {
+          "database": "up"
+        },
+        "timestamp": "2026-11-09T16:35:17.654Z"
+      }
+    },
+    {
+      "port": 3002,
+      "path": "health",
+      "httpStatus": 200,
+      "body": {
+        "status": "ok",
+        "service": "credenly-api",
+        "timestamp": "2026-11-09T16:35:16.715Z"
+      }
+    },
+    {
+      "port": 3002,
+      "path": "health/ready",
+      "httpStatus": 200,
+      "body": {
+        "status": "ready",
+        "service": "credenly-api",
+        "components": {
+          "database": "up",
+          "auth": "up",
+          "raes": "up"
+        },
+        "timestamp": "2026-11-09T16:35:19.714Z"
+      }
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "projectRef": "askqizcwemmydwcgrewp",
+  "institutions": [
+    {
+      "institution": "POLI",
+      "baseline": {
+        "ready": true,
+        "corteId": "05ad0ff7-27e0-4068-a568-366148e122f4",
+        "aplicado": true,
+        "cantidades": {
+          "SEDE": 3,
+          "PROGRAMA": 7,
+          "CREDENCIAL": 13,
+          "ESTUDIANTE": 13,
+          "PROGRAMA_SEDE": 11
+        },
+        "desconocidos": []
+      }
+    },
+    {
+      "institution": "UDEA",
+      "baseline": {
+        "ready": true,
+        "corteId": "b8d0f674-d031-4647-a411-dd480a4174db",
+        "aplicado": true,
+        "cantidades": {
+          "SEDE": 13,
+          "PROGRAMA": 13,
+          "CREDENCIAL": 18,
+          "ESTUDIANTE": 18,
+          "PROGRAMA_SEDE": 35
+        },
+        "desconocidos": []
+      }
+    }
+  ],
+  "totalFingerprints": 144,
+  "initialPending": 0
+}

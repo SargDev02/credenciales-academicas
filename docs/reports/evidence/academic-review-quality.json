@@ -1,0 +1,47 @@
+{
+  "validatedAt": "2026-11-09",
+  "node": "26.10.0",
+  "pnpm": "12.8.1",
+  "lint": {
+    "command": "eslint . --max-warnings 0",
+    "exitCode": 0,
+    "scope": "central JS/TS recommended rules, no Next/React hooks plugin"
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "tests": {
+    "total": 262,
+    "passed": 262,
+    "failed": 0,
+    "sqlIncluded": 25
+  },
+  "build": {
+    "exitCode": 0,
+    "workspaces": [
+      "contracts",
+      "raes-api",
+      "credenly-api",
+      "raes-web",
+      "credenly-web"
+    ]
+  },
+  "browser": {
+    "existingRegression": 20,
+    "academicReview": 6,
+    "total": 26,
+    "failed": 0
+  },
+  "webBoundaries": {
+    "versionableFiles": 388,
+    "browserBundles": 39,
+    "backendSecretsFound": 0,
+    "privateKeysFound": 0,
+    "privateEnvOrTraineddataIndexed": 0,
+    "manualBrowserSessionPersistence": 0
+  },
+  "remoteSyntheticTest": "BLOCKED_INVALID_CURRENT_RAES_ADMIN_PASSWORD",
+  "remoteBranchPublished": false,
+  "merge": false,
+  "deploy": false
+}

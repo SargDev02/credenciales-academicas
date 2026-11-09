@@ -1,3 +1,14 @@
+# Detección y revisión académica
+
+Desde la activación del corte del 2026-11-09, los conectores detectan y presentan
+propuestas. La escritura canónica requiere aprobación administrativa. Comandos,
+contratos, baseline y operación en [revisión académica](academic-review.md).
+`sync` es alias de detect-and-submit; las rutas de escritura descritas abajo
+son HISTÓRICAS y ahora responden409 ACADEMIC_REVIEW_REQUIRED. No usarlas para
+incorporar datos ni para programar sincronización automática.
+
+## Referencia histórica anterior al corte
+
 # Sincronización académica base
 
 Esta etapa introduce los primeros endpoints de escritura institucional sobre RAES.

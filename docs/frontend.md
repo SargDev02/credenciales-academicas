@@ -352,3 +352,17 @@ recursivo correctos; `pnpm test` **199/199** (192 anteriores conservados, seis c
 de presentación y uno de MetricCard nuevos); navegador **20/20**. `pnpm lint`
 termina con exit 0 por `--if-present`, pero ningún paquete define lint: no se
 presenta como análisis estático. Sin cambios de API, Auth remoto, esquema o RPC.
+
+## Validaciones académicas RAES
+
+La bandeja `/validations` y `/validations/[id]` usa las nuevas APIs administrativas
+de revisión. Dashboard muestra el conteo real pendiente; ADMIN/SUPERADMIN deciden
+y AUDITOR consulta. Diálogos con confirmación/motivo, comparación por campo,
+paginación y estados terminales/supersedidos. Mantiene los tokens Figma y añade
+únicamente composición de pantalla; no modifica el archivo de diseño.
+Credenly sigue leyendo en vivo el estado aprobado, con headers privados/no-store.
+Contrato, pruebas y límites en [revisión académica](academic-review.md).
+
+Readiness Credenly ahora comprueba Auth mediante una llamada real: la API y el
+panel administrativo proyectan `up/down` y «Disponible»; no confunden configuración
+con disponibilidad ni esa consulta de salud con un login ciudadano.

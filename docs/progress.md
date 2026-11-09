@@ -985,3 +985,43 @@ documentados; no se declara listo para producción.
 
 Operador y tests en `66df433`; informe/evidencia y actualización de guías en commit
 separado. PR #15 conserva su estado Ready for Review y permanece abierto.
+
+## 2026-11-09 — Reconexión y revisión académica supervisada
+
+Rama `feat/raes-academic-review` desde main09e9775. No mezcla ni merge del PR#16,
+sin despliegue. Trabajo local previo preservado e inventariado en el
+[informe de reconexión](reports/supabase-reconnection-2026-11-09.md).
+
+- [x] RAES/Credenly restaurados reconectados; cuatro env ignorados, secretos de
+  integración conservados. Proyectos antiguos intactos. Fuentes no migradas.
+- [x] Comparación semántica exacta de DDL restaurado, conteos y UUID críticos.
+  Segundo perfil ciudadano ausente (Sergio) aceptado por decisión del propietario;
+  no se reconstruye ni elimina su Auth.
+- [x] Auth RAES reparado solo en cuatro NULL del UUID autorizado; tres resets
+  independientes autorizados, contraseñas ocultas, perfiles/relaciones conservados.
+- [x] Health/ready reales200; RAES Admin, ciudadano y Credenly Admin pasan. Cookies
+  separadas, aislamiento403, sesiones de prueba cerradas. Cinco comparticiones
+  conservadas; lecturas canónicas REVOCADA/ANULADA y VIGENTE multiinstitución.
+- [x] Migraciones nuevas20261109161812 y20261109162351 aplicadas tras ROLLBACK y
+  comparación de once tablas canónicas intactas. No replay/repair de históricos.
+- [x] Corte144 huellas: Poli47, UdeA97; cero desconocidos/pendientes iniciales.
+  Huellas congeladas separadas de cabezas de detección, sin documentos/payloads.
+- [x] Detectores reales completos: cero propuestas y escrituras canónicas.
+- [x] Propuestas y decisión transaccional con roles/scopes, supersedida, rechazo,
+  deduplicación, fencing, guards DB/rutas legacy y conservación de historial.
+- [x] Bandeja RAES y contador real, detalle/comparación, decisiones y estados,
+  responsive360/768/1024/1440, controles por rol y foco/teclado.
+- [x] Credenly consulta viva sin snapshots; prueba local integrada A→pendiente→B
+  aprobado en siguiente GET, private/no-store también en errores.
+- [x] Lint real, typecheck, builds,262/262 tests,25SQL incluidos;26/26 navegador.
+  PGlite dev autorizado, sin presentar WASM como ensayo completo Supabase.
+- [x] RLS/grants reales y advisors revisados; INFO server-only sin policy y WARN
+  HIBP conservados. Límite de contraseñas12 y signup RAES cerrado restaurados.
+- [ ] Prueba remota con tres filas sintéticas nuevas autorizadas en Poli, OCR y
+  ciudadano temporal, aprobación real y limpieza: bloqueada en ADMIN_LOGIN por
+  contraseña actual inválida; pendiente reintento/reset específico autorizado. No se modificará Valentina ni otros registros previos.
+
+Implementación, contratos, operación y límites en [academic-review.md](academic-review.md).
+No se declara cierre de esta funcionalidad hasta completar su prueba remota.
+Persisten los pendientes de producción de identidad real, recuperación, operación/
+retención/rotación, leaked passwords y gate/CI del PR#16.
