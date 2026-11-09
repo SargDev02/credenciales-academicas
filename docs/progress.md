@@ -1085,3 +1085,10 @@ No se cambia el artefactoFAIL aPASS: la evidencia complementaria está separada.
 
 El alcance funcional del prototipo se considera validado; permanecen los pendientes
 de producción y recuperación/operación/identidad/HIBP/CI delPR#16. Sin merge/deploy.
+
+Publicación: [PR#17](https://github.com/SargDev02/credenciales-academicas/pull/17),
+**Draft**, rama `feat/raes-academic-review` publicada con commits separados. PR#16
+continúa Draft/open, head5c244cfb163094d121fb5315448e173bfca03601, sin merge ni
+modificación. Main remoto sigue09e977562a11ec305f191ed885185174c5423458.
+Sin despliegue. Informe de20puntos y limitación del operador:
+[academic-review-status-2026-11-09.md](reports/academic-review-status-2026-11-09.md).

@@ -95,3 +95,11 @@ por paquete delPR#16; PGlite no reemplaza restauración Supabase ni pruebas de c
 
 Guías: [revisión académica](../academic-review.md),
 [reconexión](supabase-reconnection-2026-11-09.md), [progreso](../progress.md).
+
+## Estado de publicación
+
+[PR#17](https://github.com/SargDev02/credenciales-academicas/pull/17) abierto en
+**Draft**, head `feat/raes-academic-review`, base main09e9775. Commits separados,
+sin squash/rebase destructivo. PR#16 permanece Draft/open, head5c244cf; no se mezcló
+ni modificó. No hay merge ni despliegue. Working tree revisado limpio antes de
+publicar; el commit final registra únicamente estos datos de documentación.

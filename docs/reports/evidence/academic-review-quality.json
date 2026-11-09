@@ -41,9 +41,15 @@
     "manualBrowserSessionPersistence": 0
   },
   "remoteSyntheticTest": "PASS_WITH_SUPPLEMENTAL_POSTCHECK",
-  "remoteBranchPublished": false,
+  "remoteBranchPublished": true,
   "merge": false,
   "deploy": false,
   "operatorLastBlock": "Resume operator exited FAIL after HTTP A/B passed; final observation failure not reproduced, original artifact retained",
-  "remoteReplayTransport": "RPC with service_role in ROLLBACK; HTTP replay covered locally"
+  "remoteReplayTransport": "RPC with service_role in ROLLBACK; HTTP replay covered locally",
+  "pullRequest": {
+    "number": 17,
+    "url": "https://github.com/SargDev02/credenciales-academicas/pull/17",
+    "state": "OPEN",
+    "draft": true
+  }
 }
