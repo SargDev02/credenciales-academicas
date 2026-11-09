@@ -88,7 +88,10 @@ async function main(){
  stage='SOURCE_CHANGE_B';await sql(`begin;do $$begin if (select count(*) from public.credenciales where id='${manifest.ids.credential}' and codigo='${manifest.credentialCode}' and titulo='${manifest.titleA}')<>1 then raise exception 'FIXTURE_STATE_CHANGED';end if;update public.credenciales set titulo='${manifest.titleB}' where id='${manifest.ids.credential}';end $$;commit;`);
  const second=await detect();check(second.proposalsCreated===1);const correction=await pending('ACTUALIZACION_CREDENCIAL');check((await live()).version.titulo===manifest.titleA);done('B_PENDING_CITIZEN_STILL_A',{requestId:correction,detection:second});
  stage='APPROVAL_B';await approve(correction);const b=await live();check(b.id===a.id&&b.version.titulo===manifest.titleB&&b.versionActual===2);done('NEXT_GET_RETURNS_APPROVED_B',{requestId:correction,credentialId:b.id,httpStatus:200,version:2,source:'RAES',persistedByCredenly:false});
- const stable=await counts(),repeat=await detect();check(repeat.proposalsCreated===0);check((await approve(correction)).replayed===true);check(JSON.stringify(await counts())===JSON.stringify(stable));done('REPEATED_DETECTION_AND_APPROVAL_IDEMPOTENT',{detection:repeat});
+ stage='IDEMPOTENCE_COUNTS_BEFORE';const stable=await counts();
+ stage='IDEMPOTENCE_DETECTION';const repeat=await detect();evidence.idempotenceDetection=repeat;save();check(repeat.proposalsCreated===0);
+ stage='IDEMPOTENCE_REPLAY';const replay=await approve(correction);evidence.idempotenceReplay=replay;save();check(replay.replayed===true);
+ stage='IDEMPOTENCE_COUNTS_AFTER';check(JSON.stringify(await counts())===JSON.stringify(stable));done('REPEATED_DETECTION_AND_APPROVAL_IDEMPOTENT',{detection:repeat});
  evidence.after=await counts();evidence.result='PASS';evidence.finishedAt=new Date().toISOString();
 }
 async function cleanup(){
@@ -101,5 +104,5 @@ async function cleanup(){
   evidence.cleanup={authAbsent:true,citizenRows:remaining,sessionsClosed:true};done('TEMPORARY_ACCOUNT_AND_CITIZEN_ROWS_REMOVED');
  }
 }
-try{await main();}catch{evidence.result='FAIL';evidence.failedStage=stage;console.error('La prueba se detuvo en la etapa '+stage+'; no se imprimen detalles privados.');process.exitCode=1;}finally{try{await cleanup();}catch{evidence.cleanupFailed=true;console.error('Limpieza no confirmada. No se fuerzan eliminaciones.');process.exitCode=1;}save();}
+try{await main();}catch(error){evidence.diagnostic={...(Number.isInteger(error?.status)?{status:error.status}:{}),...(typeof error?.code==='string'&&/^[A-Z0-9_]{1,80}$/.test(error.code)?{code:error.code}:{})};evidence.result='FAIL';evidence.failedStage=stage;console.error('La prueba se detuvo en la etapa '+stage+'; no se imprimen detalles privados.');process.exitCode=1;}finally{try{await cleanup();}catch{evidence.cleanupFailed=true;console.error('Limpieza no confirmada. No se fuerzan eliminaciones.');process.exitCode=1;}save();}
 if(!checkOnly&&evidence.result==='PASS'&&!evidence.cleanupFailed)console.log('Prueba completa correcta; cuenta temporal eliminada.');

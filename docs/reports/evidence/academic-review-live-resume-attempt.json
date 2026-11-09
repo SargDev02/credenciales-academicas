@@ -1,0 +1,117 @@
+{
+  "startedAt": "2026-11-09T17:50:22.914Z",
+  "fixture": {
+    "document": "SYNTH-RVW-20261109-001",
+    "credentialCode": "SYNTH-POLI-REVIEW-20261109-001",
+    "ids": {
+      "student": "fef04b81-da0a-42b3-8298-14ef89b2dd25",
+      "enrollment": "b41a55b6-db8d-4b1f-acc5-0e77a92a12d9",
+      "credential": "094615f8-10d9-495f-8233-dcacb0fb8c55"
+    },
+    "sourceProject": "fswppckzhvpcbybslnop",
+    "sourceInstitutionNit": "890980136-6",
+    "titleA": "Credencial sintetica revision A",
+    "titleB": "Credencial sintetica revision B"
+  },
+  "stages": [
+    {
+      "name": "ADMIN_AUTHENTICATED"
+    },
+    {
+      "name": "EXISTING_APPROVED_FIXTURE_VERIFIED",
+      "personId": "77cf8d08-fd62-42ac-94bf-404a653b7fec",
+      "requestId": "19cccf59-e73e-45b2-ac3b-915fbf9bd8ed",
+      "credentialId": "3611d73f-e7bc-47a9-96cc-45e77ac47dc7"
+    },
+    {
+      "name": "TEMPORARY_CITIZEN_LINKED_VIA_REAL_OCR",
+      "verificationId": "e94b6a51-b6b2-49e4-bec8-96839e9b7f97"
+    },
+    {
+      "name": "CITIZEN_A",
+      "credentialId": "3611d73f-e7bc-47a9-96cc-45e77ac47dc7",
+      "code": "RAES-CRD-00000033",
+      "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a",
+      "httpStatus": 200
+    },
+    {
+      "name": "B_PENDING_CITIZEN_STILL_A",
+      "requestId": "7cdec780-ff39-4ca9-99cf-a8e742eff025",
+      "detection": {
+        "operation": "DETECT_AND_SUBMIT",
+        "studentsObserved": 1,
+        "credentialsObserved": 1,
+        "proposalsCreated": 1,
+        "observationsUnchanged": 1,
+        "canonicalWrites": 0
+      }
+    },
+    {
+      "name": "NEXT_GET_RETURNS_APPROVED_B",
+      "requestId": "7cdec780-ff39-4ca9-99cf-a8e742eff025",
+      "credentialId": "3611d73f-e7bc-47a9-96cc-45e77ac47dc7",
+      "httpStatus": 200,
+      "version": 2,
+      "source": "RAES",
+      "persistedByCredenly": false
+    },
+    {
+      "name": "TEMPORARY_ACCOUNT_AND_CITIZEN_ROWS_REMOVED"
+    }
+  ],
+  "academicWritesCredenly": 0,
+  "firstAttempt": {
+    "startedAt": "2026-11-09T17:41:18.643Z",
+    "before": {
+      "personas_maestra": 30,
+      "persona_fuentes": 31,
+      "credenciales": 32,
+      "credencial_versiones": 39,
+      "credencial_eventos": 39,
+      "operaciones_api": 39
+    },
+    "incorporation": {
+      "name": "NEW_GROUP_APPROVED",
+      "requestId": "19cccf59-e73e-45b2-ac3b-915fbf9bd8ed",
+      "personId": "77cf8d08-fd62-42ac-94bf-404a653b7fec"
+    },
+    "cleanup": {
+      "authAbsent": true,
+      "citizenRows": {
+        "perfiles": 0,
+        "verificaciones_identidad": 0,
+        "vinculaciones_raes": 0,
+        "comparticiones": 0
+      },
+      "sessionsClosed": true
+    }
+  },
+  "before": {
+    "personas_maestra": 31,
+    "persona_fuentes": 32,
+    "credenciales": 33,
+    "credencial_versiones": 40,
+    "credencial_eventos": 40,
+    "operaciones_api": 40
+  },
+  "temporaryId": "dd58d56c-8d24-40db-9566-3817bf474355",
+  "ocr": {
+    "httpStatus": 201,
+    "state": "APROBADA",
+    "confidence": 0.93,
+    "expectedDocumentMatched": true
+  },
+  "result": "FAIL",
+  "failedStage": "APPROVAL_B",
+  "preexistingAcademicAndCitizenRowsUnchanged": true,
+  "cleanup": {
+    "authAbsent": true,
+    "citizenRows": {
+      "perfiles": 0,
+      "verificaciones_identidad": 0,
+      "vinculaciones_raes": 0,
+      "comparticiones": 0
+    },
+    "sessionsClosed": true
+  }
+}
