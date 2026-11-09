@@ -8,7 +8,8 @@ import { createClient } from "@supabase/supabase-js";
 config({ path: ".env.local", quiet: true });
 const args = process.argv.slice(2);
 const checkOnly = args.includes("--check");
-const positional = args.filter((arg) => arg !== "--check");
+const verifyLocal = args.includes("--verify-local");
+const positional = args.filter((arg) => arg !== "--check" && arg !== "--verify-local");
 let password;
 let confirmation;
 let sessionClient;
@@ -17,7 +18,7 @@ class ResetError extends Error {}
 
 async function main() {
   if (positional.length !== 2 || positional[0] !== "--email" || !/^\S+@\S+\.\S+$/.test(positional[1])) {
-    throw new ResetError("Uso: pnpm --filter @raes/api admin:reset-password --email cuenta@dominio [--check]");
+    throw new ResetError("Uso: pnpm --filter @raes/api admin:reset-password --email cuenta@dominio [--check] [--verify-local]");
   }
   if (!checkOnly && (!process.stdin.isTTY || !process.stdout.isTTY)) {
     throw new ResetError("Ejecuta el comando en tu terminal interactiva. No se acepta contraseña mediante pipes o argumentos.");
@@ -72,10 +73,20 @@ async function main() {
   updated = true;
   sessionClient = createClient(url, key, options);
   const login = await sessionClient.auth.signInWithPassword({ email, password });
-  password = undefined; confirmation = undefined;
   if (login.error || login.data.user?.id !== profile.id || !login.data.session) {
     throw new ResetError("La contraseña se cambió, pero no fue posible verificar el inicio de sesión. No repitas el cambio automáticamente.");
   }
+  if (verifyLocal) {
+    try {
+      const { verifyLocalAdminLogin } = await import("./lib/verify-local-admin-login.mjs");
+      await verifyLocalAdminLogin({ email, password, accessToken: login.data.session.access_token, profile,
+        revokeSession: async (token) => { const result = await db.auth.admin.signOut(token, "local"); if (result.error) throw new ResetError("No se confirmó el cierre de la sesión web de comprobación."); },
+      });
+    } catch {
+      throw new ResetError("La contraseña cambió, pero la verificación API/web local no terminó. Revisa los servidores antes de volver a probar; no repitas el reset automáticamente.");
+    }
+  }
+  password = undefined; confirmation = undefined;
   const after = await db.from("perfiles_admin").select("id,nombres,apellidos,rol,estado").eq("id", profile.id).single();
   if (after.error || JSON.stringify(after.data) !== JSON.stringify(profile)) throw new ResetError("La contraseña se cambió; se requiere revisar el perfil administrativo.");
   console.log("Contraseña restablecida e inicio de sesión verificado. Perfil y rol conservados.");

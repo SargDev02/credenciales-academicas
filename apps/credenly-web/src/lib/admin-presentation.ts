@@ -119,10 +119,10 @@ export function servicePresentation(health: Health) {
       key: "auth",
       title: "Supabase Auth",
       summary: "Auth",
-      available: health.components.auth === "configured",
-      availableLabel: "Configurado",
+      available: health.components.auth === "up",
+      availableLabel: "Disponible",
       description:
-        "Presencia de la configuración de autenticación. No simula un inicio de sesión.",
+        "Consulta real a la API de Supabase Auth. No simula un inicio de sesión.",
     },
     {
       key: "raes",
