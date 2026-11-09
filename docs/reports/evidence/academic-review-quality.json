@@ -11,8 +11,8 @@
     "exitCode": 0
   },
   "tests": {
-    "total": 262,
-    "passed": 262,
+    "total": 270,
+    "passed": 270,
     "failed": 0,
     "sqlIncluded": 25
   },
@@ -33,15 +33,17 @@
     "failed": 0
   },
   "webBoundaries": {
-    "versionableFiles": 388,
+    "versionableFiles": 406,
     "browserBundles": 39,
     "backendSecretsFound": 0,
     "privateKeysFound": 0,
     "privateEnvOrTraineddataIndexed": 0,
     "manualBrowserSessionPersistence": 0
   },
-  "remoteSyntheticTest": "PENDING_NEW_ADMIN_SESSION_AFTER_VERIFIED_AUTH_RESET",
+  "remoteSyntheticTest": "PASS_WITH_SUPPLEMENTAL_POSTCHECK",
   "remoteBranchPublished": false,
   "merge": false,
-  "deploy": false
+  "deploy": false,
+  "operatorLastBlock": "Resume operator exited FAIL after HTTP A/B passed; final observation failure not reproduced, original artifact retained",
+  "remoteReplayTransport": "RPC with service_role in ROLLBACK; HTTP replay covered locally"
 }

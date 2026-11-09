@@ -1013,17 +1013,18 @@ sin despliegue. Trabajo local previo preservado e inventariado en el
   responsive360/768/1024/1440, controles por rol y foco/teclado.
 - [x] Credenly consulta viva sin snapshots; prueba local integrada A→pendiente→B
   aprobado en siguiente GET, private/no-store también en errores.
-- [x] Lint real, typecheck, builds,262/262 tests,25SQL incluidos;26/26 navegador.
+- [x] Lint real, typecheck, builds,270/270 tests,25SQL incluidos;26/26 navegador.
   PGlite dev autorizado, sin presentar WASM como ensayo completo Supabase.
 - [x] RLS/grants reales y advisors revisados; INFO server-only sin policy y WARN
   HIBP conservados. Límite de contraseñas12 y signup RAES cerrado restaurados.
-- [ ] Prueba remota con tres filas sintéticas nuevas autorizadas en Poli, OCR y
-  ciudadano temporal, aprobación real y limpieza: bloqueada en ADMIN_LOGIN por
-  contraseña actual inválida; nuevo reset únicamente de RAES completado y validado; pendiente
-  ejecutar la prueba con una nueva sesión administrativa. No se modificará Valentina ni otros registros previos.
+- [x] Prueba remota con tres filas sintéticas nuevas autorizadas en Poli, OCR,
+  ciudadano temporal y aprobación real: HTTP A→pendiente→B correcto. Dos cuentas
+  temporales eliminadas; postcheck final PASS e idempotencia RPC comprobada.
+  El último bloque del operador original falló y se conserva/documenta esa limitación.
 
 Implementación, contratos, operación y límites en [academic-review.md](academic-review.md).
-No se declara cierre de esta funcionalidad hasta completar su prueba remota.
+La revisión académica queda funcionalmente validada para el alcance del prototipo,
+con la limitación del bloque final del operador documentada y postcheck PASS.
 Persisten los pendientes de producción de identidad real, recuperación, operación/
 retención/rotación, leaked passwords y gate/CI del PR#16.
 
@@ -1040,3 +1041,47 @@ perfil intacto, cookies HttpOnly y guard de logout correcto. Evidencia sanitizad
 en `reports/evidence/raes-admin-authorized-password-reset.json`. Credenly y Valentina quedan fuera de esta
 autorización. La herramienta de escritorio denegó acceso a Terminal: el propietario
 debe lanzar el comando directamente; no se intenta otro mecanismo de control UI.
+
+### Prueba remota — incorporación confirmada y corrección OCR autorizada
+
+La ejecución autenticada incorporó exactamente las tres filas sintéticas
+aprobadas en Poli. Detección→NUEVO_ESTUDIANTE PENDIENTE conservó todo el canónico;
+aprobación administrativa creó persona `77cf8d08-fd62-42ac-94bf-404a653b7fec`,
+fuente y credencial, con solicitud `19cccf59-e73e-45b2-ac3b-915fbf9bd8ed`.
+Totales31/32/33personas/fuentes/credenciales y40versiones/eventos/operaciones.
+Ningún registro previo cambió. UdeA continúa intacta.
+
+La fase ciudadana detectó un defecto real: Tesseract leyó bien el identificador,
+pero el parser extraía MBRES desde NO dentro de NOMBRES. El operador rechazó la
+identidad no coincidente. Cuenta temporal `0d384284-c36a-4b42-8646-5cde347b218f`
+y todas sus relaciones eliminadas; sesiones cerradas, sin forzar FK.
+El historial académico recién aprobado se conserva. Evidencia del primer intento
+en `reports/evidence/academic-review-live-first-attempt.json`.
+
+El propietario autorizó la corrección mínima de delimitadores del parser.
+Ocho regresiones nuevas,13/13 parser,270/270 totales, lint/typecheck/builds correctos.
+El mismo render+Tesseract real ahora devuelve el documento esperado con confianza
+0.93. Sin modificar schema/RPC/umbrales ni datos previos. Operador `--resume`
+precheck sin escrituras correcto; la reanudación y el postcheck se detallan abajo.
+
+### Cierre funcional de revisión académica
+
+- HTTP ciudadano real200: A/v1, A mientras B pendiente, B/v2 tras aprobación.
+  sourceRAES/persistedByCredenlyfalse; ninguna escritura académica en Credenly.
+- Fixture permanente RAES-CRD-00000033, UUID3611d73f-e7bc-47a9-96cc-45e77ac47dc7.
+  Dos decisiones aprobadas y cero pendientes; sin reescribir registros previos.
+- Postcheck independiente PASS: detección0nuevas, RPC de replay con ROLLBACK y
+  huellas de once tablas canónicas intactas; mismos31/32/33 y41versiones/eventos/operaciones.
+- Ambas cuentas temporales ausentes en Auth, identidades, sesiones y relaciones.
+  Se conservan los4usuarios/1perfil/1verificación/1vínculo/5shares/9accesos originales.
+- Detectores globales Poli14/14 yUdeA18/18,0propuestas ycanonicalWrites0.
+- Parser autorizado corregido,270/270 tests,25SQL incluidos; lint/types/builds y
+ 26/26navegador correctos. Sin secretos, env, dumps ni traineddata en Git.
+
+Incidencia conservada: el operador resume salióFAIL en su último bloque después
+de pasar HTTP A/B y limpiar. Causa no reproducida; fases de diagnóstico ampliadas.
+Replay remoto verificado porRPC/service_role conROLLBACK; replayHTTP local.
+No se cambia el artefactoFAIL aPASS: la evidencia complementaria está separada.
+
+El alcance funcional del prototipo se considera validado; permanecen los pendientes
+de producción y recuperación/operación/identidad/HIBP/CI delPR#16. Sin merge/deploy.

@@ -245,7 +245,7 @@ operación/retención/rotación, contraseñas filtradas y gate/CI del PR #16.
 
 - `pnpm lint`: ESLint real, cero errores/warnings.
 - `pnpm typecheck`: todos los workspaces correctos.
-- `pnpm test`: 262/262 (237 de paquetes + 25 SQL), sin skips. Incluye
+- `pnpm test`: 270/270 (245 de paquetes + 25 SQL), sin skips. Incluye
   reconstrucción limpia, legado, rollback, deduplicación, terminales, guard,
   timestamps, cambios canónicos posteriores y comparación actual/propuesta.
 - Builds de ambos frontends, ambas APIs y contratos: correctos.
@@ -263,15 +263,63 @@ operación/retención/rotación, contraseñas filtradas y gate/CI del PR #16.
 Las detecciones reales completas posteriores al corte devolvieron 0 propuestas:
 Poli 13 personas/13 credenciales, 26 observaciones iguales; UdeA 18/18, 36 iguales.
 Ambas canonicalWrites:0. Esto comprueba el corte actual sin reaprobar registros.
-La prueba remota nueva se detuvo en ADMIN_LOGIN: Supabase rechazó la contraseña
-actual introducida por el propietario (invalid_credentials). No se creó ninguna
-fila fuente ni cuenta temporal. Después, un nuevo reset únicamente de RAES fue expresamente autorizado y pasó
-Auth/API/browser con UUID/perfil/rol conservados. Queda ejecutar de nuevo el
-operador de prueba con esa contraseña; no se conserva una sesión entre operadores.
-No se presenta la prueba remota como completada por estas comprobaciones locales.
+La prueba remota completó incorporación, OCR/vinculación y HTTP ciudadano
+A→pendiente→B aprobado con200 y sin snapshots. El operador se detuvo en su último
+bloque de observación de idempotencia, con limpieza completa confirmada; se
+conserva el artefacto FAIL y no se afirma que ese proceso terminara con exit0.
+El postcheck independiente terminó PASS: repetición de detector sin propuestas,
+replay RPC/service_role en ROLLBACK y once huellas canónicas sin cambios; confirma
+también cero usuarios/identidades/sesiones/relaciones temporales. El replay HTTP
+se prueba localmente. La causa exacta del fallo final del operador no se reprodujo
+y queda como limitación de la herramienta, con diagnóstico por etapas ampliado.
 
 Exclusión comprobada también sobre RAES PostgreSQL remoto: dos peticiones HTTP
 de inicio simultáneas devolvieron200 y409, cierre del lease200; ningún canónico
 cambió y no apareció ninguna solicitud. Se verificó service_role sin EXECUTE en
 las tres RPC históricas de mutación. Evidencia `academic-review-real-exclusion.json`.
 Esto no sustituye una prueba de carga ni todas las carreras de aprobación.
+
+## Primer intento remoto y reanudación
+
+La incorporación sintética real sí pasó: tres filas nuevas en Poli, propuesta
+agrupada pendiente sin escritura canónica, aprobación por API admin y persona
+`77cf8d08-fd62-42ac-94bf-404a653b7fec`. La fase ciudadana detectó un fallo del
+parser OCR: extraía MBRES desde NO dentro de NOMBRES, aunque Tesseract leía el
+identificador correctamente. El operador se detuvo antes de vincular y eliminó
+la cuenta temporal y sus relaciones. Todos los registros previos conservaron sus
+huellas. No se borró el historial nuevo aprobado.
+
+El propietario autorizó un fix genérico de etiquetas completas, sin bajar
+thresholds ni añadir excepciones. Ocho regresiones nuevas y Tesseract real
+confirman el identificador correcto. Ver propuesta autorizada y evidencia de
+primer intento/diagnóstico en `reports/evidence/academic-review-*`.
+
+```bash
+pnpm --filter @raes/api exec node scripts/verify-academic-review-live.mjs --resume --check
+pnpm --filter @raes/api exec node scripts/verify-academic-review-live.mjs --resume
+```
+
+Resume exige la evidencia del intento anterior, limpieza confirmada, misma
+aprobación/UUID de persona, misma credencial VIGENTE v1/títuloA, tres filas fuente
+exactas y cuenta temporal ausente. No ejecuta SQL de creación. Los checks excluyen
+únicamente la credencial sintética autorizada que cambiará A→B; el resto, incluido
+su historial v1 y sus filas de persona/fuente, permanece protegido.
+
+## Resultado remoto final
+
+Dos solicitudes APROBADA, cero pendientes; una persona nueva, una fuente y una
+credencial nuevas. Totales RAES31personas/32fuentes/33credenciales,41versiones,
+eventos y operaciones. La segunda ejecución global de ambos detectores devuelve
+cero novedades: Poli14/14 (28observaciones iguales), UdeA18/18 (36iguales).
+
+Credencial3611d73f-e7bc-47a9-96cc-45e77ac47dc7 / RAES-CRD-00000033, VIGENTE v2,
+procede de Poli. Los dos intentos temporales de Credenly quedaron eliminados:
+Auth/identidades/sesiones/perfil/verificación/vínculo/comparticiones en cero para
+sus UUID; originales4Auth/1perfil/1verificación/1vínculo/5shares/9accesos intactos.
+La cuenta administrativa y Valentina se conservan. Fixture permanente y cambios
+exactos en [su manifest](../supabase/fixtures/academic-review/README.md).
+
+Comprobador final sin nuevas cuentas ni contraseña:
+`pnpm --filter @raes/api exec node scripts/verify-academic-review-postcheck.mjs`.
+No repetir creación/resume: el dataset ya está en B. La revisión académica queda
+funcionalmente validada para el prototipo; sin declaración de producción.
