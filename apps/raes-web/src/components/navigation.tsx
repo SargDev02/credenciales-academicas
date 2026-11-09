@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 const items = [
   { href: "/dashboard", label: "Resumen" },
+  { href: "/validations", label: "Validaciones" },
   { href: "/institutions", label: "Instituciones" },
   { href: "/api-clients", label: "Clientes API" },
   { href: "/audit", label: "Auditoría" },

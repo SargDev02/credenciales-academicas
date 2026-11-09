@@ -18,7 +18,7 @@ export default defineConfig({
   },
   projects: [
     ...[360, 768, 1024, 1440].map((width) => ({
-      testIgnore: "admin.spec.ts",
+      testIgnore: ["admin.spec.ts", "academic-review.spec.mjs"],
       name: `width-${width}`,
       use: { viewport: { width, height: 1000 } },
     })),
