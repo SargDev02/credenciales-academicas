@@ -4,7 +4,9 @@
 pendiente de acceso administrativo.** El propietario reintentó la contraseña de
 RAES; Supabase volvió a responder400 invalid_credentials. No se creó fixture,
 cuenta temporal ni propuesta académica. El precheck de la cuenta sigue correcto.
-Se solicita autorización específica de nuevo reset; no se cambia automáticamente.
+El propietario autorizó después restablecer solo ese administrador RAES. El
+operador exige el UUID y proyecto esperados; falta la nueva contraseña oculta
+en Terminal. Esta autorización no implica que el restablecimiento ya terminó.
 
 | Punto solicitado | Resultado comprobado |
 | --- | --- |

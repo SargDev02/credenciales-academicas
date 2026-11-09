@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import { Writable } from "node:stream";
 import { createInterface } from "node:readline/promises";
 import { config } from "dotenv";
@@ -9,7 +10,11 @@ config({ path: ".env.local", quiet: true });
 const args = process.argv.slice(2);
 const checkOnly = args.includes("--check");
 const verifyLocal = args.includes("--verify-local");
-const positional = args.filter((arg) => arg !== "--check" && arg !== "--verify-local");
+const expectedUserArg = args.find(arg => arg.startsWith("--expected-user-id="));
+const expectedProjectArg = args.find(arg => arg.startsWith("--expected-project-ref="));
+const expectedUserId = expectedUserArg?.slice("--expected-user-id=".length);
+const expectedProjectRef = expectedProjectArg?.slice("--expected-project-ref=".length);
+const positional = args.filter((arg) => arg !== "--check" && arg !== "--verify-local" && arg !== expectedUserArg && arg !== expectedProjectArg);
 let password;
 let confirmation;
 let sessionClient;
@@ -27,6 +32,7 @@ async function main() {
   const url = process.env.RAES_SUPABASE_URL;
   const key = process.env.RAES_SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key || new URL(url).protocol !== "https:") throw new ResetError("Revisa la configuración local de RAES API.");
+  if (expectedProjectArg && (!/^[a-z]{20}$/.test(expectedProjectRef ?? "") || new URL(url).hostname !== `${expectedProjectRef}.supabase.co`)) throw new ResetError("El proyecto no corresponde al destino autorizado. No se realizó el cambio.");
   const options = {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     global: { fetch: (input, init = {}) => fetch(input, { ...init, signal: init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) }) },
@@ -43,6 +49,7 @@ async function main() {
   }
   if (matches.length !== 1) throw new ResetError("Se requiere una única cuenta existente con perfil administrativo ACTIVO para ese correo.");
   const profile = matches[0];
+  if (expectedUserArg && (!expectedUserId || profile.id !== expectedUserId)) throw new ResetError("El UUID no corresponde a la cuenta autorizada. No se realizó el cambio.");
   console.log(`Cuenta: ${email} · ${profile.rol} · ${new URL(url).hostname}`);
   if (checkOnly) {
     console.log("Comprobación correcta. No se cambió ninguna contraseña.");
@@ -89,6 +96,7 @@ async function main() {
   password = undefined; confirmation = undefined;
   const after = await db.from("perfiles_admin").select("id,nombres,apellidos,rol,estado").eq("id", profile.id).single();
   if (after.error || JSON.stringify(after.data) !== JSON.stringify(profile)) throw new ResetError("La contraseña se cambió; se requiere revisar el perfil administrativo.");
+  writeFileSync("/tmp/raes-admin-password-reset-result.json", JSON.stringify({ verifiedAt: new Date().toISOString(), projectRef: new URL(url).hostname.split(".")[0], userId: profile.id, role: profile.rol, state: profile.estado, passwordReset: true, loginVerified: true, profileUnchanged: true }, null, 2) + "\n", { mode: 0o600 });
   console.log("Contraseña restablecida e inicio de sesión verificado. Perfil y rol conservados.");
 }
 try { await main(); }
