@@ -1,4 +1,5 @@
 export const scopeCatalog = [
+  { codigo: "academic-review:submit", descripcion: "Presentar cambios académicos para revisión administrativa" },
   {
     codigo: "institution:sync",
     descripcion: "Sincronizar metadatos institucionales, sedes y programas",
@@ -36,13 +37,7 @@ export const scopeCatalog = [
 export type ScopeCode = (typeof scopeCatalog)[number]["codigo"];
 
 export const institutionAScopes: ScopeCode[] = [
-  "institution:sync",
-  "persons:sync",
-  "credentials:create",
-  "credentials:read",
-  "credentials:correct",
-  "credentials:revoke",
-  "credentials:annul",
+  "academic-review:submit", "credentials:read",
 ];
 
 export const credenlyScopes: ScopeCode[] = [

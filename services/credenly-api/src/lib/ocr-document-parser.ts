@@ -112,8 +112,8 @@ function detectDocumentNumber(
   normalizedText: string,
 ): string | null {
   const labeledPatterns = [
-    /(?:NUIP|NUMERO|N[O°])\s*[:#-]?\s*([A-Z0-9.-]{5,24})/,
-    /(?:DOCUMENTO|IDENTIFICACION)\s*[:#-]?\s*([A-Z0-9.-]{5,24})/,
+    /(?:^|\s)(?:NUIP|NUMERO|N[O°])(?=\s|[:#-])\s*[:#-]?\s*([A-Z0-9.-]{5,24})/,
+    /(?:^|\s)(?:DOCUMENTO|IDENTIFICACION)(?=\s|[:#-])\s*[:#-]?\s*([A-Z0-9.-]{5,24})/,
   ];
 
   for (const pattern of labeledPatterns) {

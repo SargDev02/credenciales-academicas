@@ -1,0 +1,2 @@
+import {defineConfig} from '@playwright/test';
+export default defineConfig({testDir:'./tests/frontend',testMatch:'academic-review.spec.mjs',fullyParallel:false,workers:1,retries:0,timeout:60000,reporter:'list',use:{headless:true,viewport:{width:1440,height:1000},launchOptions:{executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'},trace:'off',video:'off',screenshot:'off'}});

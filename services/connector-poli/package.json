@@ -10,10 +10,8 @@
     "test": "tsx --test src/*.test.ts",
     "presync": "pnpm --filter @raes/contracts build",
     "sync": "tsx src/cli.ts",
-    "sync:base": "tsx src/cli.ts --only=base",
-    "sync:credentials": "tsx src/cli.ts --only=credentials",
-    "presync:base": "pnpm --filter @raes/contracts build",
-    "presync:credentials": "pnpm --filter @raes/contracts build"
+    "predetect": "pnpm --filter @raes/contracts build",
+    "detect": "tsx src/cli.ts"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",

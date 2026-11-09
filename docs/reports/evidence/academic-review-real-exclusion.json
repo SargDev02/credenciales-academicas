@@ -1,0 +1,20 @@
+{
+  "checkedAt": "2026-11-09T16:39:24.544Z",
+  "simultaneousDetectionStatuses": [
+    200,
+    409
+  ],
+  "leaseReleaseHttp": 200,
+  "canonicalWrites": 0,
+  "counts": {
+    "cuts": 2,
+    "events": 39,
+    "people": 30,
+    "sources": 31,
+    "requests": 0,
+    "versions": 39,
+    "credentials": 32,
+    "frozenFingerprints": 144,
+    "legacyServiceExecute": false
+  }
+}

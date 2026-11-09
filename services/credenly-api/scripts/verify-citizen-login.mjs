@@ -18,6 +18,8 @@ const email = option("--email"),
 const webBase = option("--web-base") ?? "http://localhost:3003";
 const apiBase = option("--api-base") ?? "http://localhost:3002";
 const output = option("--output");
+const adminEmail = option("--admin-email"), expectedAdminId = option("--expected-admin-user-id");
+assert.equal(Boolean(adminEmail), Boolean(expectedAdminId), "Provide both admin verification arguments");
 assert.ok(
   process.stdin.isTTY && process.stdout.isTTY,
   "Run in an interactive terminal",
@@ -32,6 +34,7 @@ const requireWeb = createRequire(
   new URL("../../../apps/credenly-web/package.json", import.meta.url),
 );
 const { createServerClient } = requireWeb("@supabase/ssr");
+let adminAuth, adminPassword, adminSessionClosed=false;
 let password,
   browser,
   context,
@@ -39,28 +42,24 @@ let password,
   passwordClient,
   phase = "password entry";
 const result = { email, expectedId, accountMutations: 0 };
-try {
-  const hidden = new Writable({
-    write(_chunk, _enc, done) {
-      done();
+async function readHiddenPassword(prompt) {
+  const hidden = new Writable({ write(_chunk, _enc, done) { done(); } });
+  const terminal = createInterface({ input: process.stdin, output: hidden, terminal: true });
+  terminal.on("SIGINT", () => terminal.close());
+  process.stdout.write(prompt);
+  try { return await terminal.question(""); }
+  finally { terminal.close(); hidden.end(); process.stdout.write("\n"); }
+}
+function scopedAuth(cookieName) {
+  return createServerClient(process.env.CREDENLY_WEB_SUPABASE_URL,process.env.CREDENLY_WEB_SUPABASE_PUBLISHABLE_KEY,{
+    cookieOptions:{name:cookieName},auth:{autoRefreshToken:false},cookies:{
+      getAll:()=>context.cookies().then(values=>values.map(({name,value})=>({name,value}))),setAll(){},
     },
   });
-  const terminal = createInterface({
-    input: process.stdin,
-    output: hidden,
-    terminal: true,
-  });
-  terminal.on("SIGINT", () => terminal.close());
-  process.stdout.write(
-    `Verificar acceso ciudadano de ${email}. No cambia contraseña.\nContraseña ACTUAL (entrada oculta): `,
-  );
-  try {
-    password = await terminal.question("");
-  } finally {
-    terminal.close();
-    hidden.end();
-    process.stdout.write("\n");
-  }
+}
+
+try {
+  password = await readHiddenPassword(`Verificar acceso ciudadano de ${email}. No cambia contraseña.\nContraseña ACTUAL (entrada oculta): `);
   assert.ok(password && password.length <= 256, "Password input is required");
   phase = "password authentication";
   passwordClient = createClient(
@@ -167,6 +166,8 @@ try {
         id: c.id,
         code: c.codigoRaes,
         institutionId: c.institucion?.id,
+        state: c.estadoActual,
+        version: c.versionActual,
       }));
       result.source = payload.source;
       result.persistedByCredenly = payload.persistedByCredenly;
@@ -204,6 +205,33 @@ try {
     "/credentials/[id]",
   ];
   result.hydrationErrors = 0;
+  if (adminEmail) {
+    phase = "admin password entry";
+    adminPassword = await readHiddenPassword(`Verificar administración de ${adminEmail}. No cambia contraseña.\nContraseña ACTUAL administrativa (entrada oculta): `);
+    assert.ok(adminPassword && adminPassword.length <= 256);
+    adminAuth = scopedAuth("credenly-admin-web-auth");
+    phase = "admin browser login";
+    await page.goto(`${webBase}/admin/login`);
+    await page.getByLabel("Correo",{exact:true}).fill(adminEmail);
+    await page.getByLabel("Contraseña",{exact:true}).fill(adminPassword);
+    adminPassword = undefined;
+    await page.getByRole("button",{name:"Iniciar sesión",exact:true}).click();
+    await page.waitForURL(`${webBase}/admin`);
+    await page.getByRole("heading",{name:"Resumen operativo",exact:true}).waitFor();
+    const administrator = await adminAuth.auth.getUser();
+    assert.ok(!administrator.error); assert.equal(administrator.data.user.id,expectedAdminId);
+    const {data:{session:adminSession}}=await adminAuth.auth.getSession(); assert.ok(adminSession);
+    const adminMe=await fetch(`${apiBase}/api/v1/admin/me`,{headers:{Authorization:`Bearer ${adminSession.access_token}`},signal:AbortSignal.timeout(15000)});
+    assert.equal(adminMe.status,200);const adminPayload=await adminMe.json();assert.equal(adminPayload.data.id,expectedAdminId);assert.equal(adminPayload.data.rol,"ADMIN_CREDENLY");
+    assert.equal((await fetch(`${apiBase}/api/v1/credentials`,{headers:{Authorization:`Bearer ${adminSession.access_token}`},signal:AbortSignal.timeout(15000)})).status,403);
+    assert.equal((await fetch(`${apiBase}/api/v1/admin/me`,{headers:{Authorization:`Bearer ${session.access_token}`},signal:AbortSignal.timeout(15000)})).status,403);
+    for(const prefix of ["credenly-web-auth","credenly-admin-web-auth"]){const cookieRows=(await context.cookies()).filter(c=>c.name.startsWith(prefix));assert.ok(cookieRows.length&&cookieRows.every(c=>c.httpOnly&&c.sameSite==="Lax"));}
+    await page.getByRole("button",{name:"Salir de administración",exact:true}).click();await page.waitForURL(`${webBase}/admin/login`);adminSessionClosed=true;
+    assert.ok(!(await context.cookies()).some(c=>c.name.startsWith("credenly-admin-web-auth")));
+    await page.goto(`${webBase}/credentials`);await page.getByRole("heading",{name:"Mis credenciales",exact:true}).waitFor();
+    result.adminLogin={id:expectedAdminId,role:"ADMIN_CREDENLY",httpStatus:200,browserLogin:"PASS",citizenIsolationHttp:403,adminIsolationHttp:403};
+    result.separateSessionCookies=true;result.adminTestSessionClosed=true;
+  }
   phase = "logout";
   await page.getByRole("button", { name: "Salir", exact: true }).click();
   await page.waitForURL(`${webBase}/login`);
@@ -233,7 +261,11 @@ try {
     `Verificación detenida en: ${phase}. No se modificó contraseña ni cuenta. No se guardan diagnósticos de sesión.`,
   );
 } finally {
-  password = undefined;
+  password = undefined; adminPassword = undefined;
+  if (adminAuth && !adminSessionClosed) {
+    try { const r=await adminAuth.auth.signOut({scope:"local"});result.adminTestSessionClosed=!r.error; }
+    catch { result.adminTestSessionClosed=false; }
+  }
   if (auth && !result.testSessionClosed) {
     try {
       const r = await auth.auth.signOut({ scope: "local" });

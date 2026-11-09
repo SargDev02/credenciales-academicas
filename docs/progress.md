@@ -985,3 +985,131 @@ documentados; no se declara listo para producción.
 
 Operador y tests en `66df433`; informe/evidencia y actualización de guías en commit
 separado. PR #15 conserva su estado Ready for Review y permanece abierto.
+
+## 2026-11-09 — Reconexión y revisión académica supervisada
+
+Rama `feat/raes-academic-review` desde main09e9775. No mezcla ni merge del PR#16,
+sin despliegue. Trabajo local previo preservado e inventariado en el
+[informe de reconexión](reports/supabase-reconnection-2026-11-09.md).
+
+- [x] RAES/Credenly restaurados reconectados; cuatro env ignorados, secretos de
+  integración conservados. Proyectos antiguos intactos. Fuentes no migradas.
+- [x] Comparación semántica exacta de DDL restaurado, conteos y UUID críticos.
+  Segundo perfil ciudadano ausente (Sergio) aceptado por decisión del propietario;
+  no se reconstruye ni elimina su Auth.
+- [x] Auth RAES reparado solo en cuatro NULL del UUID autorizado; tres resets
+  independientes autorizados, contraseñas ocultas, perfiles/relaciones conservados.
+- [x] Health/ready reales200; RAES Admin, ciudadano y Credenly Admin pasan. Cookies
+  separadas, aislamiento403, sesiones de prueba cerradas. Cinco comparticiones
+  conservadas; lecturas canónicas REVOCADA/ANULADA y VIGENTE multiinstitución.
+- [x] Migraciones nuevas20261109161812 y20261109162351 aplicadas tras ROLLBACK y
+  comparación de once tablas canónicas intactas. No replay/repair de históricos.
+- [x] Corte144 huellas: Poli47, UdeA97; cero desconocidos/pendientes iniciales.
+  Huellas congeladas separadas de cabezas de detección, sin documentos/payloads.
+- [x] Detectores reales completos: cero propuestas y escrituras canónicas.
+- [x] Propuestas y decisión transaccional con roles/scopes, supersedida, rechazo,
+  deduplicación, fencing, guards DB/rutas legacy y conservación de historial.
+- [x] Bandeja RAES y contador real, detalle/comparación, decisiones y estados,
+  responsive360/768/1024/1440, controles por rol y foco/teclado.
+- [x] Credenly consulta viva sin snapshots; prueba local integrada A→pendiente→B
+  aprobado en siguiente GET, private/no-store también en errores.
+- [x] Lint real, typecheck, builds,270/270 tests,25SQL incluidos;26/26 navegador.
+  PGlite dev autorizado, sin presentar WASM como ensayo completo Supabase.
+- [x] RLS/grants reales y advisors revisados; INFO server-only sin policy y WARN
+  HIBP conservados. Límite de contraseñas12 y signup RAES cerrado restaurados.
+- [x] Prueba remota con tres filas sintéticas nuevas autorizadas en Poli, OCR,
+  ciudadano temporal y aprobación real: HTTP A→pendiente→B correcto. Dos cuentas
+  temporales eliminadas; postcheck final PASS e idempotencia RPC comprobada.
+  El último bloque del operador original falló y se conserva/documenta esa limitación.
+
+Implementación, contratos, operación y límites en [academic-review.md](academic-review.md).
+La revisión académica queda funcionalmente validada para el alcance del prototipo,
+con la limitación del bloque final del operador documentada y postcheck PASS.
+Persisten los pendientes de producción de identidad real, recuperación, operación/
+retención/rotación, leaked passwords y gate/CI del PR#16.
+
+### Restablecimiento RAES específico autorizado
+
+El propietario autorizó un nuevo reset solo para el UUID
+`a17656ca-1950-4ec9-af47-2514178a65ea` en RAES restaurado. El operador existente
+incorpora guards opcionales `--expected-user-id` / `--expected-project-ref` para
+exigir el destino exacto antes de pedir contraseña o escribir. Precheck válido
+correcto; UUID distinto y proyecto distinto rechazan con exit1, sin cambios.
+Sintaxis Node y ESLint del operador pasan. El cambio real terminó el2026-11-09: contraseña introducida oculta dos veces,
+login Auth y browser correctos, `/admin/me`200, mismo UUID y SUPERADMIN/ACTIVO,
+perfil intacto, cookies HttpOnly y guard de logout correcto. Evidencia sanitizada
+en `reports/evidence/raes-admin-authorized-password-reset.json`. Credenly y Valentina quedan fuera de esta
+autorización. La herramienta de escritorio denegó acceso a Terminal: el propietario
+debe lanzar el comando directamente; no se intenta otro mecanismo de control UI.
+
+### Prueba remota — incorporación confirmada y corrección OCR autorizada
+
+La ejecución autenticada incorporó exactamente las tres filas sintéticas
+aprobadas en Poli. Detección→NUEVO_ESTUDIANTE PENDIENTE conservó todo el canónico;
+aprobación administrativa creó persona `77cf8d08-fd62-42ac-94bf-404a653b7fec`,
+fuente y credencial, con solicitud `19cccf59-e73e-45b2-ac3b-915fbf9bd8ed`.
+Totales31/32/33personas/fuentes/credenciales y40versiones/eventos/operaciones.
+Ningún registro previo cambió. UdeA continúa intacta.
+
+La fase ciudadana detectó un defecto real: Tesseract leyó bien el identificador,
+pero el parser extraía MBRES desde NO dentro de NOMBRES. El operador rechazó la
+identidad no coincidente. Cuenta temporal `0d384284-c36a-4b42-8646-5cde347b218f`
+y todas sus relaciones eliminadas; sesiones cerradas, sin forzar FK.
+El historial académico recién aprobado se conserva. Evidencia del primer intento
+en `reports/evidence/academic-review-live-first-attempt.json`.
+
+El propietario autorizó la corrección mínima de delimitadores del parser.
+Ocho regresiones nuevas,13/13 parser,270/270 totales, lint/typecheck/builds correctos.
+El mismo render+Tesseract real ahora devuelve el documento esperado con confianza
+0.93. Sin modificar schema/RPC/umbrales ni datos previos. Operador `--resume`
+precheck sin escrituras correcto; la reanudación y el postcheck se detallan abajo.
+
+### Cierre funcional de revisión académica
+
+- HTTP ciudadano real200: A/v1, A mientras B pendiente, B/v2 tras aprobación.
+  sourceRAES/persistedByCredenlyfalse; ninguna escritura académica en Credenly.
+- Fixture permanente RAES-CRD-00000033, UUID3611d73f-e7bc-47a9-96cc-45e77ac47dc7.
+  Dos decisiones aprobadas y cero pendientes; sin reescribir registros previos.
+- Postcheck independiente PASS: detección0nuevas, RPC de replay con ROLLBACK y
+  huellas de once tablas canónicas intactas; mismos31/32/33 y41versiones/eventos/operaciones.
+- Ambas cuentas temporales ausentes en Auth, identidades, sesiones y relaciones.
+  Se conservan los4usuarios/1perfil/1verificación/1vínculo/5shares/9accesos originales.
+- Detectores globales Poli14/14 yUdeA18/18,0propuestas ycanonicalWrites0.
+- Parser autorizado corregido,270/270 tests,25SQL incluidos; lint/types/builds y
+ 26/26navegador correctos. Sin secretos, env, dumps ni traineddata en Git.
+
+Incidencia conservada: el operador resume salióFAIL en su último bloque después
+de pasar HTTP A/B y limpiar. Causa no reproducida; fases de diagnóstico ampliadas.
+Replay remoto verificado porRPC/service_role conROLLBACK; replayHTTP local.
+No se cambia el artefactoFAIL aPASS: la evidencia complementaria está separada.
+
+El alcance funcional del prototipo se considera validado; permanecen los pendientes
+de producción y recuperación/operación/identidad/HIBP/CI delPR#16. Sin merge/deploy.
+
+Publicación: [PR#17](https://github.com/SargDev02/credenciales-academicas/pull/17),
+**Draft**, rama `feat/raes-academic-review` publicada con commits separados. PR#16
+continúa Draft/open, head5c244cfb163094d121fb5315448e173bfca03601, sin merge ni
+modificación. Main remoto sigue09e977562a11ec305f191ed885185174c5423458.
+Sin despliegue. Informe de20puntos y limitación del operador:
+[academic-review-status-2026-11-09.md](reports/academic-review-status-2026-11-09.md).
+
+### 2026-11-09 — Investigación aislada de la incidencia del operador
+
+No se repitieron fixtures, baseline, incorporaciones, cambios institucionales ni
+creación Auth. La investigación confirmó pérdida de excepción en el catch antiguo
+y etiqueta APPROVAL_B compartida por todo el bloque final; cuatro errores locales
+distintos reproducen exactamente el mismo artefacto histórico. No se atribuye
+retrospectivamente una causa no registrada. El disparador histórico sigue
+indeterminado; el postcheck exitoso no permite reconstruirlo.
+
+`--resume --check` sobre B/v2 reproduce además una expectativa actual de versión A;
+se agregó `--verify-completed` para comprobación segura, sin relajar ni rebobinar A.
+Operador y postcheck corregidos: PASS/exit0; 12 regresiones, 282/282 suite completa,
+lint/typecheck correctos. Diagnósticos por etapa/código/cause/exit/status sin secretos;
+archivos nuevos con nombres únicos. Tres evidencias históricas intactas por SHA.
+
+Cero pendientes inesperadas/residuos Auth y ninguna mutación canónica no aprobada;
+huellas canónicas, perfiles e identidad conservadas. Conectores canonicalWrites0,
+Credenly consulta RAES vivo, Valentina/admin intactos y Sergio sin perfil deliberadamente.
+Sin merge/deploy ni cambios en PR#16. El límite causal pendiente está documentado en
+[el informe de incidencia](reports/academic-review-operator-incident-2026-11-09.md).

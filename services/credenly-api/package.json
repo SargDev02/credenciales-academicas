@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts scripts/lib/*.test.mjs",
     "admin:provision": "node --env-file=.env.local --env-file=../../apps/credenly-web/.env.local scripts/provision-credenly-admin.mjs",
-    "citizen:reset-password": "node --env-file=.env.local scripts/reset-citizen-password.mjs"
+    "citizen:reset-password": "node --env-file=.env.local scripts/reset-citizen-password.mjs",
+    "admin:reset-password": "node --env-file=.env.local scripts/reset-admin-password.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

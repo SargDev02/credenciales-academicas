@@ -1,0 +1,13 @@
+{
+  "provenance": "Historical RAES DDL captured from Supabase migration history on 2026-10-19; identical immutable bytes, not PR #16 hardening. Empty databases only.",
+  "files": [
+    {
+      "file": "20261005041757_initial_raes_schema.sql",
+      "sha256": "3e99c92e1537c9d47620e8a8fac96c120744814c99eae10f11f20be563a96221"
+    },
+    {
+      "file": "20261005041827_tune_raes_indexes_and_rls.sql",
+      "sha256": "c32f19c59e233de75527d9ea63bddcc8f15306c7230498c9bc29e5b91514c242"
+    }
+  ]
+}

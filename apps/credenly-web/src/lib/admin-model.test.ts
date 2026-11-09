@@ -95,12 +95,12 @@ test("account pagination and health distinguish explicit API results from unavai
     checkedAt: "2026-10-18T12:00:00Z",
     httpStatus: 503,
     status: "not_ready",
-    components: { database: "down", auth: "configured", raes: "down" },
+    components: { database: "down", auth: "up", raes: "down" },
   };
   assert.equal(isHealth({ data: health }), true);
   assert.equal(
     isHealth({
-      data: { ...health, components: { ...health.components, auth: "up" } },
+      data: { ...health, components: { ...health.components, auth: "configured" } },
     }),
     false,
   );

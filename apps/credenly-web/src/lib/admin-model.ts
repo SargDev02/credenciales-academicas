@@ -118,7 +118,7 @@ export type Health = {
   status: "ready" | "not_ready";
   components: {
     database: "up" | "down";
-    auth: "configured" | "unavailable";
+    auth: "up" | "down";
     raes: "up" | "down";
   };
 };
@@ -131,7 +131,7 @@ export function isHealth(v: unknown): v is { data: Health } {
     ["ready", "not_ready"].includes(String(v.data.status)) &&
     record(v.data.components) &&
     ["up", "down"].includes(String(v.data.components.database)) &&
-    ["configured", "unavailable"].includes(String(v.data.components.auth)) &&
+    ["up", "down"].includes(String(v.data.components.auth)) &&
     ["up", "down"].includes(String(v.data.components.raes))
   );
 }

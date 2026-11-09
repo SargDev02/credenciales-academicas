@@ -14,7 +14,8 @@
     "test": "tsx --test src/lib/*.test.ts",
     "bootstrap:institution-a": "tsx scripts/bootstrap-institution-a.ts",
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts",
-    "admin:reset-password": "node scripts/reset-admin-password.mjs"
+    "admin:reset-password": "node scripts/reset-admin-password.mjs",
+    "academic-review:baseline": "tsx scripts/academic-review-baseline.ts"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
@@ -22,7 +23,8 @@
     "next": "16.3.8",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "^4.6.5"
+    "zod": "^4.6.5",
+    "@raes/connector-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

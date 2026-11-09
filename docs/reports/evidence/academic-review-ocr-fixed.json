@@ -1,0 +1,56 @@
+[
+  {
+    "options": {
+      "font": "Arial",
+      "size": 64
+    },
+    "confidence": 0.93,
+    "parsed": {
+      "tipoDocumento": "CC",
+      "numeroDocumento": "SYNTH-RVW-20261109-001",
+      "nombres": "SINTETICA",
+      "apellidos": "REVISION"
+    },
+    "decision": {
+      "estado": "APROBADA",
+      "motivoRevision": null,
+      "motivoFallo": null
+    }
+  },
+  {
+    "options": {
+      "font": "Arial",
+      "size": 80
+    },
+    "confidence": 0.93,
+    "parsed": {
+      "tipoDocumento": "CC",
+      "numeroDocumento": "SYNTH-RVW-20261109-001",
+      "nombres": "SINTETICA",
+      "apellidos": "REVISION"
+    },
+    "decision": {
+      "estado": "APROBADA",
+      "motivoRevision": null,
+      "motivoFallo": null
+    }
+  },
+  {
+    "options": {
+      "font": "Courier New",
+      "size": 72
+    },
+    "confidence": 0.9,
+    "parsed": {
+      "tipoDocumento": "CC",
+      "numeroDocumento": "SYNTH-RVW-20261109-001",
+      "nombres": "SINTETICA",
+      "apellidos": "REVISION"
+    },
+    "decision": {
+      "estado": "APROBADA",
+      "motivoRevision": null,
+      "motivoFallo": null
+    }
+  }
+]

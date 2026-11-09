@@ -1,0 +1,17 @@
+[
+  {
+    "path": "docs/reports/evidence/academic-review-live-first-attempt.json",
+    "sha256": "7bcc9108fdc14c13684b348a46bc56a2bbdfeed5ce8c9844502cd456d10e9748",
+    "matchesHistoricalCommit": true
+  },
+  {
+    "path": "docs/reports/evidence/academic-review-live-resume-attempt.json",
+    "sha256": "5bf2ef30d7f5f5ccac7863d4e0cd4de0b0160ea3375bb1a76b7080157b929914",
+    "matchesHistoricalCommit": true
+  },
+  {
+    "path": "docs/reports/evidence/academic-review-live-postcheck.json",
+    "sha256": "24fb4d6f66ecdaa0480f7b84a27a71f5649479538d4d5b0f81e004183921cebf",
+    "matchesHistoricalCommit": true
+  }
+]

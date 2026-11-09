@@ -44,8 +44,9 @@ rechazo de actores desconocidos y aislamiento de `anon`/`authenticated`. Toda
 fila de prueba se revierte dentro de la transacción. Ejecutarlo en RAES mediante
 una conexión SQL autorizada; no requiere nuevas claves.
 
-`pnpm lint` existe en la raíz, pero actualmente ningún paquete declara un script
-`lint`: su salida exitosa no constituye una revisión estática de estilo.
+`pnpm lint` ahora ejecuta ESLint central real sobre JS/TS. No hay scripts por
+paquete ni reglas específicas Next/React/hooks; typecheck permanece separado.
+Este gate mínimo es propio de esta rama y no incorpora CI del PR #16.
 
 ## Operación de conectores
 
@@ -178,3 +179,12 @@ Las pruebas de flujo opt-in separan API fixture (estados/errores) de APIs reales
 requieren cuentas sintéticas temporales y limpieza verificada. Ver comandos, puertos
 y alcance preciso en `docs/frontend.md`. No ejecutar las pruebas remotas sin su
 flag explícito; no usan cuentas existentes ni insertan información académica.
+
+## Revisión académica y proyectos restaurados
+
+Usar el perfil CLI `proyecto-gobernacion` para RAES/Credenly restaurados y conservar
+el perfil institucional para las fuentes. No reaplicar DDL por diferencias de
+timestamp: [reconexión](reports/supabase-reconnection-2026-11-09.md).
+Los comandos sync documentados históricamente arriba ya no aplican datos: son
+alias detect-and-submit. Guía actual de corte, detección, API y pruebas en
+[academic-review.md](academic-review.md).

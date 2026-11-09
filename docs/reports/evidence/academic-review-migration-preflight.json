@@ -1,0 +1,19 @@
+{
+  "performedAt": "2026-11-09T16:17:37.503Z",
+  "projectRef": "askqizcwemmydwcgrewp",
+  "mode": "ROLLBACK",
+  "migrationSha256": "09fb994f0aca8c755baba12fdc1716f3d904c48be45a274ddb32114d0b881c15",
+  "result": [
+    {
+      "evidence": {
+        "events": 39,
+        "sources": 31,
+        "requests": 0,
+        "versions": 39,
+        "credentials": 32,
+        "masterPeople": 30,
+        "reviewTables": 5
+      }
+    }
+  ]
+}

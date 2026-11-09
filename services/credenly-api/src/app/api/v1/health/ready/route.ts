@@ -8,20 +8,22 @@ export async function GET() {
   try {
     const supabase = getCredenlySupabaseAdmin();
 
-    const [databaseResult, raesResult] = await Promise.allSettled([
+    const [databaseResult, authResult, raesResult] = await Promise.allSettled([
       supabase
         .from("perfiles")
         .select("id", { head: true, count: "exact" })
         .limit(1),
+      supabase.auth.admin.listUsers({ page: 1, perPage: 1 }),
       getRaesClientIdentity(),
     ]);
 
     const databaseUp =
       databaseResult.status === "fulfilled" &&
       !databaseResult.value.error;
+    const authUp = authResult.status === "fulfilled" && !authResult.value.error && Array.isArray(authResult.value.data.users);
     const raesUp = raesResult.status === "fulfilled";
 
-    if (!databaseUp || !raesUp) {
+    if (!databaseUp || !authUp || !raesUp) {
       if (
         databaseResult.status === "fulfilled" &&
         databaseResult.value.error
@@ -32,12 +34,7 @@ export async function GET() {
       }
 
       if (raesResult.status === "rejected") {
-        console.error("Credenly RAES readiness failed", {
-          message:
-            raesResult.reason instanceof Error
-              ? raesResult.reason.message
-              : "unknown error",
-        });
+        console.error("Credenly RAES readiness failed");
       }
 
       return Response.json(
@@ -46,7 +43,7 @@ export async function GET() {
           service: "credenly-api",
           components: {
             database: databaseUp ? "up" : "down",
-            auth: "configured",
+            auth: authUp ? "up" : "down",
             raes: raesUp ? "up" : "down",
           },
         },
@@ -59,7 +56,7 @@ export async function GET() {
       service: "credenly-api",
       components: {
         database: "up",
-        auth: "configured",
+        auth: authUp ? "up" : "down",
         raes: "up",
       },
       timestamp: new Date().toISOString(),

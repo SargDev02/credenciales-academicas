@@ -1,9 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { synchronize } from "./sync";
-import { RaesClient, type CredentialSyncState } from "./raes-client";
+import { randomUUID } from "node:crypto";
+import { detect } from "./sync";
+import { buildAcademicObservations, parseDetectionArgs } from "./academic-review";
+import { RaesClient } from "./raes-client";
 import type { InstitutionalSnapshot } from "./source";
-import type { CredencialNueva, CorreccionCredencial, RevocacionCredencial, AnulacionCredencial } from "@raes/contracts";
+import type { AcademicObservation } from "@raes/contracts";
 
 function snapshot(): InstitutionalSnapshot {
   return {
@@ -16,109 +18,46 @@ function snapshot(): InstitutionalSnapshot {
     credentials: [{ id: "source-credential", estudiante_id: "student", matricula_id: "enrollment", codigo: "TEST-001", tipo: "DIPLOMA", titulo: "Título inicial", descripcion: null, fecha_emision: "2025-01-01", fecha_grado: null, numero_acta: null, numero_folio: null, numero_libro: null, hash_documento: null, estado: "VIGENTE", created_at: "2025-01-01T00:00:00Z", updated_at: "2025-01-01T00:00:00Z" }],
   };
 }
-class FakeRaes extends RaesClient {
-  rows = new Map<string, CredentialSyncState>();
-  history: string[] = [];
-  events: string[] = [];
-  writes = 0;
-  constructor(namespace = "udea") { super({ baseUrl: "http://localhost", clientId: "fixture", clientSecret: "fixture", namespace }); }
-  async syncInstitution() { this.writes++; }
-  async syncCampus() { this.writes++; }
-  async syncProgram() { this.writes++; }
-  async syncProgramCampus() { this.writes++; }
-  async syncPerson() { this.writes++; }
-  async getCredentialState(code: string) { return this.rows.get(code) ?? null; }
-  async createCredential(payload: CredencialNueva, headers: { idempotencyKey: string }) {
-    const { personaIdentificadorOrigen, ...academic } = payload;
-    this.rows.set(payload.codigoOrigen, { state: "VIGENTE", version: 1, creationKey: headers.idempotencyKey, personSourceIds: [personaIdentificadorOrigen], payload: academic });
-    this.history.push(payload.titulo); this.events.push("REGISTRADA");
-  }
-  async correctCredential(command: CorreccionCredencial) {
-    const current = this.rows.get(command.codigoOrigen)!;
-    current.payload = { codigoOrigen: command.codigoOrigen, ...command.datosActualizados };
-    current.version++; this.history.push(command.datosActualizados.titulo); this.events.push("CORREGIDA");
-  }
-  async revokeCredential(command: RevocacionCredencial) { this.terminal(command.codigoOrigen, "REVOCADA"); }
-  async annulCredential(command: AnulacionCredencial) { this.terminal(command.codigoOrigen, "ANULADA"); }
-  terminal(code: string, state: "REVOCADA" | "ANULADA") {
-    const current = this.rows.get(code)!; current.state = state; current.version++;
-    this.history.push(current.payload.titulo); this.events.push(state);
-  }
-}
-const options = { mode: "all" as const, credentialCode: null };
 
-test("registro y reejecución no duplican credenciales/versiones/eventos", async () => {
-  const raes = new FakeRaes(); const s = snapshot();
-  await synchronize(s, raes, options); await synchronize(s, raes, options);
-  assert.equal(raes.rows.size, 1); assert.deepEqual(raes.events, ["REGISTRADA"]);
-});
-test("corrección y vuelta al contenido inicial preservan todas las versiones", async () => {
-  const raes = new FakeRaes(); const s = snapshot();
-  await synchronize(s, raes, options);
-  s.credentials[0]!.titulo = "Título corregido"; s.credentials[0]!.updated_at = "2025-02-01T00:00:00Z";
-  await synchronize(s, raes, options); await synchronize(s, raes, options);
-  s.credentials[0]!.titulo = "Título inicial"; s.credentials[0]!.updated_at = "2025-03-01T00:00:00Z";
-  await synchronize(s, raes, options);
-  assert.deepEqual(raes.history, ["Título inicial", "Título corregido", "Título inicial"]);
-  assert.equal(raes.rows.get("TEST-001")!.version, 3);
-});
-for (const state of ["REVOCADO", "ANULADO"]) test(`estado ${state} conserva versión inicial y no repite transición`, async () => {
-  const raes = new FakeRaes(); const s = snapshot(); s.credentials[0]!.estado = state;
-  await synchronize(s, raes, options); await synchronize(s, raes, options);
-  assert.equal(raes.history.length, 2); assert.equal(raes.rows.get("TEST-001")!.version, 2);
-});
-test("cambios de estado terminal se reportan sin destruir historial", async () => {
-  const raes = new FakeRaes(); const s = snapshot(); s.credentials[0]!.estado = "REVOCADO";
-  await synchronize(s, raes, options); s.credentials[0]!.estado = "VIGENTE";
-  const summary = await synchronize(s, raes, options);
-  assert.deepEqual(summary.terminalStateConflicts, ["TEST-001"]);
-  assert.equal(raes.events.length, 2);
-});
-for (const creationKey of ["manual-creation", null]) {
-  for (const terminal of ["VIGENTE", "REVOCADA", "ANULADA"] as const) {
-    test(`no adopta ni modifica un alta ajena (${creationKey ?? "sin operación propia"}, ${terminal})`, async () => {
-      const raes = new FakeRaes(); const s = snapshot();
-      // Seed a pre-existing record without claiming ownership for this connector.
-      await raes.createCredential({
-        codigoOrigen: s.credentials[0]!.codigo, personaIdentificadorOrigen: "student",
-        tipo: "DIPLOMA", categoria: "TITULO", titulo: "Título histórico",
-        fechaEmision: "2025-01-01",
-      }, { idempotencyKey: "external-operation" });
-      const existing = raes.rows.get("TEST-001")!;
-      existing.creationKey = creationKey; existing.state = terminal; existing.version = 3;
-      const before = structuredClone({ rows: raes.rows, history: raes.history, events: raes.events });
-      s.credentials[0]!.titulo = "Cambio desde fuente no administrada";
-      s.credentials[0]!.estado = terminal === "VIGENTE" ? "REVOCADO" : "VIGENTE";
-      for (let run = 0; run < 2; run++) {
-        const summary = await synchronize(s, raes, { mode: "credentials", credentialCode: null });
-        assert.deepEqual(summary.existingCredentialsNotAdopted, ["TEST-001"]);
-        assert.equal(summary.credentialsCreatedOrReplayed, 0);
-        assert.equal(summary.credentialsCorrected, 0);
-        assert.equal(summary.credentialsRevoked, 0);
-        assert.equal(summary.credentialsAnnulled, 0);
-        assert.deepEqual({ rows: raes.rows, history: raes.history, events: raes.events }, before);
-        assert.equal(raes.writes, 0);
-      }
-    });
+class RecordingRaes extends RaesClient {
+  submitted: AcademicObservation[] = [];
+  constructor() { super({ baseUrl: "http://localhost:9", clientId: "fixture", clientSecret: "fixture", namespace: "test" }); }
+  override async submitReview(_id: string, observation: AcademicObservation) {
+    this.submitted.push(observation);
+    return { observaciones: [{ id: randomUUID(), estado: "PENDIENTE" as const, nueva: true }] };
   }
+  override async syncPerson(): Promise<never> { throw new Error("Canonical person write forbidden"); }
+  override async createCredential(): Promise<never> { throw new Error("Canonical credential write forbidden"); }
+  override async correctCredential(): Promise<never> { throw new Error("Canonical correction forbidden"); }
+  override async revokeCredential(): Promise<never> { throw new Error("Canonical revocation forbidden"); }
+  override async annulCredential(): Promise<never> { throw new Error("Canonical annulment forbidden"); }
 }
-test("matrícula de otra persona falla antes de escribir en RAES", async () => {
-  const raes = new FakeRaes(); const s = snapshot(); s.enrollments[0]!.estudiante_id = "other";
-  await assert.rejects(synchronize(s, raes, options)); assert.equal(raes.writes, 0);
+test("detection groups a student and credentials without canonical API writes", async()=>{
+ const raes=new RecordingRaes();const result=await detect(snapshot(),raes,randomUUID());
+ assert.equal(result.canonicalWrites,0);assert.equal(result.proposalsCreated,1);assert.equal(raes.submitted.length,1);assert.equal(raes.submitted[0]!.credenciales.length,1);
 });
-test("identidad de credencial existente no se reasigna", async () => {
-  const raes = new FakeRaes(); const s = snapshot(); await synchronize(s, raes, options);
-  raes.rows.get("TEST-001")!.personSourceIds = ["other-source"];
-  await assert.rejects(synchronize(s, raes, options), /identidad/);
+test("descriptive edits are submitted without needing connector creation ownership", async()=>{
+ const s=snapshot(),raes=new RecordingRaes();await detect(s,raes,randomUUID());s.credentials[0]!.titulo="Título posterior";await detect(s,raes,randomUUID());
+ assert.equal(raes.submitted[1]!.credenciales[0]!.contenido.titulo,"Título posterior");
 });
-test("namespaces de ambas instituciones permanecen separados", async () => {
-  const a = new FakeRaes("poli"); const b = new FakeRaes("udea");
-  await synchronize(snapshot(), a, options); await synchronize(snapshot(), b, options);
-  assert.notEqual(a.rows.get("TEST-001")!.creationKey, b.rows.get("TEST-001")!.creationKey);
+for(const [source,expected] of [["VIGENTE","VIGENTE"],["REVOCADO","REVOCADA"],["ANULADO","ANULADA"]])test(`reported ${source} is proposed, never applied`, async()=>{
+ const s=snapshot(),raes=new RecordingRaes();s.credentials[0]!.estado=source!;await detect(s,raes,randomUUID());assert.equal(raes.submitted[0]!.credenciales[0]!.estado,expected);
 });
-test("orden de propiedades JSON no genera correcciones", async () => {
-  const raes = new FakeRaes(); const s = snapshot(); await synchronize(s, raes, options);
-  const row = raes.rows.get("TEST-001")!;
-  row.payload = Object.fromEntries(Object.entries(row.payload).reverse()) as typeof row.payload;
-  await synchronize(s, raes, options); assert.equal(raes.history.length, 1);
+test("terminal-to-active reports are still proposals rather than automatic reactivation",async()=>{
+ const s=snapshot(),raes=new RecordingRaes();s.credentials[0]!.estado="REVOCADO";await detect(s,raes,randomUUID());s.credentials[0]!.estado="VIGENTE";await detect(s,raes,randomUUID());assert.equal(raes.submitted[1]!.credenciales[0]!.estado,"VIGENTE");
+});
+test("all source references are validated before any submission",async()=>{
+ const s=snapshot(),raes=new RecordingRaes();s.credentials.push({...s.credentials[0]!,id:"broken",matricula_id:"missing"});await assert.rejects(detect(s,raes,randomUUID()));assert.equal(raes.submitted.length,0);
+});
+test("a credential cannot use another student's enrollment",()=>{
+ const s=snapshot();s.enrollments[0]!.estudiante_id="another";assert.throws(()=>buildAcademicObservations(s));
+});
+test("filtering keeps the full incorporation group and rejects unknown codes",()=>{
+ const s=snapshot();s.credentials.push({...s.credentials[0]!,id:"second",codigo:"SECOND"});assert.equal(buildAcademicObservations(s,"SECOND")[0]!.credenciales.length,2);assert.throws(()=>buildAcademicObservations(s,"missing"));
+});
+test("missing optional fields normalize to null and timestamps stay outside academic content",()=>{
+ const o=buildAcademicObservations(snapshot())[0]!;assert.equal(o.persona.segundoNombre,null);assert.equal(o.sourceUpdatedAt,null);assert.equal(o.credenciales[0]!.contenido.numeroActa,null);
+});
+test("legacy direct sync modes are rejected; detect code selection is explicit",()=>{
+ assert.deepEqual(parseDetectionArgs(["--","--credential-code=TEST-001"]),{credentialCode:"TEST-001"});for(const arg of ["--only=all","--only=base","--only=credentials","--credential-code="])assert.throws(()=>parseDetectionArgs([arg]));
 });

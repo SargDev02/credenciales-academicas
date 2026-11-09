@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-09",
+  "branch": "feat/raes-academic-review",
+  "historicalCausalStatus": "INDETERMINATE_EXCEPTION_DISCARDED",
+  "exactHistoricalTriggerIdentified": false,
+  "operatorDiagnosticsAndCompletedReplay": "FIXED",
+  "operatorExit": 0,
+  "postcheckExit": 0,
+  "affectedTests": 12,
+  "fullSuite": {
+    "tests": 282,
+    "passed": 282,
+    "failed": 0
+  },
+  "affectedTestsRerunAfterDiagnosticTypeChange": true,
+  "lintExit": 0,
+  "typecheckExit": 0,
+  "newFixtures": 0,
+  "baselineRuns": 0,
+  "institutionalWrites": 0,
+  "newApprovals": 0,
+  "newAuthUsers": 0,
+  "unexpectedPending": 0,
+  "temporaryAuthResidues": 0,
+  "merge": false,
+  "deploy": false,
+  "fullChecksRepeatedAfterFinalCodeReview": true
+}

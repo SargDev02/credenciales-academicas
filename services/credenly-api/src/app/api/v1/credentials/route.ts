@@ -14,6 +14,12 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
+  const response = await readCredentials(request);
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
+}
+
+async function readCredentials(request: Request) {
   try {
     const user = await authenticateCitizen(request);
     const credentials = await getLiveCredentialsForUser(user.id);

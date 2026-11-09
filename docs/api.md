@@ -97,8 +97,8 @@ siguiente sin afirmar que haya registros. Página inválida: 400 `INVALID_PAGE`.
 
 Health reutiliza el verificador existente; nunca consulta RAES DB. HTTP del wrapper
 es 200 si la lectura y su auditoría finalizaron, incluso cuando el readiness
-proyectado sea 503/not_ready. Auth `configured` solo indica configuración requerida
-presente. Los fallos inesperados se sanitizan.
+proyectado sea 503/not_ready. Auth `up/down` refleja una consulta real a Auth Admin; no prueba el login de
+un usuario. Los fallos inesperados se sanitizan.
 
 Comunes: 401 sin token o inválido; 403 sin perfil/rol/estado autorizado; 503 ante
 fallo de validación, consulta operativa o auditoría. El guard se ejecuta antes de
@@ -109,3 +109,11 @@ Cada lectura autorizada registra actor, acción, EXITO/ERROR, fecha y recurso m�
 Si el registro falla, no se entrega el resultado y se responde 503. Denegaciones sin
 actor administrativo válido no generan perfiles ni filas de auditoría ficticias.
 No se exponen tokens, identidad RAES, documentos ni credenciales académicas.
+
+## Revisión académica
+
+Nuevos endpoints institucionales de detección/propuesta y administrativos de
+listado/detalle/approve/reject, contratos, filtros, permisos y errores documentados
+en [academic-review.md](academic-review.md#api-y-autorización). Las nueve rutas de
+escritura institucional anteriores quedan retiradas con409 ACADEMIC_REVIEW_REQUIRED.
+Las lecturas de credenciales siguen dinámicas, privadas y sin caché.

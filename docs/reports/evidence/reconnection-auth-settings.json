@@ -1,0 +1,25 @@
+[
+  {
+    "project": "RAES",
+    "ref": "askqizcwemmydwcgrewp",
+    "changedFields": [
+      "disable_signup",
+      "password_min_length"
+    ],
+    "passwordMinLength": 12,
+    "publicSignupDisabled": true,
+    "leakedPasswordProtectionUnchanged": true,
+    "basis": "Previously approved minimum 12 and RAES signup closure; restored after project migration"
+  },
+  {
+    "project": "Credenly",
+    "ref": "xvzylegwuxmxqcgdjjrq",
+    "changedFields": [
+      "password_min_length"
+    ],
+    "passwordMinLength": 12,
+    "publicSignupDisabled": false,
+    "leakedPasswordProtectionUnchanged": true,
+    "basis": "Previously approved minimum 12 and RAES signup closure; restored after project migration"
+  }
+]

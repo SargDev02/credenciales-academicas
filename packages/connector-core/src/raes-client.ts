@@ -1,3 +1,4 @@
+import { detectionLeaseSchema, proposalReceiptSchema, type AcademicObservation } from "@raes/contracts";
 import type {
   AnulacionCredencial,
   CorreccionCredencial,
@@ -52,6 +53,16 @@ export class RaesClient {
     this.baseUrl = env.baseUrl.replace(/\/$/, "");
     this.authorization =
       `Bearer ${env.clientId}.${env.clientSecret}`;
+  }
+
+  async startDetection() {
+    return detectionLeaseSchema.parse(await this.request("POST", "/api/v1/academic-review/detections")).data;
+  }
+  async finishDetection(detectionId: string, error: boolean) {
+    return detectionLeaseSchema.parse(await this.request("DELETE", "/api/v1/academic-review/detections", { deteccionId: detectionId, error })).data;
+  }
+  async submitReview(detectionId: string, observation: AcademicObservation) {
+    return proposalReceiptSchema.parse(await this.request("POST", "/api/v1/academic-review/proposals", { deteccionId: detectionId, observacion: observation })).data;
   }
 
   async getCredentialState(code: string): Promise<CredentialSyncState | null> {
@@ -137,7 +148,7 @@ export class RaesClient {
   }
 
   private async request(
-    method: "GET" | "POST" | "PUT",
+    method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
     body?: unknown,
     mutationHeaders?: MutationHeaders,

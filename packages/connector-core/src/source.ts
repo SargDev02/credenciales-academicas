@@ -11,6 +11,7 @@ export type InstitutionRow = {
 };
 
 export type CampusRow = {
+  updated_at?: string | null;
   id: string;
   codigo: string;
   nombre: string;
@@ -21,6 +22,7 @@ export type CampusRow = {
 };
 
 export type ProgramRow = {
+  updated_at?: string | null;
   id: string;
   codigo_interno: string;
   codigo_snies: string | null;
@@ -32,6 +34,7 @@ export type ProgramRow = {
 };
 
 export type ProgramCampusRow = {
+  updated_at?: string | null;
   id: string;
   programa_id: string;
   sede_id: string;
@@ -41,6 +44,7 @@ export type ProgramCampusRow = {
 };
 
 export type StudentRow = {
+  updated_at?: string | null;
   id: string;
   tipo_documento: string;
   numero_documento: string;
@@ -92,6 +96,10 @@ export function createInstitutionSourceClient(
     env.supabaseUrl,
     env.serviceRoleKey,
     {
+      global: { fetch: (input, init) => fetch(input, {
+        ...init,
+        signal: init?.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(30000)]) : AbortSignal.timeout(30000),
+      }) },
       auth: {
         persistSession: false,
         autoRefreshToken: false,
@@ -116,10 +124,10 @@ export async function readInstitutionalSnapshot(client: SupabaseClient): Promise
     .select("nit,codigo_snies,nombre,tipo_institucion,estado").limit(2);
   if (error || institutions?.length !== 1) throw new Error("La fuente debe contener exactamente una institución");
   const [campuses, programs, programCampuses, students, enrollments, credentials] = await Promise.all([
-    readAll<CampusRow>(client, "sedes", "id,codigo,nombre,departamento,municipio,direccion,estado"),
-    readAll<ProgramRow>(client, "programas", "id,codigo_interno,codigo_snies,nombre,nivel_formacion,modalidad,facultad,estado"),
-    readAll<ProgramCampusRow>(client, "programa_sede", "id,programa_id,sede_id,jornada,modalidad,estado"),
-    readAll<StudentRow>(client, "estudiantes", "id,tipo_documento,numero_documento,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido"),
+    readAll<CampusRow>(client, "sedes", "id,codigo,nombre,departamento,municipio,direccion,estado,updated_at"),
+    readAll<ProgramRow>(client, "programas", "id,codigo_interno,codigo_snies,nombre,nivel_formacion,modalidad,facultad,estado,updated_at"),
+    readAll<ProgramCampusRow>(client, "programa_sede", "id,programa_id,sede_id,jornada,modalidad,estado,updated_at"),
+    readAll<StudentRow>(client, "estudiantes", "id,tipo_documento,numero_documento,primer_nombre,segundo_nombre,primer_apellido,segundo_apellido,updated_at"),
     readAll<EnrollmentRow>(client, "matriculas", "id,programa_sede_id,estudiante_id"),
     readAll<CredentialRow>(client, "credenciales", "id,estudiante_id,matricula_id,codigo,tipo,titulo,descripcion,fecha_emision,fecha_grado,numero_acta,numero_folio,numero_libro,hash_documento,estado,created_at,updated_at"),
   ]);
