@@ -1019,8 +1019,8 @@ sin despliegue. Trabajo local previo preservado e inventariado en el
   HIBP conservados. Límite de contraseñas12 y signup RAES cerrado restaurados.
 - [ ] Prueba remota con tres filas sintéticas nuevas autorizadas en Poli, OCR y
   ciudadano temporal, aprobación real y limpieza: bloqueada en ADMIN_LOGIN por
-  contraseña actual inválida; nuevo reset únicamente de RAES autorizado, pendiente
-  entrada oculta y validación. No se modificará Valentina ni otros registros previos.
+  contraseña actual inválida; nuevo reset únicamente de RAES completado y validado; pendiente
+  ejecutar la prueba con una nueva sesión administrativa. No se modificará Valentina ni otros registros previos.
 
 Implementación, contratos, operación y límites en [academic-review.md](academic-review.md).
 No se declara cierre de esta funcionalidad hasta completar su prueba remota.
@@ -1034,7 +1034,9 @@ El propietario autorizó un nuevo reset solo para el UUID
 incorpora guards opcionales `--expected-user-id` / `--expected-project-ref` para
 exigir el destino exacto antes de pedir contraseña o escribir. Precheck válido
 correcto; UUID distinto y proyecto distinto rechazan con exit1, sin cambios.
-Sintaxis Node y ESLint del operador pasan. El cambio real requiere todavía entrada
-oculta local; no se declara ejecutado. Credenly y Valentina quedan fuera de esta
+Sintaxis Node y ESLint del operador pasan. El cambio real terminó el2026-11-09: contraseña introducida oculta dos veces,
+login Auth y browser correctos, `/admin/me`200, mismo UUID y SUPERADMIN/ACTIVO,
+perfil intacto, cookies HttpOnly y guard de logout correcto. Evidencia sanitizada
+en `reports/evidence/raes-admin-authorized-password-reset.json`. Credenly y Valentina quedan fuera de esta
 autorización. La herramienta de escritorio denegó acceso a Terminal: el propietario
 debe lanzar el comando directamente; no se intenta otro mecanismo de control UI.

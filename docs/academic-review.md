@@ -265,8 +265,9 @@ Poli 13 personas/13 credenciales, 26 observaciones iguales; UdeA 18/18, 36 igual
 Ambas canonicalWrites:0. Esto comprueba el corte actual sin reaprobar registros.
 La prueba remota nueva se detuvo en ADMIN_LOGIN: Supabase rechazó la contraseña
 actual introducida por el propietario (invalid_credentials). No se creó ninguna
-fila fuente ni cuenta temporal. Se solicita reintento o autorización específica
-para un nuevo reset RAES; no se modifica ninguna contraseña automáticamente.
+fila fuente ni cuenta temporal. Después, un nuevo reset únicamente de RAES fue expresamente autorizado y pasó
+Auth/API/browser con UUID/perfil/rol conservados. Queda ejecutar de nuevo el
+operador de prueba con esa contraseña; no se conserva una sesión entre operadores.
 No se presenta la prueba remota como completada por estas comprobaciones locales.
 
 Exclusión comprobada también sobre RAES PostgreSQL remoto: dos peticiones HTTP

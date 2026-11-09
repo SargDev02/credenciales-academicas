@@ -5,8 +5,9 @@ pendiente de acceso administrativo.** El propietario reintentó la contraseña d
 RAES; Supabase volvió a responder400 invalid_credentials. No se creó fixture,
 cuenta temporal ni propuesta académica. El precheck de la cuenta sigue correcto.
 El propietario autorizó después restablecer solo ese administrador RAES. El
-operador exige el UUID y proyecto esperados; falta la nueva contraseña oculta
-en Terminal. Esta autorización no implica que el restablecimiento ya terminó.
+operador exigió UUID y proyecto esperados. El nuevo restablecimiento ya terminó:
+Auth/API/navegador PASS, perfil y rol intactos. La prueba de incorporación requiere
+una nueva sesión administrativa; las sesiones de comprobación se cerraron.
 
 | Punto solicitado | Resultado comprobado |
 | --- | --- |
@@ -21,7 +22,7 @@ en Terminal. Esta autorización no implica que el restablecimiento ya terminó.
 | 9. Cred→RAES | Cliente real y HTTP ciudadano existentes200; terminales v3/v2 y sintéticas vigentes multiinstitución, cero acceso directo a RAES DB/fuentes |
 | 10. Poli→RAES | whoami200; detector13/13,0 solicitudes/0 escrituras canónicas |
 | 11. UdeA→RAES | whoami200; detector18/18,0 solicitudes/0 escrituras canónicas |
-| 12. Login RAES | Reset inicialmente autorizado y login Auth/API/browser PASS con mismo UUID/SUPERADMIN/ACTIVO. El login posterior para aprobar el fixture falla por contraseña; no confundir ambas verificaciones |
+| 12. Login RAES | Reset inicialmente autorizado y login Auth/API/browser PASS con mismo UUID/SUPERADMIN/ACTIVO. El intento posterior falló por contraseña; un nuevo reset específicamente autorizado ya pasó Auth/API/browser. Falta ejecutar incorporación con la nueva sesión |
 | 13. Login Cred | Ciudadano/Admin PASS, sesiones/cookies separadas, cruces403 y logout; perfiles/relaciones intactos |
 | 14. Conteos | Canónico30personas/31fuentes/32credenciales/39versiones/eventos/operaciones sin cambios. Cred4Auth/1perfil/1verificación/1vínculo/5shares/9accesos. Segundo perfil Sergio no restaurado por decisión del propietario |
 | 15. Migraciones | Diez históricas por proyecto conservadas. Solo RAES añade20261109161812 y20261109162351; Credenly sin DDL nuevo |

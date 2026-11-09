@@ -40,7 +40,7 @@
     "privateEnvOrTraineddataIndexed": 0,
     "manualBrowserSessionPersistence": 0
   },
-  "remoteSyntheticTest": "BLOCKED_INVALID_CURRENT_RAES_ADMIN_PASSWORD",
+  "remoteSyntheticTest": "PENDING_NEW_ADMIN_SESSION_AFTER_VERIFIED_AUTH_RESET",
   "remoteBranchPublished": false,
   "merge": false,
   "deploy": false
