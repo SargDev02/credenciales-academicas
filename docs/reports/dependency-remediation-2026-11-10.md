@@ -5,6 +5,10 @@ Fecha: 2026-11-10. Rama `chore/predeploy-quality-gate`, referencia inicial
 regresiones y evidencia de validación. Sin merge, deploy, cambios en PR #17 ni
 llamadas a las bases Supabase remotas.
 
+**Estado actual: audit corregido; PR todavía NO listo para merge.** El CI sin
+caché está bloqueado por la antigüedad mínima de Next 16.4.6; véase el diagnóstico
+posterior al final. Los PASS locales no se presentan como un CI aprobado.
+
 ## Versiones y alcance
 
 | Dependencia | Antes | Después |
@@ -88,7 +92,7 @@ resultados históricos anteriores no se modifican.
 
 | Gate | Resultado |
 |---|---|
-| Instalación frozen | PASS |
+| Instalación frozen local, con caché de verificación compartida | PASS; CI sin caché bloqueado por antigüedad |
 | pnpm audit --prod | PASS, cero avisos |
 | pnpm audit:gate | PASS, findings vacío |
 | Security/history scan | PASS, cero hallazgos |
@@ -118,3 +122,40 @@ introduce un consumidor nuevo de Image Optimization. Los tests browser existente
 cubren CSP/nonce, Server Actions de login, cookies, aislamiento ciudadano/admin,
 App Router, no-store, assets y límites OCR. La prueba OCR real usa únicamente
 píxeles sintéticos y no afirma autenticidad documental.
+
+
+## Resultado CI y reproducción sin caché de verificación
+
+El [run 42823532812](https://github.com/SargDev02/credenciales-academicas/actions/runs/42823532812),
+para el código del commit 4d7da0b, falló en instalación frozen por
+`ERR_PNPM_MINIMUM_RELEASE_AGE_VIOLATION`. Los gates posteriores del job quedaron
+SKIPPED, no PASS. No es un advisory nuevo ni un fallo de los tests funcionales.
+
+La copia limpia inicial no tenía node_modules/.next/dist/.env, pero compartía la
+caché global que pnpm usa para recordar verificaciones del lockfile. Incluso un
+storeDir/stateDir nuevos conservaban ese PASS almacenado. Al aislar también
+cacheDir y exigir verificación, la misma política falla localmente. Esta
+limitación de la primera validación se documenta explícitamente; su resultado
+local histórico no se sustituye por otro.
+
+La reproducción usó una copia independiente y pnpm 12.8.1 con
+`--config.cacheDir=RUTA_NUEVA`, `--store-dir RUTA_NUEVA`,
+`--state-dir RUTA_NUEVA`, `install --frozen-lockfile --no-trust-lockfile`.
+No desactiva la verificación ni cambia la política del repositorio.
+
+El mínimo por defecto de pnpm es 1440 minutos
+([documentación oficial](https://pnpm.io/settings/dependency-resolution#minimumreleaseage)).
+Las doce entradas rechazadas son Next/eslint-config-next/@next de 16.4.6. La
+publicación más reciente registrada por el runner es Next a
+2026-11-09T20:22:06Z. Sus 24 horas se cumplen el 10-11-2026 a las 20:22:06 UTC,
+**15:22:06 America/Bogota**. Repetir CI después de las 15:23 de Bogotá, sin
+modificar configuración. Cumplir la edad elimina esta condición temporal; solo
+una nueva ejecución completa podrá confirmar el PASS final.
+
+No se añadió minimumReleaseAgeExclude, no se redujo minimumReleaseAge, no se
+activó trustLockfile y no se cambió la excepción braces. No se altera el workflow
+para saltar verificaciones. [Evidencia CI y reproducción](evidence/dependency-remediation-ci-2026-11-10.json).
+
+La remediación de vulnerabilidades está publicada y pasa audit, pero la
+aprobación técnica para merge permanece pendiente del CI posterior a la ventana
+de antigüedad. No se hace merge ni despliegue.
