@@ -39,3 +39,12 @@ Supabase JS 2.118.0, Zod 4.6.7 y TypeScript 7.0.2 frente a versiones instaladas
 demostrada; TypeScript 7 excede el rango soportado por typescript-eslint instalado.
 SSR 0.12.7, Tesseract 7, Playwright 1.64.1 y tsx no originaron advisories en el
 baseline. Node de validación/CI: 24.22.0 LTS; pnpm: 12.8.1.
+
+
+## Revalidación y remediación posterior — 2026-11-10
+
+La auditoría del head 5c244cf detectó nuevos avisos en Next, Zod y minimatch.
+La remediación acotada y su validación actual se documentan en
+[dependency-remediation-2026-11-10.md](dependency-remediation-2026-11-10.md).
+Los resultados anteriores se conservan como evidencia de su fecha; la excepción
+original de braces no se modifica ni cubre estos otros advisories.

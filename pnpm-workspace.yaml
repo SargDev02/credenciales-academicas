@@ -8,3 +8,8 @@ allowBuilds:
   tesseract.js: true
   # Use the lockfile's platform binding; never download a fallback native binary.
   unrs-resolver: false
+
+# Scope the security fix to the parser that still requires minimatch ^10.2.2.
+# Compatibility evidence: docs/reports/dependency-remediation-2026-11-10.md
+overrides:
+  "@typescript-eslint/typescript-estree@8.71.2>minimatch": "11.0.1"
