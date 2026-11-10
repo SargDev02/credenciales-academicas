@@ -5,11 +5,13 @@
   "type": "module",
   "exports": {
     ".": "./src/http.ts",
-    "./config": "./src/config.ts"
+    "./config": "./src/config.ts",
+    "./security": "./src/security.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/*.test.ts"
+    "test": "tsx --test src/*.test.ts",
+    "lint": "eslint . --max-warnings 0"
   },
   "devDependencies": {
     "@types/node": "^20",

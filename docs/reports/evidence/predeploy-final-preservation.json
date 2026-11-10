@@ -1,0 +1,28 @@
+{
+  "raes": {
+    "temporary_auth": 0,
+    "temporary_sessions": 0,
+    "qa_prefix_users": 0,
+    "temporary_admin": 0,
+    "master_people": 30,
+    "sources": 31,
+    "credentials": 32,
+    "versions": 39,
+    "events": 39
+  },
+  "credenly": {
+    "temporary_auth": 0,
+    "temporary_sessions": 0,
+    "qa_prefix_users": 0,
+    "temporary_profile": 0,
+    "temporary_verification": 0,
+    "temporary_link": 0,
+    "temporary_share": 0,
+    "temporary_share_access": 0,
+    "profiles": 2,
+    "verifications": 1,
+    "links": 1,
+    "shares": 5,
+    "accesses": 9
+  }
+}

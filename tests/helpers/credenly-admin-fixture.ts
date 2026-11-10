@@ -1,3 +1,4 @@
+import { guardFixtureRequest } from "./http-fixture";
 import assert from "node:assert/strict";
 import { createHmac, randomBytes } from "node:crypto";
 import { createServer } from "node:https";
@@ -81,6 +82,7 @@ export async function startAdminFixture() {
   const tokenFor = (id: string) =>
     [...sessions].find(([, user]) => user.id === id)![0];
   const state = {
+    citizenState: "ACTIVO",
     inactive: false,
     metricsError: false,
     raesDown: false,
@@ -95,7 +97,7 @@ export async function startAdminFixture() {
   const paths: string[] = [];
   const fixture = createServer(
     { key: readFileSync(key), cert: readFileSync(cert) },
-    async (req, res) => {
+    guardFixtureRequest(async (req, res) => {
       const url = new URL(req.url!, upstream);
       paths.push(`${req.method} ${url.pathname}`);
       res.setHeader("Content-Type", "application/json");
@@ -222,7 +224,7 @@ export async function startAdminFixture() {
             id: citizenId,
             nombres: "Ciudadana",
             apellidos: "Sintética",
-            estado: "ACTIVO",
+            estado: state.citizenState,
             created_at: now,
             updated_at: now,
           },
@@ -242,18 +244,18 @@ export async function startAdminFixture() {
       if (/\/api\/v1\/persons\/[^/]+\/credentials$/.test(url.pathname))
         return reply(200, { data: [] });
       reply(404, { msg: "Local fixture route missing" });
-    },
+    }),
   );
   fixture.listen(3433);
   await once(fixture, "listening");
   const inherited = Object.fromEntries(
     ["PATH", "HOME", "TMPDIR", "LANG"].flatMap((k) =>
-      process.env[k] ? [[k, process.env[k]!]] : [],
+      process.env[k] ? [[k, process.env[k]]] : [],
     ),
   );
   const common = {
     ...inherited,
-    NODE_ENV: "production",
+    NODE_ENV: "production" as const,
     NODE_EXTRA_CA_CERTS: cert,
   };
   const api = spawn(
@@ -308,7 +310,7 @@ export async function startAdminFixture() {
             ready = true;
             break;
           }
-        } catch {}
+        } catch { /* Expected transient failure or optional diagnostic; no sensitive error output. */ }
         await new Promise((resolve) => setTimeout(resolve, 100));
       }
       assert.ok(ready, "Local fixture server unavailable");
@@ -332,6 +334,7 @@ export async function startAdminFixture() {
     stop,
     reset() {
       Object.assign(state, {
+        citizenState: "ACTIVO",
         inactive: false,
         metricsError: false,
         raesDown: false,

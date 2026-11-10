@@ -13,13 +13,14 @@
     "sync:base": "tsx src/cli.ts --only=base",
     "sync:credentials": "tsx src/cli.ts --only=credentials",
     "presync:base": "pnpm --filter @raes/contracts build",
-    "presync:credentials": "pnpm --filter @raes/contracts build"
+    "presync:credentials": "pnpm --filter @raes/contracts build",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
     "@supabase/supabase-js": "^2.117.2",
     "dotenv": "^17.2.3",
-    "zod": "^4.6.5",
+    "zod": "^4.6.7",
     "@raes/connector-core": "workspace:*"
   },
   "devDependencies": {

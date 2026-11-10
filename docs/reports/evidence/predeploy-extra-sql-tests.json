@@ -1,0 +1,52 @@
+[
+  {
+    "project": "raes",
+    "file": "supabase/tests/browser_privileges.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "BROWSER_PRIVILEGES_OK"
+      }
+    ]
+  },
+  {
+    "project": "raes",
+    "file": "supabase/raes/tests/credential_lifecycle_existing_data.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "EXISTING_CREDENTIAL_CORRECTION_REVOCATION_ANNULMENT_OK"
+      }
+    ]
+  },
+  {
+    "project": "credenly",
+    "file": "supabase/tests/browser_privileges.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "BROWSER_PRIVILEGES_OK"
+      }
+    ]
+  },
+  {
+    "project": "poli",
+    "file": "supabase/tests/browser_privileges.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "BROWSER_PRIVILEGES_OK"
+      }
+    ]
+  },
+  {
+    "project": "udea",
+    "file": "supabase/tests/browser_privileges.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "BROWSER_PRIVILEGES_OK"
+      }
+    ]
+  }
+]

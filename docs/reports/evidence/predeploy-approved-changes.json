@@ -1,0 +1,140 @@
+{
+  "authorizedOn": "2026-10-19",
+  "changes": [
+    {
+      "project": "raes",
+      "kind": "migration",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114830",
+      "file": "supabase/raes/migrations/20261019114830_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "raes",
+      "kind": "auth-config",
+      "before": {
+        "password_min_length": 6,
+        "disable_signup": false
+      },
+      "after": {
+        "password_min_length": 12,
+        "disable_signup": true,
+        "password_hibp_enabled": false
+      }
+    },
+    {
+      "project": "raes",
+      "kind": "data-preservation",
+      "countsUnchanged": true,
+      "counts": {
+        "auditoria": 103,
+        "cliente_api_scopes": 2,
+        "cliente_api_secretos": 1,
+        "clientes_api": 1,
+        "credencial_eventos": 39,
+        "credencial_versiones": 39,
+        "credenciales": 32,
+        "instituciones": 2,
+        "integracion_scopes": 14,
+        "integracion_secretos": 2,
+        "integraciones_institucionales": 2,
+        "operaciones_api": 39,
+        "perfiles_admin": 1,
+        "persona_fuentes": 31,
+        "personas_maestra": 30,
+        "programa_sede": 46,
+        "programas": 20,
+        "scopes": 8,
+        "sedes": 16
+      }
+    },
+    {
+      "project": "credenly",
+      "kind": "migration",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114842",
+      "file": "supabase/credenly/migrations/20261019114842_least_privilege_browser_roles.sql",
+      "sha256": "75a3b965d9730d109744d5520007730b6434a7c93ed76d907dd9732719b4fa7f"
+    },
+    {
+      "project": "credenly",
+      "kind": "migration",
+      "name": "enforce_credenly_profile_exclusion",
+      "version": "20261019114846",
+      "file": "supabase/credenly/migrations/20261019114846_enforce_credenly_profile_exclusion.sql",
+      "sha256": "485f59b35db98b59f04160dfa4948bc956c0d7c54cab834c2ae6012942124035"
+    },
+    {
+      "project": "credenly",
+      "kind": "auth-config",
+      "before": {
+        "password_min_length": 6,
+        "disable_signup": false
+      },
+      "after": {
+        "password_min_length": 12,
+        "disable_signup": false,
+        "password_hibp_enabled": false
+      }
+    },
+    {
+      "project": "credenly",
+      "kind": "data-preservation",
+      "countsUnchanged": true,
+      "counts": {
+        "accesos_compartidos": 9,
+        "auditoria_admin": 40,
+        "comparticiones": 5,
+        "perfiles": 2,
+        "perfiles_admin": 1,
+        "verificaciones_identidad": 1,
+        "vinculaciones_raes": 1
+      },
+      "authUuidsEmailsConfirmationUnchanged": true
+    },
+    {
+      "project": "poli",
+      "kind": "migration",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114859",
+      "file": "supabase/poli/migrations/20261019114859_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "poli",
+      "kind": "data-preservation",
+      "countsUnchanged": true,
+      "counts": {
+        "credenciales": 13,
+        "estudiantes": 13,
+        "institucion": 1,
+        "matriculas": 13,
+        "programa_sede": 11,
+        "programas": 7,
+        "sedes": 3
+      }
+    },
+    {
+      "project": "udea",
+      "kind": "migration",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114905",
+      "file": "supabase/udea/migrations/20261019114905_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "udea",
+      "kind": "data-preservation",
+      "countsUnchanged": true,
+      "counts": {
+        "credenciales": 18,
+        "estudiantes": 18,
+        "institucion": 1,
+        "matriculas": 18,
+        "programa_sede": 35,
+        "programas": 13,
+        "sedes": 13
+      }
+    }
+  ]
+}

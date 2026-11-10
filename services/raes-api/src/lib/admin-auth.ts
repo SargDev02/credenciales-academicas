@@ -89,7 +89,7 @@ export async function authenticateAdmin(
     );
   }
 
-  const profile = profileData as AdminIdentity["profile"] | null;
+  const profile = profileData;
 
   if (!profile || profile.estado !== "ACTIVO") {
     throw new AdminAuthError(

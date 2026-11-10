@@ -23,25 +23,27 @@ export function OnboardingForm({
     <form
       className="citizen-form"
       aria-busy={pending}
-      onSubmit={async (event) => {
-        event.preventDefault();
-        if (pending) return;
-        const data = new FormData(event.currentTarget);
-        setPending(true);
-        setResult({});
-        try {
-          const response = await updateOnboarding(kind, data);
-          setResult(response);
-          if (response.message) router.refresh();
-        } catch {
-          setResult({
-            error:
-              "No pudimos confirmar el resultado. Actualiza el estado antes de reenviar.",
-          });
-        } finally {
-          setPending(false);
-          requestAnimationFrame(() => ref.current?.focus());
-        }
+      onSubmit={(event) => {
+        void (async () => {
+          event.preventDefault();
+          if (pending) return;
+          const data = new FormData(event.currentTarget);
+          setPending(true);
+          setResult({});
+          try {
+            const response = await updateOnboarding(kind, data);
+            setResult(response);
+            if (response.message) router.refresh();
+          } catch {
+            setResult({
+              error:
+                "No pudimos confirmar el resultado. Actualiza el estado antes de reenviar.",
+            });
+          } finally {
+            setPending(false);
+            requestAnimationFrame(() => ref.current?.focus());
+          }
+        })();
       }}
     >
       <fieldset disabled={pending}>
@@ -80,7 +82,7 @@ export function OnboardingForm({
             type="file"
             label="Imagen del documento"
             accept="image/jpeg,image/png,image/webp"
-            hint="JPEG, PNG o WEBP. Hasta 8 MB. Se procesa en el servidor y se elimina la imagen."
+            hint="JPEG, PNG o WEBP fijos. Hasta 8 MB y 16 megapíxeles (8192 px por lado). Se procesa en el servidor, sin almacenar la imagen."
             required
           />
         ) : (

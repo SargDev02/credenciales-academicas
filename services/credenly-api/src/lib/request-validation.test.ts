@@ -21,6 +21,7 @@ test("la ruta de perfil autenticada convierte JSON malformado en 400", async () 
   Object.assign(process.env, { CREDENLY_SUPABASE_URL: "https://profile-fixture.supabase.co", CREDENLY_SUPABASE_SERVICE_ROLE_KEY: "fixture-server-key-never-public", RAES_API_BASE_URL: "https://raes-api.example", RAES_CREDENLY_CLIENT_ID: "raes_cli_fixture", RAES_CREDENLY_CLIENT_SECRET: "raes_sk_fixture_secret" });
   const original = globalThis.fetch;
   globalThis.fetch = async input => {
+    if (new URL(String(input)).pathname === "/rest/v1/perfiles") return Response.json([{ estado: "ACTIVO" }]);
     if (new URL(String(input)).pathname === "/rest/v1/perfiles_admin") return Response.json([]);
     assert.equal(new URL(String(input)).pathname, "/auth/v1/user");
     return Response.json({ id: "citizen", aud: "authenticated", role: "authenticated", created_at: "2025-01-01" });

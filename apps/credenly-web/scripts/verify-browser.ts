@@ -1,3 +1,5 @@
+import { chromiumLaunchOptions } from "../../../tests/helpers/browser.mjs";
+import { guardFixtureRequest } from "../../../tests/helpers/http-fixture";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
 import { createServer } from "node:http";
@@ -69,7 +71,7 @@ let verificationState = "REVISION",
 let share: Record<string, unknown> | null = null;
 let userId: string | undefined, session: string | undefined;
 let loggedOut = false;
-const api = createServer(async (req, res) => {
+const api = createServer(guardFixtureRequest(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-store");
   const reply = (status: number, payload: unknown) => {
@@ -177,7 +179,7 @@ const api = createServer(async (req, res) => {
     link = {
       id: randomUUID(),
       raesPersonaId: randomUUID(),
-      verificacionIdentidadId: verification!.id,
+      verificacionIdentidadId: verification.id,
       estado: "VERIFICADA",
     };
     return reply(200, { data: link });
@@ -203,10 +205,10 @@ const api = createServer(async (req, res) => {
     return reply(200, { data: share });
   }
   reply(404, { error: "LOCAL_FIXTURE_NOT_FOUND" });
-});
+}));
 api.listen(3402, "127.0.0.1");
 await once(api, "listening");
-const env: Record<string, string> = {
+const env: NodeJS.ProcessEnv = {
   NODE_ENV: "production",
   CREDENLY_API_BASE_URL: "http://127.0.0.1:3402",
   CREDENLY_WEB_SITE_URL: base,
@@ -225,11 +227,7 @@ const web = spawn(
   ["node_modules/next/dist/bin/next", "start", "-p", "3205"],
   { env, stdio: "ignore" },
 );
-const browser = await chromium.launch({
-  headless: true,
-  executablePath:
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-});
+const browser = await chromium.launch(chromiumLaunchOptions);
 const context = await browser.newContext();
 const page = await context.newPage();
 const errors: string[] = [];
@@ -241,7 +239,7 @@ try {
   for (let n = 0; n < 50; n++) {
     try {
       if ((await fetch(`${base}/login`)).ok) break;
-    } catch {}
+    } catch { /* Expected transient failure or optional diagnostic; no sensitive error output. */ }
     await new Promise((r) => setTimeout(r, 200));
   }
   const created = await db.auth.admin.createUser({
@@ -393,8 +391,8 @@ try {
     ["expired", "Enlace expirado"],
     ["missing", "Información no disponible"],
     ["error", "No pudimos consultar RAES"],
-  ]) {
-    publicMode = mode!;
+  ] as const) {
+    publicMode = mode;
     await page.goto(`${base}/verify/${token}`);
     await page.getByRole("heading", { name: heading, exact: true }).waitFor();
     assert.equal(

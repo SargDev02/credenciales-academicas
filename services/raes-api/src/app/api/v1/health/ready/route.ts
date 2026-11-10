@@ -37,7 +37,7 @@ export async function GET() {
       },
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch {
     console.error("RAES readiness configuration failed");
 
     return Response.json(

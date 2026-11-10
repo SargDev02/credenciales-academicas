@@ -512,3 +512,39 @@ test("citizen/admin isolation, active role and scoped logout remain enforced by 
     page.getByText("No pudimos abrir la administración", { exact: true }),
   ).toBeVisible();
 });
+
+test("API security headers cover auth errors and local OCR admission rejects excess before processing", async () => {
+  const denied = await api("credentials");
+  expect(denied.status).toBe(401);
+  expect(denied.headers.get("cache-control")).toBe("private, no-store");
+  expect(denied.headers.get("x-content-type-options")).toBe("nosniff");
+  expect(denied.headers.get("content-security-policy")).toContain("default-src 'none'");
+  const attempts = [];
+  for (let index = 0; index < 7; index++) attempts.push(await fetch(`${qa.apiBase}/api/v1/identity-verifications`, { method: "POST" }));
+  expect(attempts.slice(0, 6).map(response => response.status)).toEqual([401, 401, 401, 401, 401, 401]);
+  const limited = attempts[6]!;
+  expect(limited.status).toBe(429);
+  expect(Number(limited.headers.get("retry-after"))).toBeGreaterThan(0);
+  expect(limited.headers.get("cache-control")).toBe("private, no-store");
+  expect(await limited.json()).toEqual({ error: "RATE_LIMITED", message: "Demasiadas solicitudes. Intenta más tarde" });
+});
+
+
+test("restricted citizen profiles deny live API access and login without touching academic data", async ({ page, context }) => {
+  for (const state of ["SUSPENDIDO", "CERRADO"]) {
+    qa.state.citizenState = state;
+    const before = qa.paths.length;
+    for (const route of ["auth/me", "credentials", "shares", "identity-verifications"]) {
+      const response = await api(route, qa.citizenId);
+      expect(response.status).toBe(403);
+      expect(await response.json()).toEqual({ error: "CITIZEN_ACCOUNT_RESTRICTED", message: "El estado de tu cuenta no permite el acceso ciudadano" });
+    }
+    expect(qa.paths.slice(before).every(path => /\/(auth\/v1\/user|rest\/v1\/perfiles_admin|rest\/v1\/perfiles)$/.test(path))).toBe(true);
+    await login(page, false, 0);
+    await expect(page.locator("form").getByRole("alert")).toContainText("El estado de tu cuenta no permite el acceso ciudadano");
+    expect((await context.cookies()).some(cookie => cookie.name.startsWith("credenly-web-auth"))).toBe(false);
+  }
+  qa.state.citizenState = "ACTIVO";
+  await login(page, false, 0);
+  await expect(page).toHaveURL(`${qa.base}/credentials`);
+});

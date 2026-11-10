@@ -1,5 +1,10 @@
 # Frontend del prototipo
 
+Estado actual 2026-10-19: frontend integrado en main por el squash del PR #15.
+La revisión pre-deploy continúa en el PR Draft #16; estado verificable en el
+[gate](reports/predeploy-quality-gate.md). Las cifras y QA de fases anteriores
+se conservan como evidencia histórica; no sustituyen la validación actual.
+
 ## Arquitectura y alcance
 
 `apps/raes-web` y `apps/credenly-web`: Next.js 16.3.8, React 19, App Router y
@@ -197,15 +202,18 @@ capturar tarjetas y evitar revocar de nuevo una sesión ya cerrada por logout. E
 usuario residual de ese intento se eliminó normalmente tras comprobar por SQL cero
 sesiones/datos ciudadanos. No se forzaron eliminaciones.
 
-## Límites conservados
+## Límites actuales
 
-- Lint raíz termina, pero no hay scripts por paquete: no constituye análisis lint.
-- Los gaps administrativos de RAES se mantienen; el alcance Credenly Admin aprobado se documenta debajo.
-- Credenly Admin añade dos tablas autorizadas. Sin RPC nueva, cambio de identidad académica ni proveedor OCR.
-- Sin merge ni despliegues. PR #15 sigue abierto; su estado actual se registra en `docs/progress.md`.
-- Continúan separados los pendientes de producción: autenticidad/identidad real,
-  recuperación/baselines, operación/retención/rotación, protección de contraseñas
-  filtradas y lint por paquete. No se declara listo para producción.
+- Lint real en los diez paquetes y tooling, CI y 256 tests; la limitación histórica
+  de scripts ausentes se resolvió. No se borran sus registros de validación previos.
+- Los gaps administrativos de RAES (auditoría, listado de integraciones y scopes)
+  continúan explícitos; no se crearon endpoints ni accesos directos a DB para UI.
+- El PR #15 fue fusionado por squash. PR #16 permanece Draft, sin despliegue ni merge.
+- DDL de cuatro proyectos recuperado y reconstruido en PostgreSQL/WASM. Sigue
+  pendiente un restore completo de plataforma/datos y la política operativa final.
+- Identidad real/KYC, control público de abuso, HIBP gratuito/alternativa autorizada,
+  retención aprobada y rotación ensayada siguen separados de la calidad funcional
+  del prototipo. No se declara listo para producción.
 
 ## Desarrollo mediante IP de la red local
 
@@ -221,7 +229,17 @@ CREDENLY_WEB_ALLOWED_DEV_ORIGINS=192.168.1.7
 Son listas opcionales de hostnames separados por comas, sin protocolo/puerto.
 Reiniciar las webs y recargar la página. No autorizan CORS de las APIs ni cambian
 login, permisos o la configuración de producción. Si cambia la IP, actualizar el
-valor local. Para confirmar correo desde otro dispositivo, revisar además el origen
+valor local. Se pueden conservar varias direcciones conocidas separadas por comas;
+no usar un comodín global para evitar actualizar la lista.
+
+El mismo bloqueo puede aparecer en `/__nextjs_original-stack-frames`, el recurso
+con el que Next muestra detalles de errores en desarrollo. Autorizar el host
+restablece ese recurso; si el login continúa fallando, revisar el error anterior
+al aviso. Un aviso del panel de errores no demuestra que Auth haya rechazado la
+sesión. Comprobar por separado `/login` y `/admin/login`. La configuración local
+se guarda en `.env.local` ignorados; no versionar claves ni esos archivos.
+
+Para confirmar correo desde otro dispositivo, revisar además el origen
 confiable y callback Auth documentados arriba; HMR no configura ese redirect.
 
 ## Credenly Admin — alcance operativo aprobado
@@ -350,5 +368,36 @@ sin valores privados, env/traineddata indexados ni persistencia manual en browse
 Validación del refinamiento administrativo (2026-10-19): `pnpm typecheck` y build
 recursivo correctos; `pnpm test` **199/199** (192 anteriores conservados, seis casos
 de presentación y uno de MetricCard nuevos); navegador **20/20**. `pnpm lint`
-termina con exit 0 por `--if-present`, pero ningún paquete define lint: no se
+terminaba con exit 0 por `--if-present`, pero ningún paquete definía lint (evidencia
+histórica; corregido en la revisión pre-deploy): no se
 presenta como análisis estático. Sin cambios de API, Auth remoto, esquema o RPC.
+
+## Controles HTTP revisados en pre-deploy (2026-10-19)
+
+Las dos webs generan CSP con nonce por respuesta, scripts sin unsafe-inline/eval
+(en desarrollo se permite eval para Next), frame-ancestors none, form-action self y
+connect-src self. Auth y llamadas a APIs permanecen server-side; no se permite una
+conexión browser directa a Supabase. style-src conserva unsafe-inline para los
+atributos de presentación usados por React/Next. HTML se renderiza dinámicamente
+con `private, no-store`; assets `_next/static` y fuentes quedan fuera del proxy.
+Se comprobó en navegador que sus scripts reciben el nonce y los assets mantienen
+caché immutable. HSTS se emite en producción y solo tiene efecto sobre HTTPS; no
+se incluye includeSubDomains ni preload sin decidir el dominio de despliegue.
+
+Ambas APIs emiten cabeceras de seguridad y `private, no-store` para sus respuestas,
+incluidos errores. La admisión local por proceso limita OCR POST a 6/min,
+verificación pública a 120/min, altas administrativas a 20/min, health a 120/min y
+resto de API a 600/min, con Retry-After y 429. No se interpreta x-forwarded-for como
+identidad confiable. Es una protección local de recursos, no un límite por persona
+ni una defensa distribuida. La instancia OCR admite un worker, sin cola, y un
+plazo de 45 segundos; un worker que arranca tarde se termina sin procesar.
+
+
+### Estados de acceso ciudadano (decisión aprobada 2026-10-19)
+
+La API consulta el estado actual del perfil por UUID en cada solicitud ciudadana.
+SUSPENDIDO/CERRADO reciben 403 antes de consultar RAES o datos ciudadanos. El login
+rechazado elimina sus cookies de sesión y muestra un mensaje de cuenta restringida;
+no lo confunde con una identidad administrativa. ACTIVO, perfil ausente y
+PENDIENTE_VERIFICACION conservan onboarding. La verificación pública mantiene el
+ciclo propio del enlace. [Decisión y alcance](proposals/citizen-profile-access.md).

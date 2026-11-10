@@ -16,7 +16,7 @@ Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 
 - **Instituciones**: originan la información académica.
 - **RAES**: recibe, valida, conserva, versiona y expone la información académica mediante API.
-- **Credenly**: registra ciudadanos, verifica su identidad, los vincula con RAES y presenta credenciales consultadas desde RAES.
+- **Credenly**: registra ciudadanos, procesa documentos de identidad, los vincula con RAES y presenta credenciales consultadas desde RAES.
 - **Credenly nunca almacena credenciales académicas ni una copia persistente de su estado.**
 
 ## Principios
@@ -49,3 +49,12 @@ fixtures locales y forma parte de `pnpm test:frontend:browser`. La cuenta sinté
 login real validado. Valentina conserva `valentina@yopmail.com` y sus relaciones;
 el administrador no tiene acceso ciudadano. Ver
 [modelo de autenticación](docs/authentication.md).
+
+## Calidad pre-deploy
+
+Node 24.22.0 / pnpm 12.8.1 fijados. Lint real, tests por los diez workspaces,
+reconstrucción de esquemas en PostgreSQL/WASM, comprobaciones de secretos y browser
+QA local forman parte de CI. El [gate pre-deploy](docs/reports/predeploy-quality-gate.md)
+distingue correcciones verificadas, limitaciones y bloqueos. Esta fase no despliega
+ni certifica preparación para producción. [Operación](docs/operations.md) y
+[variables de entorno](docs/environment.md).

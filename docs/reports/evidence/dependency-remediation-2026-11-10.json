@@ -1,0 +1,284 @@
+{
+  "date": "2026-11-10",
+  "branch": "chore/predeploy-quality-gate",
+  "referenceHead": "5c244cfb163094d121fb5315448e173bfca03601",
+  "runtime": {
+    "node": "v24.22.0",
+    "pnpm": "12.8.1"
+  },
+  "environment": "fresh local clone, no .env/node_modules/.next/dist before install; no remote secrets in environment",
+  "versions": {
+    "next": [
+      "16.3.8",
+      "16.4.6"
+    ],
+    "eslint-config-next": [
+      "16.3.8",
+      "16.4.6"
+    ],
+    "zod": [
+      "4.6.5",
+      "4.6.7"
+    ],
+    "minimatchUnderTypescriptEstree": [
+      "10.2.6",
+      "11.0.1"
+    ],
+    "react": [
+      "19.2.8",
+      "19.2.8"
+    ],
+    "react-dom": [
+      "19.2.8",
+      "19.2.8"
+    ]
+  },
+  "minimatchParent": "@typescript-eslint/typescript-estree@8.71.2",
+  "override": "@typescript-eslint/typescript-estree@8.71.2>minimatch=11.0.1",
+  "normalResolutionBlockedByParentRange": "^10.2.2, also retained by latest stable parent 8.72.2",
+  "compatibility": {
+    "ordinaryPatternComparisons": 192,
+    "result": "PASS",
+    "realParserRegression": "PASS",
+    "zodEarlyCollectionBoundsRegression": "PASS"
+  },
+  "bracesPolicyByteIdentical": true,
+  "bracesPolicySha256": "121fbcc24b8b9aa9b33602b4dea8790ee92010b465c0bd4eca1a3658308415a2",
+  "bracesExpiry": "2026-11-18T23:59:59-05:00",
+  "auditCodeByteIdentical": true,
+  "newAuditExceptions": 0,
+  "auditResult": "PASS",
+  "productionAuditResult": "No known vulnerabilities found",
+  "advisories": [],
+  "tests": {
+    "passed": 258,
+    "failed": 0
+  },
+  "browserTests": {
+    "passed": 26,
+    "failed": 0
+  },
+  "builds": [
+    "packages/contracts",
+    "apps/raes-web",
+    "services/credenly-api",
+    "apps/credenly-web",
+    "services/raes-api"
+  ],
+  "schemaReconstructions": 4,
+  "additionalLocalRlsGrantChecks": 4,
+  "historicalDdlFiles": 22,
+  "correctiveDdlFiles": 5,
+  "ocr": {
+    "localOcr": "PASS",
+    "provider": "TESSERACT_LOCAL",
+    "imagePreflight": "PASS",
+    "dimensions": [
+      900,
+      280
+    ],
+    "databaseWrites": 0,
+    "authenticIdentityClaim": false
+  },
+  "supabaseRemoteRequests": 0,
+  "pr17Modified": false,
+  "merge": false,
+  "deploy": false,
+  "typedLintVerified": true,
+  "gates": [
+    {
+      "gate": "clean-frozen",
+      "command": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile"
+      ],
+      "exit": 0,
+      "seconds": 1.28
+    },
+    {
+      "gate": "audit-prod",
+      "command": [
+        "pnpm",
+        "audit",
+        "--prod"
+      ],
+      "exit": 0,
+      "seconds": 0.51
+    },
+    {
+      "gate": "audit",
+      "command": [
+        "pnpm",
+        "audit:gate"
+      ],
+      "exit": 0,
+      "seconds": 0.46
+    },
+    {
+      "gate": "security",
+      "command": [
+        "pnpm",
+        "security:scan"
+      ],
+      "exit": 0,
+      "seconds": 0.24
+    },
+    {
+      "gate": "ddl",
+      "command": [
+        "node",
+        "scripts/verify-schema-archive.mjs"
+      ],
+      "exit": 0,
+      "seconds": 0.13
+    },
+    {
+      "gate": "lint",
+      "command": [
+        "pnpm",
+        "lint"
+      ],
+      "exit": 0,
+      "seconds": 14.7
+    },
+    {
+      "gate": "typecheck",
+      "command": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 5.46
+    },
+    {
+      "gate": "tests",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 11.29
+    },
+    {
+      "gate": "builds",
+      "command": [
+        "pnpm",
+        "-r",
+        "--if-present",
+        "build"
+      ],
+      "exit": 0,
+      "seconds": 7.15
+    },
+    {
+      "gate": "browser",
+      "command": [
+        "pnpm",
+        "test:frontend:browser"
+      ],
+      "exit": 0,
+      "seconds": 40.02
+    },
+    {
+      "gate": "db-security",
+      "command": [
+        "node",
+        "/tmp/credenciales-pr16-remediation-20261110/verify-isolated-security.mjs"
+      ],
+      "exit": 0,
+      "seconds": 2.31
+    },
+    {
+      "gate": "ocr-local",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@credenly/api",
+        "exec",
+        "tsx",
+        "scripts/verify-local-ocr.ts"
+      ],
+      "exit": 0,
+      "seconds": 2.13
+    },
+    {
+      "gate": "effective-lint",
+      "command": [
+        "pnpm",
+        "exec",
+        "eslint",
+        "--print-config",
+        "services/raes-api/src/lib/admin-auth.ts"
+      ],
+      "exit": 0,
+      "seconds": 1.34
+    },
+    {
+      "gate": "runtime",
+      "command": [
+        "pnpm",
+        "exec",
+        "node",
+        "-p",
+        "JSON.stringify({node:process.version,pnpm:require(\"node:child_process\").execFileSync(\"pnpm\",[\"--version\"],{encoding:\"utf8\"}).trim()})"
+      ],
+      "exit": 0,
+      "seconds": 0.07
+    }
+  ],
+  "lockfileReview": {
+    "removedPackages": [
+      "@next/env@16.3.8",
+      "@next/eslint-plugin-next@16.3.8",
+      "@next/swc-darwin-arm64@16.3.8",
+      "@next/swc-darwin-x64@16.3.8",
+      "@next/swc-linux-arm64-gnu@16.3.8",
+      "@next/swc-linux-arm64-musl@16.3.8",
+      "@next/swc-linux-x64-gnu@16.3.8",
+      "@next/swc-linux-x64-musl@16.3.8",
+      "@next/swc-win32-arm64-msvc@16.3.8",
+      "@next/swc-win32-x64-msvc@16.3.8",
+      "eslint-config-next@16.3.8",
+      "minimatch@10.2.6",
+      "next@16.3.8",
+      "zod@4.6.5"
+    ],
+    "addedPackages": [
+      "@isaacs/nonrecursive-glob-match@1.1.0",
+      "@next/env@16.4.6",
+      "@next/eslint-plugin-next@16.4.6",
+      "@next/swc-darwin-arm64@16.4.6",
+      "@next/swc-darwin-x64@16.4.6",
+      "@next/swc-linux-arm64-gnu@16.4.6",
+      "@next/swc-linux-arm64-musl@16.4.6",
+      "@next/swc-linux-x64-gnu@16.4.6",
+      "@next/swc-linux-x64-musl@16.4.6",
+      "@next/swc-win32-arm64-msvc@16.4.6",
+      "@next/swc-win32-x64-msvc@16.4.6",
+      "eslint-config-next@16.4.6",
+      "minimatch@11.0.1",
+      "next@16.4.6",
+      "zod@4.6.7"
+    ],
+    "reactUnchanged": true,
+    "bracesPolicyUnchanged": true,
+    "auditGateUnchanged": true
+  },
+  "logSha256": {
+    "clean-frozen": "c9a5975d639d130f73c08fa28ac4d9f9631aa6f6f6295f80390107326e231f18",
+    "audit-prod": "15950a68a7ed99c59779717acefdceb3f69cfd31bde67d2c954f2a3cea4d7955",
+    "audit": "945e64acf60e3138d0da751072984f1c01ec9ca3ce3869836feb35341e1ecf9e",
+    "security": "eb066af570540aaa0acb6cd05ad4bd38a65ab10a7488059e4beeb3c9e46f920e",
+    "ddl": "139a13537e5a5d4291e6d6577a59c93c28a16b933932279f8f2a4cad1a90fb28",
+    "lint": "1aa8e19d7791e0aa68916ca1c3d92879d0396c64f82c35e04a1ed0cc3d40a543",
+    "typecheck": "5aadd63fcf4ee035ed49431461e6755cdbe9a448ede4d1f91e5d5f54b7a4e15e",
+    "tests": "627900dd301cce82dae3e9b747185a6c6d2c46ce405b465f60874a1863255fb6",
+    "builds": "8343d9469a9f675497417b04f5ec9c20a2a7cc064761ab7709f8e23553070b70",
+    "browser": "67f22bd7bdda425cb71b55dcb8ac4a75a958bcdf9c321d111f2d73a6993e660c",
+    "db-security": "346f1ae27d56db8e83a01bfafded7072af88615ec3eeda265cac42e803fa3e38",
+    "ocr-local": "3293a249f40a12291ff5aeeb1c0cc66436300ac91ce42c8de73ee57f1cb54fbd",
+    "effective-lint": "80a3d0da8679162d973c049d0f2dd06d2afab864c5efe838a54be2559edc4579",
+    "runtime": "bba25bba3d0644f4283a6e7935e7cb14a6c18b9f9ad98db974e82779361c7be7"
+  }
+}

@@ -47,7 +47,7 @@ for (const prefix of ["POLI", "UDEA"]) {
   assert.ok(people.data && sourceCredentials.data && institution.data, "Source rows missing");
   const sourcePeople: MasterRow[] = people.data;
   const sourceRows: { id: string; codigo: string; estudiante_id: string; estado: string }[] = sourceCredentials.data;
-  const tenant = institutions.find(i => i.nit === institution.data!.nit);
+  const tenant = institutions.find(i => i.nit === institution.data.nit);
   assert.ok(tenant, "Source institution not registered");
   sets.push(new Set(sourcePeople.map(p => `${p.tipo_documento}:${p.numero_documento}`)));
   const personMap = new Map<string, string>();

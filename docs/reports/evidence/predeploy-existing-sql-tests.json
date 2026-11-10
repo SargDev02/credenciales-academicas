@@ -1,0 +1,52 @@
+[
+  {
+    "project": "raes",
+    "file": "api_client_audit.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "AUDIT_ACTORS_AND_RLS_OK"
+      }
+    ]
+  },
+  {
+    "project": "raes",
+    "file": "provisioning_rpc_permissions.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "PROVISIONING_PERMISSIONS_OK"
+      }
+    ]
+  },
+  {
+    "project": "credenly",
+    "file": "admin_permissions.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "ADMIN_RLS_GRANTS_AND_CITIZEN_DENIAL_OK"
+      }
+    ]
+  },
+  {
+    "project": "credenly",
+    "file": "link_rpc_permissions.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "LINK_RPC_PERMISSIONS_OK"
+      }
+    ]
+  },
+  {
+    "project": "credenly",
+    "file": "profile_permissions.sql",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "PROFILE_COLUMN_PERMISSIONS_AND_OWNERSHIP_RLS_OK"
+      }
+    ]
+  }
+]

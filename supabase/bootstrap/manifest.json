@@ -1,0 +1,291 @@
+{
+  "capturedAt": "2026-10-19",
+  "purpose": "Historical DDL reconstruction on EMPTY isolated Supabase projects only; never apply this archive to existing projects.",
+  "projects": {
+    "raes": [
+      {
+        "version": "20261005041757",
+        "name": "initial_raes_schema",
+        "file": "20261005041757_initial_raes_schema.sql",
+        "sha256": "3e99c92e1537c9d47620e8a8fac96c120744814c99eae10f11f20be563a96221",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005041827",
+        "name": "tune_raes_indexes_and_rls",
+        "file": "20261005041827_tune_raes_indexes_and_rls.sql",
+        "sha256": "c32f19c59e233de75527d9ea63bddcc8f15306c7230498c9bc29e5b91514c242",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005184757",
+        "name": "register_initial_credential_transaction",
+        "file": "20261005184757_register_initial_credential_transaction.sql",
+        "sha256": "b75d17a80687791da4486329bcd67819f6e4fb2a631009dc2a3cc2d136b4a53a",
+        "existingLocalMigration": [
+          "supabase/raes/migrations/202610051345_register_initial_credential_transaction.sql"
+        ]
+      },
+      {
+        "version": "20261005232625",
+        "name": "credential_lifecycle_versioning",
+        "file": "20261005232625_credential_lifecycle_versioning.sql",
+        "sha256": "c2137043db869e6868e99eadabce04a41a9c8471c882ab1ee8ee8af05b8baa22",
+        "existingLocalMigration": [
+          "supabase/raes/migrations/202610051825_credential_lifecycle_versioning.sql"
+        ]
+      },
+      {
+        "version": "20261006005739",
+        "name": "api_clients",
+        "file": "20261006005739_api_clients.sql",
+        "sha256": "46fdb3bbd020dc853ccbede9e8acab8dae6aa540a472299e18923f3594deba7f",
+        "existingLocalMigration": [
+          "supabase/raes/migrations/202610060045_api_clients.sql"
+        ]
+      },
+      {
+        "version": "20261006011049",
+        "name": "admin_provisioning_rpc",
+        "file": "20261006011049_admin_provisioning_rpc.sql",
+        "sha256": "d041954daa29616ef46967e908a64e4cab64f26eb62c68919cb043062a66729d",
+        "existingLocalMigration": [
+          "supabase/raes/migrations/202610060110_admin_provisioning_rpc.sql"
+        ]
+      },
+      {
+        "version": "20261018163434",
+        "name": "api_client_audit",
+        "file": "20261018163434_api_client_audit.sql",
+        "sha256": "ac90db6c893d59ebf69464fa77ca60adbe267be02f2f36468ca4c11a6226200c",
+        "existingLocalMigration": [
+          "supabase/raes/migrations/20261018163434_api_client_audit.sql"
+        ]
+      },
+      {
+        "version": "20261018164429",
+        "name": "restrict_provisioning_rpc",
+        "file": "20261018164429_restrict_provisioning_rpc.sql",
+        "sha256": "afa3966610ca112b1a28010f7124ece21ce85746bc84cc9a226a1a71849ba40d",
+        "existingLocalMigration": [
+          "supabase/raes/migrations/20261018164429_restrict_provisioning_rpc.sql"
+        ]
+      }
+    ],
+    "credenly": [
+      {
+        "version": "20261005041801",
+        "name": "initial_credenly_schema",
+        "file": "20261005041801_initial_credenly_schema.sql",
+        "sha256": "2dc6e8edf569e6c11ad95d82674ddcd192a9a95551ee4c1ec6736dba474fd9ba",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005041830",
+        "name": "tune_credenly_rls",
+        "file": "20261005041830_tune_credenly_rls.sql",
+        "sha256": "aa02145dc22ade2c06c345cc10d57fa4a5ec7cf0cd3f0d017116837e4a0e99ff",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261006013103",
+        "name": "confirm_raes_link",
+        "file": "20261006013103_confirm_raes_link.sql",
+        "sha256": "060333802135756422bb8971c7d428b9a4f51aefd4f6a3ff6f978f4cc756d632",
+        "existingLocalMigration": [
+          "supabase/credenly/migrations/202610060130_confirm_raes_link.sql"
+        ]
+      },
+      {
+        "version": "20261006015138",
+        "name": "local_ocr_traceability",
+        "file": "20261006015138_local_ocr_traceability.sql",
+        "sha256": "1af8df5bbb8013375a2441635350682d7d11ad6872908a91bf5c338a73c472e7",
+        "existingLocalMigration": [
+          "supabase/credenly/migrations/202610060215_local_ocr_traceability.sql"
+        ]
+      },
+      {
+        "version": "20261018171510",
+        "name": "restrict_raes_link_rpc",
+        "file": "20261018171510_restrict_raes_link_rpc.sql",
+        "sha256": "e54a3fcbf393d4e047a64966c7f4c3e4057442566d8bf0c73c48e75887b4437f",
+        "existingLocalMigration": [
+          "supabase/credenly/migrations/20261018171510_restrict_raes_link_rpc.sql"
+        ]
+      },
+      {
+        "version": "20261018172010",
+        "name": "restrict_profile_write_columns",
+        "file": "20261018172010_restrict_profile_write_columns.sql",
+        "sha256": "11fbd52f63a3d939ca3d1e2efaee1609ca4b927b3f4e17e7b4ca71d08bf89c07",
+        "existingLocalMigration": [
+          "supabase/credenly/migrations/20261018172010_restrict_profile_write_columns.sql"
+        ]
+      },
+      {
+        "version": "20261019042521",
+        "name": "credenly_admin_identity",
+        "file": "20261019042521_credenly_admin_identity.sql",
+        "sha256": "cdc21fa0601c93d2015eb6c91bca834f6c8f9a8d4fd11a75ebe09f51bb956cf4",
+        "existingLocalMigration": [
+          "supabase/credenly/migrations/20261019042521_credenly_admin_identity.sql"
+        ]
+      },
+      {
+        "version": "20261019042601",
+        "name": "credenly_admin_audit",
+        "file": "20261019042601_credenly_admin_audit.sql",
+        "sha256": "aefe78852ae7d1aecf122a397c75a598c84cd137b316e7ef8f742535405c1b38",
+        "existingLocalMigration": [
+          "supabase/credenly/migrations/20261019042601_credenly_admin_audit.sql"
+        ]
+      }
+    ],
+    "poli": [
+      {
+        "version": "20261005031550",
+        "name": "create_institutional_academic_schema",
+        "file": "20261005031550_create_institutional_academic_schema.sql",
+        "sha256": "5921720cf7e3caaeb3436d68742379fbd407a857bdefd2c93621c5372360a34e",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005031620",
+        "name": "harden_updated_at_search_path",
+        "file": "20261005031620_harden_updated_at_search_path.sql",
+        "sha256": "3b377c948eb97d0853f0594e9a17ac4fdf53755aa2f6a29b939e64cdd8f4a891",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005031954",
+        "name": "enable_rls_institutional_tables",
+        "file": "20261005031954_enable_rls_institutional_tables.sql",
+        "sha256": "ca22ce6c0ec26bb636cfa8a617765f722aca9f96d135be8d0a574e824d4b1724",
+        "existingLocalMigration": []
+      }
+    ],
+    "udea": [
+      {
+        "version": "20261005031557",
+        "name": "create_institutional_academic_schema",
+        "file": "20261005031557_create_institutional_academic_schema.sql",
+        "sha256": "5921720cf7e3caaeb3436d68742379fbd407a857bdefd2c93621c5372360a34e",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005031624",
+        "name": "harden_updated_at_search_path",
+        "file": "20261005031624_harden_updated_at_search_path.sql",
+        "sha256": "3b377c948eb97d0853f0594e9a17ac4fdf53755aa2f6a29b939e64cdd8f4a891",
+        "existingLocalMigration": []
+      },
+      {
+        "version": "20261005032001",
+        "name": "enable_rls_institutional_tables",
+        "file": "20261005032001_enable_rls_institutional_tables.sql",
+        "sha256": "ca22ce6c0ec26bb636cfa8a617765f722aca9f96d135be8d0a574e824d4b1724",
+        "existingLocalMigration": []
+      }
+    ]
+  },
+  "postBaselineMigrations": [
+    {
+      "project": "raes",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114830",
+      "file": "supabase/raes/migrations/20261019114830_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "credenly",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114842",
+      "file": "supabase/credenly/migrations/20261019114842_least_privilege_browser_roles.sql",
+      "sha256": "75a3b965d9730d109744d5520007730b6434a7c93ed76d907dd9732719b4fa7f"
+    },
+    {
+      "project": "credenly",
+      "name": "enforce_credenly_profile_exclusion",
+      "version": "20261019114846",
+      "file": "supabase/credenly/migrations/20261019114846_enforce_credenly_profile_exclusion.sql",
+      "sha256": "485f59b35db98b59f04160dfa4948bc956c0d7c54cab834c2ae6012942124035"
+    },
+    {
+      "project": "poli",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114859",
+      "file": "supabase/poli/migrations/20261019114859_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    },
+    {
+      "project": "udea",
+      "name": "least_privilege_browser_roles",
+      "version": "20261019114905",
+      "file": "supabase/udea/migrations/20261019114905_least_privilege_browser_roles.sql",
+      "sha256": "ea9b3c66292f25523476abe3535145cf11d4bd9b68be2e0bb950a716ee5760ef"
+    }
+  ],
+  "functionBodySha256": {
+    "raes": [
+      {
+        "name": "aprovisionar_cliente_api",
+        "sha256": "35b22b8c38ae60dfec31357ed4471ad6e07a7d47902afe9c38288f25af6359c7"
+      },
+      {
+        "name": "aprovisionar_integracion_institucional",
+        "sha256": "37308a0ca424c4a9f37a54bffcec1e7bb6be05fc891a36d21e9d384ace5e43e5"
+      },
+      {
+        "name": "corregir_credencial",
+        "sha256": "010c56b406f1c3ee5bcb329cb970722d6a3164fbe26e06a99ed0a4fae948e7c4"
+      },
+      {
+        "name": "prevent_delete",
+        "sha256": "b71e7fd4dd4e1ccf5ade80e55178b28a26a862ca18dd0a116b8abd09f1369ff1"
+      },
+      {
+        "name": "prevent_update_or_delete",
+        "sha256": "6498d5ec28828bd9efcfc469c33311cbdc4aeff0efada4627944fad72bebd1b5"
+      },
+      {
+        "name": "registrar_credencial_inicial",
+        "sha256": "802c182fcdea2ca87fbb24ada2e50044f121153b81110482d9c2add0a24f5f20"
+      },
+      {
+        "name": "set_updated_at",
+        "sha256": "3c6d6c41d6262a20e7c102dbd49bb3383bd86a4138c8a3ab6b9b04a1ec2420a5"
+      },
+      {
+        "name": "transicionar_estado_credencial",
+        "sha256": "c1772d7111544003d37c84c483fc35389c9b7ddf4641a14a9d2703bc8d609d10"
+      }
+    ],
+    "credenly": [
+      {
+        "name": "confirmar_vinculacion_raes",
+        "sha256": "fe89464f109371c8380ab076a86bc53c9c2c8f34f3bc87cf07e555b71144509a"
+      },
+      {
+        "name": "enforce_credenly_profile_exclusion",
+        "sha256": "4c180b31655588d7e84f52d020d62014f81d178633049096cc2e08901da7dfdb"
+      },
+      {
+        "name": "set_updated_at",
+        "sha256": "3c6d6c41d6262a20e7c102dbd49bb3383bd86a4138c8a3ab6b9b04a1ec2420a5"
+      }
+    ],
+    "poli": [
+      {
+        "name": "set_updated_at",
+        "sha256": "3c6d6c41d6262a20e7c102dbd49bb3383bd86a4138c8a3ab6b9b04a1ec2420a5"
+      }
+    ],
+    "udea": [
+      {
+        "name": "set_updated_at",
+        "sha256": "3c6d6c41d6262a20e7c102dbd49bb3383bd86a4138c8a3ab6b9b04a1ec2420a5"
+      }
+    ]
+  }
+}

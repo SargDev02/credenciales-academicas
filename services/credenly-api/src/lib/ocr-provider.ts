@@ -15,27 +15,77 @@ export interface OcrProvider {
   recognize(image: Buffer): Promise<OcrResult>;
 }
 
+type Worker = {
+  recognize(image: Buffer): Promise<{ data: { text?: string; confidence?: number } }>;
+  terminate(): Promise<unknown>;
+};
+
+export class OcrResourceError extends Error {
+  constructor(readonly status: 429 | 504, readonly code: string, message: string) {
+    super(message);
+  }
+}
+
 export class TesseractOcrProvider implements OcrProvider {
   readonly name = "TESSERACT_LOCAL" as const;
+  private active = 0;
+
+  constructor(
+    private readonly makeWorker: () => Promise<Worker> = () => createWorker("spa"),
+    private readonly timeoutMs = 45_000,
+    private readonly maxWorkers = 1,
+  ) {}
 
   async recognize(image: Buffer): Promise<OcrResult> {
-    const worker = await createWorker("spa");
-
-    try {
-      const result = await worker.recognize(image);
-      const confidence = Math.max(
-        0,
-        Math.min(1, (result.data.confidence ?? 0) / 100),
-      );
-
-      return {
-        provider: this.name,
-        text: result.data.text ?? "",
-        confidence,
-      };
-    } finally {
-      await worker.terminate();
+    // Admission happens before worker creation. There is no unbounded queue.
+    if (this.active >= this.maxWorkers) {
+      throw new OcrResourceError(429, "OCR_BUSY", "El procesamiento documental está ocupado. Intenta más tarde");
     }
+    this.active++;
+    let worker: Worker | undefined;
+    let expired = false;
+    let cleanup: Promise<unknown> | undefined;
+    const release = () => { this.active--; };
+    const terminate = () => {
+      if (worker && !cleanup) {
+        // Do not admit another worker until termination is acknowledged. A
+        // failed termination intentionally holds capacity until process restart.
+        const runningWorker = worker;
+        cleanup = Promise.resolve().then(() => runningWorker.terminate()).then(release);
+      }
+      return cleanup;
+    };
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const deadline = new Promise<never>((_, reject) => {
+      timer = setTimeout(() => {
+        expired = true;
+        void terminate()?.catch(() => {});
+        reject(new OcrResourceError(504, "OCR_TIMEOUT", "El procesamiento documental superó el tiempo permitido"));
+      }, this.timeoutMs);
+    });
+    const work = (async () => {
+      try {
+        worker = await this.makeWorker();
+      } catch (error) {
+        release();
+        throw error;
+      }
+      try {
+        // A slow startup must never start recognizing after its deadline.
+        if (expired) throw new OcrResourceError(504, "OCR_TIMEOUT", "El procesamiento documental superó el tiempo permitido");
+        const result = await worker.recognize(image);
+        const confidence = result.data.confidence ?? 0;
+        return {
+          provider: this.name,
+          text: result.data.text ?? "",
+          confidence: Number.isFinite(confidence) ? Math.max(0, Math.min(1, confidence / 100)) : 0,
+        };
+      } finally {
+        await terminate();
+      }
+    })();
+    try { return await Promise.race([work, deadline]); }
+    finally { if (timer) clearTimeout(timer); }
   }
 }
 

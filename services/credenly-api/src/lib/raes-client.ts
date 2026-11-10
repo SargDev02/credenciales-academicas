@@ -1,3 +1,6 @@
+import type { ZodType } from "zod";
+import { readBoundedBody } from "./request-validation";
+import { raesPersonResponse, raesIdentityResponse, raesCredentialsResponse } from "./raes-response";
 import { getServerEnv } from "./env";
 
 export type RaesPerson = {
@@ -61,15 +64,6 @@ export type RaesCredential = {
     | null;
 };
 
-type RaesEnvelope<T> = {
-  data: T;
-};
-
-type RaesErrorEnvelope = {
-  error?: string;
-  message?: string;
-};
-
 export class RaesClientError extends Error {
   constructor(
     public readonly status: number,
@@ -90,6 +84,7 @@ export function buildRaesAuthorization(
 
 async function raesRequest<T>(
   path: string,
+  schema: ZodType<T>,
   init: RequestInit = {},
 ): Promise<T> {
   const env = getServerEnv();
@@ -118,26 +113,30 @@ async function raesRequest<T>(
         headers,
         cache: "no-store",
         signal: controller.signal,
+        redirect: "error",
       },
     );
 
-    const payload = (await response.json().catch(() => null)) as
-      | RaesEnvelope<T>
-      | RaesErrorEnvelope
-      | null;
+    let payload: unknown;
+    try {
+      const bytes = await readBoundedBody(response, 2 * 1024 * 1024);
+      payload = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes));
+    } catch {
+      throw new RaesClientError(502, "RAES_INVALID_RESPONSE", "RAES devolvió una respuesta inválida");
+    }
 
     if (!response.ok) {
-      const errorPayload = payload as RaesErrorEnvelope | null;
+      const errorPayload = payload && typeof payload === "object" && "error" in payload ? payload : null;
 
       throw new RaesClientError(
         response.status,
-        errorPayload?.error ?? "RAES_REQUEST_FAILED",
-        errorPayload?.message ??
-          "RAES rechazó la solicitud de Credenly",
+        errorPayload?.error === "PERSON_NOT_FOUND" || errorPayload?.error === "CREDENTIAL_NOT_FOUND"
+          ? errorPayload.error : "RAES_REQUEST_FAILED",
+        "RAES no pudo completar la solicitud de Credenly",
       );
     }
 
-    if (!payload || !("data" in payload)) {
+    if (!payload || typeof payload !== "object" || !("data" in payload)) {
       throw new RaesClientError(
         502,
         "RAES_INVALID_RESPONSE",
@@ -145,7 +144,9 @@ async function raesRequest<T>(
       );
     }
 
-    return payload.data;
+    const parsed = schema.safeParse(payload.data);
+    if (!parsed.success) throw new RaesClientError(502, "RAES_INVALID_RESPONSE", "RAES devolvió una respuesta inválida");
+    return parsed.data;
   } catch (error) {
     if (error instanceof RaesClientError) {
       throw error;
@@ -182,7 +183,7 @@ export type RaesClientIdentity = {
 
 export async function getRaesClientIdentity(): Promise<RaesClientIdentity> {
   return raesRequest<RaesClientIdentity>(
-    "/api/v1/auth/client-whoami",
+    "/api/v1/auth/client-whoami", raesIdentityResponse,
   );
 }
 
@@ -190,7 +191,7 @@ export async function resolveRaesPerson(input: {
   tipoDocumento: string;
   numeroDocumento: string;
 }): Promise<RaesPerson> {
-  return raesRequest<RaesPerson>("/api/v1/persons/resolve", {
+  return raesRequest<RaesPerson>("/api/v1/persons/resolve", raesPersonResponse, {
     method: "POST",
     body: JSON.stringify(input),
   });
@@ -200,6 +201,6 @@ export async function getRaesCredentialsForPerson(
   raesPersonId: string,
 ): Promise<RaesCredential[]> {
   return raesRequest<RaesCredential[]>(
-    `/api/v1/persons/${encodeURIComponent(raesPersonId)}/credentials`,
+    `/api/v1/persons/${encodeURIComponent(raesPersonId)}/credentials`, raesCredentialsResponse,
   );
 }

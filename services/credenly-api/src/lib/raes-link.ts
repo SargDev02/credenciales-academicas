@@ -18,14 +18,6 @@ export type RaesLinkRow = {
   updated_at: string;
 };
 
-type VerificationRow = {
-  id: string;
-  usuario_id: string;
-  tipo_documento_extraido: string | null;
-  numero_documento_extraido: string | null;
-  estado: string;
-};
-
 export class RaesLinkError extends Error {
   constructor(
     public readonly status: 400 | 404 | 409 | 500,
@@ -58,7 +50,7 @@ export async function getRaesLinkForUser(
     );
   }
 
-  return data as RaesLinkRow | null;
+  return data;
 }
 
 export async function linkApprovedVerificationToRaes(
@@ -85,7 +77,7 @@ export async function linkApprovedVerificationToRaes(
     );
   }
 
-  const verification = verificationData as VerificationRow | null;
+  const verification = verificationData;
 
   if (!verification) {
     throw new RaesLinkError(

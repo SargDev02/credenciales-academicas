@@ -1,0 +1,38 @@
+[
+  {
+    "project": "raes",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "PROPOSED_HARDENING_ROLLED_BACK_OK"
+      }
+    ]
+  },
+  {
+    "project": "credenly",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "PROPOSED_HARDENING_ROLLED_BACK_OK"
+      }
+    ]
+  },
+  {
+    "project": "poli",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "PROPOSED_HARDENING_ROLLED_BACK_OK"
+      }
+    ]
+  },
+  {
+    "project": "udea",
+    "httpStatus": 201,
+    "result": [
+      {
+        "result": "PROPOSED_HARDENING_ROLLED_BACK_OK"
+      }
+    ]
+  }
+]
