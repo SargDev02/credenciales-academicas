@@ -9,7 +9,10 @@
     "start": "next start -p 3000",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "predev": "pnpm --filter @raes/contracts build",
+    "prebuild": "pnpm --filter @raes/contracts build",
+    "pretypecheck": "pnpm --filter @raes/contracts build"
   },
   "dependencies": {
     "@raes/ui": "workspace:*",

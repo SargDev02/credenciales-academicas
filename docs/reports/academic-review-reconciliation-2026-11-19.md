@@ -10,7 +10,7 @@ no se incluye dentro de su propio contenido.
 ## Conflictos y decisiones
 
 Git produjo 16 conflictos, resueltos por archivo. No se aplicó una estrategia
- global ours/theirs.
+global ours/theirs.
 
 | Archivo | Resolución |
 | --- | --- |
@@ -117,6 +117,32 @@ Los nuevos modos `--local` se seleccionan antes de leer archivos .env. Su valida
 es WASM y no pretende comprobar GoTrue, email, cuentas remotas ni limpieza de Auth
 real. Se conservan el modo remoto original y las doce regresiones del operador.
 No se ejecutó el modo remoto ni se crearon nuevas cuentas.
+
+## Regresión encontrada al publicar: contratos sin compilar
+
+El primer CI del merge `846742c` (run **44618870449**) falló en `pnpm typecheck`:
+RAES Web no encontraba `@raes/contracts` y, por consecuencia, aparecían parámetros
+implícitos any. Frozen install, escaneo, DDL y lint habían pasado. No fue un fallo
+de Supabase ni de funcionalidad académica; faltaba preparar un paquete workspace
+cuyos exports/types apuntan a `dist`. Los otros consumidores ya tenían prehooks,
+pero RAES Web lo incorporó en #17 sin estos. Un build de otro consumidor podía
+ocultar el defecto según el orden/timing. La comprobación local inicial quedó
+enmascarada por artefactos generados durante verificaciones anteriores.
+
+Reproducción exacta sin artefactos contracts ni caché RAES Web:
+`pnpm --filter @raes/web typecheck` produjo TS2307/TS7006. Cambio mínimo:
+`predev`, `prebuild`, `pretypecheck` en RAES Web construyen `@raes/contracts`, como
+en RAES API. No se cambian exports, tipos, validadores ni reglas. La misma prueba
+pasó tras el cambio. Una nueva copia local sin .env/dist/.next repite la secuencia
+CI desde frozen install; no se ejecutan tests o builds que puedan generar dist
+antes del chequeo en frío.
+
+Se añade a CI un step dedicado **Cold RAES Web typecheck (contracts lifecycle
+regression)** antes del typecheck general. Es una regresión funcional del
+consumidor en frío, no una aserción que simplemente copie el texto del manifest.
+El run fallido queda documentado y no se reetiqueta como PASS. En la segunda copia
+pasaron frozen install, lint, consumidor en frío, typecheck completo, 333 tests,
+audit completo/producción, escaneo, DDL, cinco builds y ambos browsers (26 + 9).
 
 ## Preservación y límites
 

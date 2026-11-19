@@ -29,7 +29,12 @@ main ni se despliega. Prototipo funcional; los bloqueos de producción siguen ab
   sin cambios, vencida el 18-11-2026 y no utilizada para el PASS actual.
 
 Detalle, matriz de conflictos e inventario: [informe de reconciliación](reports/academic-review-reconciliation-2026-11-19.md).
-El estado de CI se comprueba sobre el nuevo head después del push.
+Primer CI del merge `846742c`, run 44618870449: FAIL en typecheck de RAES Web por
+`@raes/contracts` sin dist (TS2307/TS7006). Reproducido en frío; la validación local
+inicial quedó enmascarada por artefactos generados en pasos previos. Corrección:
+prehooks de contratos en dev/build/typecheck y regresión CI del consumidor en frío.
+Sin cambiar tipos/gates ni funcionalidad. El resultado nuevo de CI se comprueba
+sobre el siguiente head publicado; se conserva el FAIL inicial.
 
 ## Revisión pre-deploy histórica — 2026-10-19
 
