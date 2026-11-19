@@ -7,18 +7,20 @@
     "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start -p 3002",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts scripts/lib/*.test.mjs",
     "admin:provision": "node --env-file=.env.local --env-file=../../apps/credenly-web/.env.local scripts/provision-credenly-admin.mjs",
-    "citizen:reset-password": "node --env-file=.env.local scripts/reset-citizen-password.mjs"
+    "citizen:reset-password": "node --env-file=.env.local scripts/reset-citizen-password.mjs",
+    "lint": "eslint . --max-warnings 0"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
-    "next": "16.3.8",
+    "next": "16.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "zod": "^4.6.5",
-    "tesseract.js": "^7.0.0"
+    "zod": "^4.6.7",
+    "tesseract.js": "^7.0.0",
+    "@raes/web-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

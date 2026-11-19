@@ -32,7 +32,7 @@ async function count(
     result.count < 0
   )
     unavailable();
-  return result.count!;
+  return result.count;
 }
 async function stateCounts(table: string, states: readonly string[]) {
   const [total, values] = await Promise.all([
@@ -88,11 +88,11 @@ export async function getOperationalOverview() {
     verifications,
     links,
     shares: {
-      total: shares[0]!,
+      total: shares[0],
       byState: {
-        ACTIVA: shares[1]!,
-        REVOCADA: shares[2]!,
-        EXPIRADA: shares[3]!,
+        ACTIVA: shares[1],
+        REVOCADA: shares[2],
+        EXPIRADA: shares[3],
       },
     },
     incidents: (incidents.data ?? []).map((row) => ({

@@ -1,3 +1,4 @@
+import { chromiumLaunchOptions } from "../../../tests/helpers/browser.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, writeFile } from "node:fs/promises";
@@ -207,7 +208,7 @@ async function http(path, token) {
   let body;
   try {
     body = await response.json();
-  } catch {}
+  } catch { /* Expected transient failure or optional diagnostic; no sensitive error output. */ }
   return { status: response.status, body };
 }
 function browserAuth(createServerClient) {
@@ -231,11 +232,7 @@ async function verifyWeb() {
     new URL("../../../apps/credenly-web/package.json", import.meta.url),
   );
   const { createServerClient } = requireWeb("@supabase/ssr");
-  browser = await chromium.launch({
-    headless: true,
-    executablePath:
-      "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-  });
+  browser = await chromium.launch(chromiumLaunchOptions);
   context = await browser.newContext();
   context.setDefaultTimeout(20000);
   context.setDefaultNavigationTimeout(30000);

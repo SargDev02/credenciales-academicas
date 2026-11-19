@@ -6,7 +6,6 @@ import {
   EmptyState,
   Input,
   Button,
-  Alert,
   FormField,
 } from "@raes/ui";
 import { getInstitutions, getAdminProfile } from "../../../lib/admin-api";

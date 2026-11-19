@@ -44,7 +44,7 @@ type CredentialVersionRow = {
 
 export class ConsumerReadError extends Error {
   constructor(
-    public readonly status: 404 | 500,
+    public readonly status: 404 | 500 | 503,
     public readonly code: string,
     message: string,
   ) {
@@ -115,8 +115,9 @@ export async function listCredentialsForPerson(
   }
 
   const credentialRows: CredentialRow[] = [];
+  let expectedTotal: number | null = null;
   for (let offset = 0; ; offset += 1000) {
-    const { data, error } = await supabase.from("credenciales")
+    const { data, error, count } = await supabase.from("credenciales")
       .select(
         [
           "id",
@@ -134,20 +135,29 @@ export async function listCredentialsForPerson(
           "programas(id,nombre,codigo_snies)",
           "sedes(id,nombre,municipio)",
         ].join(","),
+        { count: "exact" },
       )
       .eq("persona_id", personId)
       .order("fecha_registro_raes", { ascending: false })
       .order("id", { ascending: false })
       .range(offset, offset + 999);
     if (error || !data) throw new ConsumerReadError(500, "CREDENTIAL_LIST_FAILED", "No fue posible consultar las credenciales en RAES");
+    if (count === null || count > 10000 || (expectedTotal !== null && count !== expectedTotal)) {
+      throw new ConsumerReadError(503, "CREDENTIAL_LIST_UNSTABLE_OR_TOO_LARGE", "No fue posible obtener un listado completo y acotado de credenciales");
+    }
+    expectedTotal = count;
     credentialRows.push(...data as unknown as CredentialRow[]);
-    if (data.length < 1000) break;
+    if (credentialRows.length === count) break;
+    if (data.length !== 1000 || credentialRows.length > count) {
+      throw new ConsumerReadError(503, "CREDENTIAL_LIST_INCOMPLETE", "No fue posible obtener un listado completo de credenciales");
+    }
   }
 
   const credentialIds = credentialRows.map(
     (credential) => credential.id,
   );
 
+  if (new Set(credentialIds).size !== credentialIds.length) throw new ConsumerReadError(503, "CREDENTIAL_LIST_UNSTABLE_OR_TOO_LARGE", "El listado cambió durante la consulta. Intenta de nuevo");
   if (credentialIds.length === 0) {
     return [];
   }
@@ -181,12 +191,9 @@ export async function listCredentialsForPerson(
     versionRows.push(...data as unknown as CredentialVersionRow[]);
   }
 
+  const versionsByCredential = new Map(versionRows.map(version => [`${version.credencial_id}:${version.numero_version}`, version]));
   return credentialRows.map((credential) => {
-    const currentVersion = versionRows.find(
-      (version) =>
-        version.credencial_id === credential.id &&
-        version.numero_version === credential.version_actual,
-    );
+    const currentVersion = versionsByCredential.get(`${credential.id}:${credential.version_actual}`);
 
     if (!currentVersion) throw new ConsumerReadError(500, "CREDENTIAL_CURRENT_VERSION_MISSING", "No fue posible obtener la versión vigente de una credencial");
     return {

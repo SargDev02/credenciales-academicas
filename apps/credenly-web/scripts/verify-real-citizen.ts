@@ -1,3 +1,4 @@
+import { chromiumLaunchOptions } from "../../../tests/helpers/browser.mjs";
 import assert from "node:assert/strict";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { mkdirSync } from "node:fs";
@@ -65,11 +66,7 @@ const verificationId = randomUUID();
 let userId: string | undefined,
   token: string | undefined,
   shareIds: string[] = [];
-const browser = await chromium.launch({
-  headless: true,
-  executablePath:
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-});
+const browser = await chromium.launch(chromiumLaunchOptions);
 const context = await browser.newContext();
 const page = await context.newPage();
 const errors: string[] = [];

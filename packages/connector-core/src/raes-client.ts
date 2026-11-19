@@ -1,3 +1,4 @@
+import { credencialNuevaSchema } from "@raes/contracts";
 import type {
   AnulacionCredencial,
   CorreccionCredencial,
@@ -56,8 +57,19 @@ export class RaesClient {
 
   async getCredentialState(code: string): Promise<CredentialSyncState | null> {
     try {
-      const result = await this.request("GET", `/api/v1/credentials/source/${encodeURIComponent(code)}`) as { data: CredentialSyncState };
-      return result.data;
+      const result = await this.request("GET", `/api/v1/credentials/source/${encodeURIComponent(code)}`);
+      const state = result && typeof result === "object" && "data" in result ? result.data : null;
+      if (!state || typeof state !== "object" || !("state" in state) || !("version" in state) ||
+        !("creationKey" in state) || !("personSourceIds" in state) || !("payload" in state) ||
+        (state.state !== "VIGENTE" && state.state !== "REVOCADA" && state.state !== "ANULADA") ||
+        typeof state.version !== "number" || !Number.isInteger(state.version) || state.version < 1 ||
+        (state.creationKey !== null && typeof state.creationKey !== "string") ||
+        !Array.isArray(state.personSourceIds) || !state.personSourceIds.every((id: unknown) => typeof id === "string")) {
+        throw new RaesApiError(502, "RAES_INVALID_RESPONSE", "RAES devolvió un estado de credencial inválido");
+      }
+      const payload = credencialNuevaSchema.omit({ personaIdentificadorOrigen: true }).safeParse(state.payload);
+      if (!payload.success) throw new RaesApiError(502, "RAES_INVALID_RESPONSE", "RAES devolvió un contenido de credencial inválido");
+      return { state: state.state, version: state.version, creationKey: state.creationKey, personSourceIds: state.personSourceIds, payload: payload.data };
     } catch (error) {
       if (error instanceof RaesApiError && error.status === 404 && error.code === "CREDENTIAL_NOT_FOUND") return null;
       throw error;
@@ -169,10 +181,8 @@ export class RaesClient {
           ? {}
           : { body: JSON.stringify(body) }),
       });
-    } catch (error) {
-      throw new Error(
-        `No fue posible conectar con RAES API: ${error instanceof Error ? error.message : String(error)}`,
-      );
+    } catch {
+      throw new RaesApiError(502, "RAES_UNAVAILABLE", "No fue posible conectar con RAES API");
     }
 
     const payload = await parseResponse(response);
@@ -186,10 +196,8 @@ export class RaesClient {
 
       throw new RaesApiError(
         response.status,
-        errorPayload.error ?? "RAES_API_ERROR",
-        errorPayload.message ??
-          `RAES respondió HTTP ${response.status}`,
-        errorPayload.details,
+        errorPayload?.error === "CREDENTIAL_NOT_FOUND" ? "CREDENTIAL_NOT_FOUND" : "RAES_API_ERROR",
+        `RAES respondió HTTP ${response.status}`,
       );
     }
 

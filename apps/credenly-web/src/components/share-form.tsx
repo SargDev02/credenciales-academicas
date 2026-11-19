@@ -26,25 +26,27 @@ export function ShareForm({
       <form
         className="citizen-form"
         aria-busy={pending}
-        onSubmit={async (event) => {
-          event.preventDefault();
-          if (pending || result.publicPath) return;
-          const data = new FormData(event.currentTarget);
-          setPending(true);
-          setCopied("");
-          try {
-            const value = await createShare(data);
-            setResult(value);
-            if (value.publicPath) router.refresh();
-          } catch {
-            setResult({
-              error:
-                "No pudimos confirmar la creación. Revisa el listado antes de reenviar.",
-            });
-          } finally {
-            setPending(false);
-            requestAnimationFrame(() => ref.current?.focus());
-          }
+        onSubmit={(event) => {
+          void (async () => {
+            event.preventDefault();
+            if (pending || result.publicPath) return;
+            const data = new FormData(event.currentTarget);
+            setPending(true);
+            setCopied("");
+            try {
+              const value = await createShare(data);
+              setResult(value);
+              if (value.publicPath) router.refresh();
+            } catch {
+              setResult({
+                error:
+                  "No pudimos confirmar la creación. Revisa el listado antes de reenviar.",
+              });
+            } finally {
+              setPending(false);
+              requestAnimationFrame(() => ref.current?.focus());
+            }
+          })();
         }}
       >
         <fieldset disabled={pending || !!result.publicPath}>
@@ -131,15 +133,17 @@ export function ShareForm({
             />
             <Button
               variant="secondary"
-              onClick={async () => {
-                try {
-                  await navigator.clipboard.writeText(
-                    `${window.location.origin}${result.publicPath}`,
-                  );
-                  setCopied("Enlace copiado.");
-                } catch {
-                  setCopied("Selecciona el enlace y cópialo manualmente.");
-                }
+              onClick={() => {
+                void (async () => {
+                  try {
+                    await navigator.clipboard.writeText(
+                      `${window.location.origin}${result.publicPath}`,
+                    );
+                    setCopied("Enlace copiado.");
+                  } catch {
+                    setCopied("Selecciona el enlace y cópialo manualmente.");
+                  }
+                })();
               }}
             >
               Copiar enlace

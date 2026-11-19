@@ -42,28 +42,30 @@ export function CreationForm({
         <form
           className="creation-form"
           aria-busy={pending}
-          onSubmit={async (event) => {
-            event.preventDefault();
-            if (pending || result.createdId) return;
-            const form = event.currentTarget;
-            const data = new FormData(form);
-            setPending(true);
-            setCopied("");
-            try {
-              const response = await createRecord(kind, data);
-              setResult(response);
-              if (response.createdId) {
-                form.reset();
-                router.refresh();
+          onSubmit={(event) => {
+            void (async () => {
+              event.preventDefault();
+              if (pending || result.createdId) return;
+              const form = event.currentTarget;
+              const data = new FormData(form);
+              setPending(true);
+              setCopied("");
+              try {
+                const response = await createRecord(kind, data);
+                setResult(response);
+                if (response.createdId) {
+                  form.reset();
+                  router.refresh();
+                }
+              } catch {
+                setResult({
+                  error:
+                    "No pudimos confirmar el alta. Revisa el listado antes de reenviar.",
+                });
+              } finally {
+                setPending(false);
               }
-            } catch {
-              setResult({
-                error:
-                  "No pudimos confirmar el alta. Revisa el listado antes de reenviar.",
-              });
-            } finally {
-              setPending(false);
-            }
+            })();
           }}
         >
           <fieldset disabled={pending || !!result.createdId}>
@@ -205,17 +207,19 @@ export function CreationForm({
               </p>
               <Button
                 variant="secondary"
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(
-                      result.credentials!.clientSecret,
-                    );
-                    setCopied("Clave copiada.");
-                  } catch {
-                    setCopied(
-                      "No pudimos copiarla. Selecciona el campo y cópiala manualmente.",
-                    );
-                  }
+                onClick={() => {
+                  void (async () => {
+                    try {
+                      await navigator.clipboard.writeText(
+                        result.credentials!.clientSecret,
+                      );
+                      setCopied("Clave copiada.");
+                    } catch {
+                      setCopied(
+                        "No pudimos copiarla. Selecciona el campo y cópiala manualmente.",
+                      );
+                    }
+                  })();
                 }}
               >
                 Copiar clave
