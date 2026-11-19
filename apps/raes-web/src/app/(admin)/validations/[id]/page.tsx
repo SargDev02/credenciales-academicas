@@ -8,10 +8,15 @@ import { canManage,formatDate } from "../../../../lib/admin-model";
 import { blockLabels,compareAcademicData,reviewStateLabels,reviewTone,reviewTypeLabels } from "../../../../lib/academic-review-model";
 import { ReviewDecision } from "../../../../components/review-decision";
 export const metadata={title:"Revisión académica"};
+async function loadValidation(id: string) {
+ try { return { ok: true as const, value: await Promise.all([getAcademicReview(id),getAdminProfile()]) }; }
+ catch(error) { if(!(error instanceof WebApiError))throw error;return { ok: false as const, error }; }
+}
 export default async function ValidationDetail({params}:{params:Promise<{id:string}>}) {
  const {id}=await params;
- try {
-  const [r,profile]=await Promise.all([getAcademicReview(id),getAdminProfile()]);
+ const loaded=await loadValidation(id);
+ if(!loaded.ok){const error=loaded.error;if(error.status===404)notFound();return <Alert title={error.status===403?"Acceso no permitido":"No pudimos cargar la revisión"} tone="danger">{error.message} <Link href="/validations">Volver a validaciones</Link></Alert>;}
+ const [r,profile]=loaded.value;
   const rows=compareAcademicData(r.actual,r.propuesto);
   return <>
    <Link href="/validations">← Validaciones</Link>
@@ -28,5 +33,5 @@ export default async function ValidationDetail({params}:{params:Promise<{id:stri
    </table></div>
    {r.estado==="PENDIENTE"?(canManage(profile)?<ReviewDecision id={r.id} blocked={r.bloqueos.length>0}/>:<p className="ui-muted">Tu rol AUDITOR permite consultar; la decisión corresponde a ADMIN o SUPERADMIN.</p>):<p className="ui-muted">Esta solicitud ya no admite decisiones.</p>}
   </>;
- }catch(error){if(!(error instanceof WebApiError))throw error;if(error.status===404)notFound();return <Alert title={error.status===403?"Acceso no permitido":"No pudimos cargar la revisión"} tone="danger">{error.message} <Link href="/validations">Volver a validaciones</Link></Alert>;}
+
 }

@@ -61,7 +61,7 @@ export async function GET() {
       },
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
+  } catch {
     console.error("Credenly readiness configuration failed");
 
     return Response.json(

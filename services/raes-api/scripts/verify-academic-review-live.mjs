@@ -10,6 +10,13 @@ import {detectFixture,verifyIdempotence,safeDiagnostic,OperatorError} from './li
 import {verifyCompletedReview} from './lib/academic-review-completed.mjs';
 import {renderSyntheticReviewDocument} from './lib/synthetic-review-document.mjs';
 
+// Local regression mode is selected before any environment files are read.
+if (process.argv.includes("--local")) {
+  const args = process.argv.slice(2).sort();
+  if (args.join(" ") !== "--local --verify-completed") throw new Error("Use --verify-completed --local for isolated validation");
+  const { verifyLocalCompletedReview } = await import("./lib/academic-review-local.mjs");
+  console.log(JSON.stringify(await verifyLocalCompletedReview()));
+} else {
 // Explicitly authorized, permanent synthetic fixture + temporary citizen account.
 // No password in args/env/files; no production fixture exceptions in application.
 const root=resolve('../..'),manifest=JSON.parse(readFileSync(resolve(root,'supabase/fixtures/academic-review/manifest.json'),'utf8'));
@@ -115,5 +122,7 @@ catch(error){console.error(JSON.stringify({result:'FAIL',diagnostic:error.operat
 }else{
 try{await main();}catch(error){evidence.diagnostic=error.operatorDiagnostic??safeDiagnostic(error,stage);evidence.result='FAIL';evidence.failedStage=stage;console.error('La prueba se detuvo en la etapa '+stage+'; no se imprimen detalles privados.');process.exitCode=1;}finally{try{await cleanup();}catch{evidence.cleanupFailed=true;console.error('Limpieza no confirmada. No se fuerzan eliminaciones.');process.exitCode=1;}save();console.log(JSON.stringify({result:evidence.result??'CHECK',outputPath:runOutputPath}));}
 if(!checkOnly&&evidence.result==='PASS'&&!evidence.cleanupFailed)console.log('Prueba completa correcta; cuenta temporal eliminada.');
+
+}
 
 }

@@ -108,3 +108,54 @@ una respuesta perdida vuelven a leer el estado y no crean otra versión si ya co
 Esta lectura no cambia el control transaccional de las RPC existentes. La fuente
 no debe ejecutar dos procesos concurrentes con fotografías distintas de la misma
 credencial; falta una política explícita de orden para ese caso antes de producción.
+
+
+## Cuándo llega un cambio a la web
+
+Los conectores actuales son comandos de una sola ejecución: leen la fuente,
+detectan cambios, presentan propuestas y terminan. Iniciar RAES API/las webs no inicia los conectores. El
+repositorio no configura un worker, tarea periódica o suscripción a cambios de las
+bases institucionales. Una edición en Supabase no se envía automáticamente a RAES.
+
+Desde la raíz, con RAES API activa en el origen configurado y los `.env.local`
+server-side de cada conector preparados:
+
+```bash
+pnpm --filter @raes/connector-poli sync
+pnpm --filter @raes/connector-udea sync
+```
+
+Estos comandos registran observaciones/propuestas por RAES API; no escriben
+el estado académico canónico. Puede limitarse la detección al código institucional
+con `detect -- --credential-code=<codigo>`.
+No ejecutar dos procesos concurrentes para una misma fuente.
+
+La secuencia esperada para una credencial administrada y VIGENTE en RAES es:
+cambiar el origen, ejecutar detección y comprobar la propuesta PENDIENTE.
+RAES Admin debe aprobarla antes de que la siguiente consulta web muestre el cambio.
+Mientras esté pendiente o si se rechaza, se conserva el contenido aprobado.
+RAES conserva versiones/eventos y los detectores reportan `canonicalWrites: 0`.
+Credenly consulta RAES por HTTP con `cache: no-store`; no lee las bases
+institucionales ni mantiene snapshots académicos. Una pestaña ya abierta necesita
+una nueva consulta (recargar); no recibe cambios por push.
+
+Si un cambio no aparece, revisar el resumen del conector:
+
+- `existingCredentialsNotAdopted`: alta legacy o de otra operación; preservación
+  deliberada, sin corregir ni adoptar el registro automáticamente.
+- `terminalStateConflicts`: RAES ya tiene un estado terminal incompatible; no
+  reactivar ni corregir una credencial revocada/anulada desde una edición de origen.
+- `credentialsCorrected`/`credentialsUnchanged`: reconciliación de contenido propio.
+- Fallo HTTP/validación: no asumir que la ejecución terminó correctamente.
+
+El [diagnóstico de 2026-10-19](reports/institution-sync-diagnosis.md) distingue
+el envío manual del caso legacy histórico observado, sin modificar datos académicos.
+
+
+## Reconciliación vigente con el quality gate
+
+Los comandos `sync` se conservan solo como alias de detección; no aplican datos
+académicos. No existen los antiguos modos `--only`, `sync:base` o
+`sync:credentials`. Usar `detect` para presentar propuestas. La aceptación o
+rechazo pertenece a RAES Admin. No volver a generar los cortes existentes de
+47/97 huellas (144 total) ni repetir fixtures o aprobaciones remotos al integrar Git.

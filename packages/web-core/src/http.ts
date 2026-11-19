@@ -70,9 +70,12 @@ export async function apiRequest<T>(
         payload &&
         typeof payload === "object" &&
         "error" in payload &&
-        ["SHARE_REVOKED", "SHARE_EXPIRED", "RAES_LINK_REQUIRED"].includes(
-          String(payload.error),
-        )
+        [
+          "SHARE_REVOKED",
+          "SHARE_EXPIRED",
+          "RAES_LINK_REQUIRED",
+          "CITIZEN_ACCOUNT_RESTRICTED",
+        ].includes(String(payload.error))
           ? String(payload.error)
           : "API_REQUEST_FAILED";
       throw new WebApiError(response.status, code);

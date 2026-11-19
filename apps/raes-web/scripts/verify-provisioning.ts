@@ -1,3 +1,5 @@
+import { chromiumLaunchOptions } from "../../../tests/helpers/browser.mjs";
+import { guardFixtureRequest } from "../../../tests/helpers/http-fixture";
 import assert from "node:assert/strict";
 import { randomBytes, randomUUID } from "node:crypto";
 import { createServer } from "node:http";
@@ -39,7 +41,7 @@ let posts = 0;
 let nextStatus = 201;
 let userId: string | undefined;
 let session: string | undefined;
-const api = createServer(async (req, res) => {
+const api = createServer(guardFixtureRequest(async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.setHeader("Cache-Control", "no-store");
   const reply = (status: number, body: unknown) => {
@@ -100,11 +102,11 @@ const api = createServer(async (req, res) => {
     }
   }
   reply(404, { error: "LOCAL_FIXTURE_NOT_FOUND" });
-});
+}));
 api.listen(3401, "127.0.0.1");
 await once(api, "listening");
 // Explicit environment allowlist: operator service-role key is never inherited by Next.
-const env: Record<string, string> = {};
+const env: NodeJS.ProcessEnv = { NODE_ENV: "production" };
 for (const key of [
   "PATH",
   "HOME",
@@ -114,18 +116,13 @@ for (const key of [
   "RAES_WEB_SUPABASE_PUBLISHABLE_KEY",
 ])
   if (process.env[key]) env[key] = process.env[key]!;
-env.NODE_ENV = "production";
 env.RAES_API_BASE_URL = "http://127.0.0.1:3401";
 const web = spawn(
   process.execPath,
   ["node_modules/next/dist/bin/next", "start", "-p", "3204"],
   { env, stdio: "ignore" },
 );
-const browser = await chromium.launch({
-  headless: true,
-  executablePath:
-    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-});
+const browser = await chromium.launch(chromiumLaunchOptions);
 const context = await browser.newContext();
 const page = await context.newPage();
 const errors: string[] = [];
@@ -136,7 +133,7 @@ try {
   for (let n = 0; n < 50; n++) {
     try {
       if ((await fetch(`${base}/design-system`)).ok) break;
-    } catch {}
+    } catch { /* Expected transient failure or optional diagnostic; no sensitive error output. */ }
     await new Promise((r) => setTimeout(r, 200));
   }
   const created = await db.auth.admin.createUser({
@@ -156,7 +153,7 @@ try {
   // authoritative getUser in the app. Capture it through server request at login.
   const originalListeners = api.listeners("request");
   api.removeAllListeners("request");
-  api.on("request", async (req, res) => {
+  api.on("request", guardFixtureRequest(async (req, res) => {
     if (
       req.url === "/api/v1/admin/me" &&
       req.headers.authorization !== `Bearer ${session}`
@@ -168,7 +165,7 @@ try {
       }
     }
     for (const listener of originalListeners) listener.call(api, req, res);
-  });
+  }));
   await page.goto(`${base}/login`);
   await page.getByLabel("Correo institucional").fill(email);
   await page.getByLabel("Contraseña", { exact: true }).fill(password);

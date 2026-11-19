@@ -18,7 +18,7 @@ for(const failed of [null,"database","auth","raes"] as const) {
    if(url.pathname==="/auth/v1/admin/users")return failed==="auth"?Response.json({message:"private auth detail"},{status:403}):Response.json({users:[],aud:"authenticated"});
    assert.equal(url.hostname,"raes-fixture.example");assert.equal(url.pathname,"/api/v1/auth/client-whoami");
    assert.equal(init?.cache,"no-store");
-   return failed==="raes"?Response.json({message:"private SQL marker"},{status:503}):Response.json({data:{scopes:["credentials:read","persons:resolve"]}});
+   return failed==="raes"?Response.json({message:"private SQL marker"},{status:503}):Response.json({data:{id:"synthetic-client",clientId:"fixture-client",nombre:"Cliente sintético",tipoCliente:"CREDENLY",scopes:["credentials:read","persons:resolve"]}});
   };
   try{
    const response=await GET();assert.equal(response.status,failed?503:200);const body=await response.json();

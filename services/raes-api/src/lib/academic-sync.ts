@@ -33,17 +33,6 @@ type ProgramCampusRow = {
   id: string;
 };
 
-type PersonMasterRow = {
-  id: string;
-  tipo_documento: string;
-  numero_documento: string;
-};
-
-type PersonSourceRow = {
-  id: string;
-  persona_id: string;
-};
-
 export async function syncInstitution(
   identity: InstitutionalIdentity,
   input: Institucion,
@@ -60,7 +49,7 @@ export async function syncInstitution(
     throwDatabaseError("consultar la institución", currentError.code);
   }
 
-  const current = currentData as InstitutionRow | null;
+  const current = currentData;
 
   if (!current) {
     throw new ApiError(
@@ -102,7 +91,7 @@ export async function syncInstitution(
     throwDatabaseError("actualizar la institución", error.code);
   }
 
-  return data as InstitutionRow;
+  return data;
 }
 
 export async function syncCampus(
@@ -134,7 +123,7 @@ export async function syncCampus(
     throwDatabaseError("sincronizar la sede", error.code);
   }
 
-  return data as CampusRow;
+  return data;
 }
 
 export async function syncProgram(
@@ -167,7 +156,7 @@ export async function syncProgram(
     throwDatabaseError("sincronizar el programa", error.code);
   }
 
-  return data as ProgramRow;
+  return data;
 }
 
 export async function syncProgramCampus(
@@ -237,7 +226,7 @@ export async function syncProgramCampus(
     throwDatabaseError("sincronizar la relación programa-sede", error.code);
   }
 
-  return data as ProgramCampusRow;
+  return data;
 }
 
 export async function syncPerson(
@@ -264,7 +253,7 @@ export async function syncPerson(
     );
   }
 
-  const existingSource = sourceData as PersonSourceRow | null;
+  const existingSource = sourceData;
 
   if (existingSource) {
     const { data: linkedMasterData, error: linkedMasterError } =
@@ -281,7 +270,7 @@ export async function syncPerson(
       );
     }
 
-    const linkedMaster = linkedMasterData as PersonMasterRow;
+    const linkedMaster = linkedMasterData;
 
     if (
       linkedMaster.tipo_documento !== input.tipoDocumento ||
@@ -335,7 +324,7 @@ export async function syncPerson(
     throwDatabaseError("resolver la persona maestra", masterLookupError.code);
   }
 
-  let master = existingMasterData as PersonMasterRow | null;
+  let master = existingMasterData;
   const matchedExistingMaster = master !== null;
 
   if (!master) {
@@ -375,12 +364,12 @@ export async function syncPerson(
       );
     }
 
-    master = resolvedMasterData as PersonMasterRow;
+    master = resolvedMasterData;
   }
 
   const now = new Date().toISOString();
 
-  const { data: createdSourceData, error: createSourceError } =
+  const { error: createSourceError } =
     await supabase
       .from("persona_fuentes")
       .upsert(
@@ -398,10 +387,9 @@ export async function syncPerson(
         },
         {
           onConflict: "institucion_id,identificador_origen",
+          ignoreDuplicates: true,
         },
-      )
-      .select("id,persona_id")
-      .single();
+      );
 
   if (createSourceError) {
     throwDatabaseError(
@@ -410,11 +398,31 @@ export async function syncPerson(
     );
   }
 
-  const createdSource = createdSourceData as PersonSourceRow;
+  // The unique source key is claimed by INSERT ... ON CONFLICT DO NOTHING.
+  // Another request may have claimed it since the first lookup. Never upsert
+  // persona_id: a concurrent conflicting document must not reassign identity.
+  const { data: claimedSource, error: claimedSourceError } = await supabase
+    .from("persona_fuentes")
+    .select("id,persona_id")
+    .eq("institucion_id", identity.institutionId)
+    .eq("identificador_origen", input.identificadorOrigen)
+    .single();
+
+  if (claimedSourceError || !claimedSource) {
+    throwDatabaseError("resolver la fuente institucional registrada", claimedSourceError?.code);
+  }
+
+  if (claimedSource.persona_id !== master.id) {
+    throw new ApiError(
+      409,
+      "PERSON_SOURCE_IDENTITY_CONFLICT",
+      "El identificador institucional ya está vinculado a otra identidad documental",
+    );
+  }
 
   return {
-    personId: createdSource.persona_id,
-    sourceId: createdSource.id,
+    personId: claimedSource.persona_id,
+    sourceId: claimedSource.id,
     matchedExistingMaster,
   };
 }

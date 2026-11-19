@@ -1,9 +1,16 @@
+import { webContentSecurityPolicy } from "@raes/web-core/security";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { getWebConfig } from "./lib/env";
 export async function proxy(request: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const csp = webContentSecurityPolicy(nonce, process.env.NODE_ENV === "development");
+  // Overwrite client-supplied values before Next derives script nonces.
+  request.headers.set("x-nonce", nonce);
+  request.headers.set("Content-Security-Policy", csp);
   let response = NextResponse.next({ request });
   response.headers.set("Cache-Control", "private, no-store");
+  response.headers.set("Content-Security-Policy", csp);
   let config;
   try {
     config = getWebConfig();
@@ -29,6 +36,7 @@ export async function proxy(request: NextRequest) {
         for (const [key, value] of Object.entries(headers))
           response.headers.set(key, value);
         response.headers.set("Cache-Control", "private, no-store");
+  response.headers.set("Content-Security-Policy", csp);
       },
     },
   });
@@ -39,11 +47,5 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 export const config = {
-  matcher: [
-    "/login",
-    "/dashboard/:path*",
-    "/institutions/:path*",
-    "/api-clients/:path*",
-    "/audit/:path*",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|fonts/).*)"],
 };

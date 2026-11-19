@@ -10,6 +10,7 @@
     "test": "tsx --test src/*.test.ts",
     "presync": "pnpm --filter @raes/contracts build",
     "sync": "tsx src/cli.ts",
+    "lint": "eslint . --max-warnings 0",
     "predetect": "pnpm --filter @raes/contracts build",
     "detect": "tsx src/cli.ts"
   },
@@ -17,7 +18,7 @@
     "@raes/contracts": "workspace:*",
     "@supabase/supabase-js": "^2.117.2",
     "dotenv": "^17.2.3",
-    "zod": "^4.6.5",
+    "zod": "^4.6.7",
     "@raes/connector-core": "workspace:*"
   },
   "devDependencies": {

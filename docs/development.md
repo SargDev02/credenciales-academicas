@@ -2,8 +2,8 @@
 
 ## Requisitos
 
-- Node.js 20 o superior.
-- pnpm.
+- Node.js 24.22.0 LTS recomendado (`.nvmrc`); mínimo de tooling 22.13.0.
+- pnpm 12.8.1 (`packageManager`).
 - Acceso autorizado a los proyectos Supabase.
 
 ## Secretos
@@ -44,9 +44,10 @@ rechazo de actores desconocidos y aislamiento de `anon`/`authenticated`. Toda
 fila de prueba se revierte dentro de la transacción. Ejecutarlo en RAES mediante
 una conexión SQL autorizada; no requiere nuevas claves.
 
-`pnpm lint` ahora ejecuta ESLint central real sobre JS/TS. No hay scripts por
-paquete ni reglas específicas Next/React/hooks; typecheck permanece separado.
-Este gate mínimo es propio de esta rama y no incorpora CI del PR #16.
+`pnpm lint` ejecuta ESLint real en los diez workspaces y en tooling/tests/config.
+El guard falla si falta un script crítico. Configuración flat con reglas de
+TypeScript, promesas tipadas, Next y React/hooks; cero warnings permitidos.
+El estado anterior de lint como no-op queda registrado solo en evidencia histórica.
 
 ## Operación de conectores
 
@@ -71,7 +72,11 @@ RAES/Credenly y `--profile /ruta/al/perfil/instituciones.toml` para las fuentes.
 Un perfil personalizado es un TOML con endpoints públicos y un nombre de almacén
 local; no contiene tokens. El login se guarda en el llavero del sistema.
 
-## Verificación multiinstitución C/D
+## Verificación multiinstitución C/D — procedimiento histórico
+
+No repetir este procedimiento ni registrar nuevos baselines al reconciliar Git.
+La evidencia ya aplicada se conserva; las pruebas actuales usan solo fixtures
+locales/WASM y revisión administrativa.
 
 Los fixtures aprobados y aplicados una vez se describen exactamente en
 `supabase/fixtures/multi-institution/README.md`. No volver a aplicar sus SQL: abortan
@@ -180,6 +185,29 @@ requieren cuentas sintéticas temporales y limpieza verificada. Ver comandos, pu
 y alcance preciso en `docs/frontend.md`. No ejecutar las pruebas remotas sin su
 flag explícito; no usan cuentas existentes ni insertan información académica.
 
+## Gate reproducible local / CI
+
+Con Node/pnpm fijados: `pnpm install --frozen-lockfile`, `pnpm security:scan`,
+`node scripts/verify-schema-archive.mjs`, `pnpm lint`, `pnpm typecheck`, `pnpm test`,
+`pnpm audit:gate`, `pnpm -r --if-present build`, `pnpm test:frontend:browser`.
+En Linux instalar previamente `pnpm exec playwright install --with-deps chromium`.
+Las pruebas canónicas usan solo fixtures locales, nunca secretos ni datos remotos.
+PGlite es dev-only y reconstruye los cuatro esquemas desde el historial versionado.
+El build no requiere .env ni contratos dist preexistentes. Next genera next-env.d.ts
+con `next typegen`; ahora se ignora, al igual que .next/dist/traineddata.
+
+CI se ejecuta en PR hacia main y push a main con acciones fijadas por SHA, permisos
+contents:read, lockfile estricto, sin secretos remotos. `pnpm audit` mantiene un
+HIGH dev visible; el gate aplica únicamente la excepción temporal aprobada y
+vence el 18-11-2026. Ver [dependencias](reports/predeploy-dependencies.md).
+
+[Variables](environment.md), [reconstrucción](../supabase/bootstrap/README.md),
+[operación/retención/rotación](operations.md) y [gate pre-deploy](reports/predeploy-quality-gate.md).
+
+Prueba manual OCR sin cuentas ni DB:
+`pnpm --filter @credenly/api exec tsx scripts/verify-local-ocr.ts`.
+Genera píxeles sintéticos en memoria, valida preflight y ejecuta Tesseract local.
+El modelo se puede descargar en el primer arranque; ningún traineddata se versiona.
 ## Revisión académica y proyectos restaurados
 
 Usar el perfil CLI `proyecto-gobernacion` para RAES/Credenly restaurados y conservar

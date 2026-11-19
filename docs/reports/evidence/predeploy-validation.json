@@ -1,0 +1,221 @@
+{
+  "reviewDate": "2026-10-19",
+  "sourceCommit": "b3eee17",
+  "runtime": {
+    "node": "24.22.0",
+    "pnpm": "12.8.1"
+  },
+  "baseline": {
+    "tests": 208,
+    "browserTests": 20,
+    "lint": "NO_OP",
+    "declaredBuilds": 5
+  },
+  "current": {
+    "unitIntegrationToolingTests": 256,
+    "browserTests": 26,
+    "declaredBuilds": 5,
+    "lint": "PASS_10_WORKSPACES_AND_TOOLS",
+    "types": "PASS_10_WORKSPACES_AND_TOOLS",
+    "schemaReconstructions": 4,
+    "postOcrPatchBrowserAdminTests": 9,
+    "postCitizenStatePatchBrowserAdminTests": 10
+  },
+  "cleanBuild": {
+    "copiedIgnoredEnv": false,
+    "preexistingNodeModulesDistNext": false,
+    "frozenInstall": "PASS",
+    "lint": "PASS",
+    "types": "PASS",
+    "tests": "PASS",
+    "allDeclaredBuilds": "PASS",
+    "browser": "PASS_26_FINAL_APPROVED_STATE_PATCH",
+    "interruptedAttempt": "MAC_SLEEP_NETWORK_IO_SUSPENDED_TIMEOUT_NOT_HIDDEN",
+    "finalOcrPatch": {
+      "typecheck": "PASS",
+      "apiTests": 72,
+      "apiBuild": "PASS",
+      "rootBrowserAfterPatch": 9
+    },
+    "finalAllWorkspaceTests": 256,
+    "finalAllWorkspaceLintTypes": "PASS",
+    "finalCitizenStatePatch": {
+      "sourceCommit": "b3eee17",
+      "lint": "PASS",
+      "typecheck": "PASS",
+      "allWorkspaceTests": 256,
+      "allDeclaredBuilds": "PASS",
+      "privateEnvironmentCopied": false,
+      "browserTests": 26
+    }
+  },
+  "realBrowserQa": [
+    {
+      "realLogin": "OK",
+      "noAdminProfile": "DENIED",
+      "role": "AUDITOR",
+      "institutionRows": 2,
+      "widths": [
+        360,
+        768,
+        1024,
+        1440
+      ],
+      "source": "RAES_API",
+      "privateBrowserStorage": 0,
+      "browserDirectDatabaseRequests": 0,
+      "hydrationErrors": 0,
+      "logoutGuard": "OK",
+      "temporaryUserId": "27d55c54-6a82-4a2a-9bcf-38dd3b0dc86c",
+      "temporaryUserRemoved": true,
+      "academicMutations": 0
+    },
+    {
+      "citizenBrowser": "REAL_API_OK",
+      "authenticatedCredentials": 200,
+      "credentials": [
+        "981200b3-a30c-4088-ae09-84b27beab01b",
+        "b80fb8d4-6a6c-4453-948a-62018be8b7b6"
+      ],
+      "institutions": 2,
+      "source": "RAES",
+      "persistedByCredenly": false,
+      "publicVerification": "AVAILABLE_REVOKED_NOT_FOUND_OK",
+      "temporaryUserId": "bdecb675-12a6-43c7-9bb8-4a1335fb10dc",
+      "temporaryVerificationId": "d89246c8-d1b5-405e-b02c-d66e5132c643",
+      "temporaryShareIds": [
+        "9459a2dd-3a06-4ee4-9f20-71bbf8ce43b7"
+      ],
+      "temporaryCitizenRemoved": true,
+      "publicTablesAfterCleanup": "IDENTICAL_HASHES_5_TABLES",
+      "sessionAfterCleanup": 401,
+      "verificationFixture": "MOCK_DESARROLLO_NOT_REAL_OCR",
+      "widths": [
+        360,
+        768,
+        1024,
+        1440
+      ],
+      "hydrationErrors": 0
+    }
+  ],
+  "localOcr": {
+    "localOcr": "PASS",
+    "provider": "TESSERACT_LOCAL",
+    "imagePreflight": "PASS",
+    "dimensions": [
+      900,
+      280
+    ],
+    "databaseWrites": 0,
+    "authenticIdentityClaim": false
+  },
+  "developmentLogging": {
+    "syntheticShareUrlTokenLogged": false,
+    "httpStatus": 200
+  },
+  "dependencies": {
+    "productionVulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0
+    },
+    "fullAuditHigh": 1,
+    "gate": "PASS_WITH_DOCUMENTED_LIMIT",
+    "exceptionGhsa": "GHSA-vfj7-8cjw-p6xm",
+    "expiresAt": "2026-11-18T23:59:59-05:00"
+  },
+  "dataProtection": {
+    "academicWritesByCredenly": 0,
+    "academicFixtureModified": false,
+    "citizenTablesUnchangedAfterQa": 5,
+    "temporaryUsersRemoved": true
+  },
+  "visualInspection": {
+    "widthsTested": [
+      360,
+      768,
+      1024,
+      1440
+    ],
+    "screenshotsInspected": [
+      360,
+      1440
+    ],
+    "sensitiveScreenshotsVersioned": false
+  },
+  "performance": {
+    "raesAllJsChunks": {
+      "files": 16,
+      "bytes": 606125,
+      "gzipBytes": 190287
+    },
+    "credenlyAllJsChunks": {
+      "files": 22,
+      "bytes": 640434,
+      "gzipBytes": 204358
+    },
+    "tesseractOrPgliteRuntimeMarkersInBrowser": 0,
+    "isInitialPageLoadMetric": false
+  },
+  "deploymentReadiness": "BLOCKED",
+  "deployed": false,
+  "mergedToMain": false,
+  "pullRequest": {
+    "number": 16,
+    "state": "OPEN",
+    "draft": true
+  },
+  "finalResidueCheck": {
+    "raes": {
+      "temporary_auth": 0,
+      "temporary_sessions": 0,
+      "qa_prefix_users": 0,
+      "temporary_admin": 0,
+      "master_people": 30,
+      "sources": 31,
+      "credentials": 32,
+      "versions": 39,
+      "events": 39
+    },
+    "credenly": {
+      "temporary_auth": 0,
+      "temporary_sessions": 0,
+      "qa_prefix_users": 0,
+      "temporary_profile": 0,
+      "temporary_verification": 0,
+      "temporary_link": 0,
+      "temporary_share": 0,
+      "temporary_share_access": 0,
+      "profiles": 2,
+      "verifications": 1,
+      "links": 1,
+      "shares": 5,
+      "accesses": 9
+    }
+  },
+  "citizenProfileAccess": {
+    "ownerApproved": true,
+    "restrictedStates": [
+      "SUSPENDIDO",
+      "CERRADO"
+    ],
+    "restrictedHttpStatus": 403,
+    "allowedForAuthAndOnboarding": [
+      "ACTIVO",
+      "PENDIENTE_VERIFICACION",
+      "NO_PROFILE"
+    ],
+    "lookupFailureOrUnknownState": 503,
+    "businessAccessBeforeDenial": 0,
+    "academicWrites": 0,
+    "existingAccountStateChanges": 0,
+    "newApiRegressionTests": 7,
+    "newHttpClientRegressionTests": 1,
+    "newBrowserTests": 1,
+    "webSessionCookiesAfterDeniedLogin": 0,
+    "publicShareLifecycle": "UNCHANGED"
+  }
+}

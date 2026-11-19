@@ -336,3 +336,25 @@ El postcheck comparte las mismas aserciones finales; ambos conservan diagnóstic
 por etapa y escriben evidencias nuevas sin reemplazar las históricas. El FAIL
 antiguo carece de excepción registrada y no puede atribuirse causalmente con
 certeza. Véase [la investigación y sus límites](reports/academic-review-operator-incident-2026-11-09.md).
+
+
+## Reconciliación con main / PR #16
+
+La rama conserva el quality gate completo, dependencias remediadas, guards
+ciudadanos, límites OCR y lectura upstream validada. Las migraciones se ensayan
+únicamente por el constructor común de supabase/bootstrap; no se reejecutan
+migraciones, cortes ni datos en los proyectos existentes.
+
+Para ensayar operador/postcheck sin red, Auth ni archivos de entorno:
+
+```bash
+pnpm --filter @raes/api exec node scripts/verify-academic-review-live.mjs --verify-completed --local
+pnpm --filter @raes/api exec node scripts/verify-academic-review-postcheck.mjs --local
+```
+
+Este modo LOCAL_WASM usa SQL real, RPC y el bloque de idempotencia compartido
+contra fixtures efímeros en memoria. No sustituye ni reescribe la prueba remota
+histórica, ni afirma login/limpieza de Auth remoto. El modo sin --local conserva
+sus guardas y requiere autorización/entorno remoto apropiado; no ejecutarlo
+como parte de esta reconciliación. CI ejecuta solo las variantes locales y ambas
+suites browser con upstream local. El FAIL histórico conserva sus bytes.

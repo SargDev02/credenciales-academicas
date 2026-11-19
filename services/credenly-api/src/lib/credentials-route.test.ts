@@ -15,6 +15,7 @@ test("Credenly entrega credenciales de dos instituciones mediante API y sin pers
   globalThis.fetch = async (input, init) => {
     const url = new URL(String(input)); requests.push(url.href);
     assert.ok(!init?.method || init.method === "GET", "Citizen read must never persist academic data");
+    if (url.pathname === "/rest/v1/perfiles" && (!init?.method || init.method === "GET")) return Response.json([{ estado: "ACTIVO" }]);
     if (url.pathname === "/rest/v1/perfiles_admin") return Response.json([]);
     if (url.hostname === "credenly-fixture.supabase.co" && url.pathname === "/auth/v1/user") return Response.json({ id: "citizen", aud: "authenticated", role: "authenticated", created_at: "2025-01-01" });
     if (url.hostname === "credenly-fixture.supabase.co" && url.pathname === "/rest/v1/vinculaciones_raes") {
@@ -23,7 +24,7 @@ test("Credenly entrega credenciales de dos instituciones mediante API y sin pers
     }
     assert.equal(url.hostname, "raes-api-fixture.example");
     assert.equal(url.pathname, "/api/v1/persons/master-person/credentials");
-    return Response.json({ data: [{ id: "a", institucion: { id: "institution-a" } }, { id: "b", institucion: { id: "institution-b" } }] });
+    return Response.json({ data: ["a", "b"].map(id => ({ id, codigoRaes: `SYNTH-${id}`, tipo: "DIPLOMA", categoria: "TITULO", estadoActual: "VIGENTE", versionActual: 1, fechaRegistroRaes: "2026-01-01", revocadaAt: null, motivoRevocacion: null, anuladaAt: null, motivoAnulacion: null, programa: null, sede: null, version: null, institucion: { id: `institution-${id}`, nit: `SYNTH-${id}`, nombre: `Synthetic ${id}` } })) });
   };
   try {
     const result = await GET(new Request("http://localhost/api/v1/credentials", { headers: { authorization: "Bearer fixture-citizen-session" } }));

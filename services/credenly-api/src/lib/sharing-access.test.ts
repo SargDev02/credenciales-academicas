@@ -8,7 +8,7 @@ async function fixture(auditFails: boolean, run: (writes: string[]) => Promise<v
   const originalLog = console.error; console.error = () => {};
   globalThis.fetch = async (input, init) => {
     const url = new URL(String(input));
-    if (url.hostname === "raes-api-fixture.example") return Response.json({ data: [{ id: "credential", codigoRaes: "TEST", tipo: "DIPLOMA", categoria: "TITULO", estadoActual: "VIGENTE", versionActual: 1, institucion: null, version: null }] });
+    if (url.hostname === "raes-api-fixture.example") return Response.json({ data: [{ id: "credential", codigoRaes: "TEST", tipo: "DIPLOMA", categoria: "TITULO", estadoActual: "VIGENTE", versionActual: 1, fechaRegistroRaes: "2026-01-01", revocadaAt: null, motivoRevocacion: null, anuladaAt: null, motivoAnulacion: null, programa: null, sede: null, institucion: null, version: null }] });
     assert.equal(url.hostname, "sharing-fixture.supabase.co");
     if (url.pathname.endsWith("/comparticiones")) return Response.json([{ id: "share", usuario_id: "citizen", raes_credencial_id: "credential", campos_visibles: [], expires_at: state === "expired" ? "2000-01-01T00:00:00Z" : "2099-01-01T00:00:00Z", revoked_at: state === "revoked" ? "2025-01-01T00:00:00Z" : null }]);
     if (url.pathname.endsWith("/vinculaciones_raes")) return Response.json([{ usuario_id: "citizen", raes_persona_id: "master", estado: "VERIFICADA" }]);

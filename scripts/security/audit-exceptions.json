@@ -1,0 +1,12 @@
+[
+  {
+    "ghsa": "GHSA-vfj7-8cjw-p6xm",
+    "module": "braces",
+    "version": "3.0.3",
+    "path": ".>eslint-config-next>@next/eslint-plugin-next>fast-glob>micromatch>braces",
+    "approvedBy": "repository-owner",
+    "approvedOn": "2026-10-19",
+    "expiresAt": "2026-11-18T23:59:59-05:00",
+    "reason": "Development lint only, static repository glob patterns, no published fix. No exception for runtime or additional paths."
+  }
+]

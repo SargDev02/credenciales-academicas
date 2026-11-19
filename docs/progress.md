@@ -1,12 +1,88 @@
 # Progreso
 
-Estado al 2026-10-18: **backend funcionalmente cerrado para el alcance del prototipo**.
-Auditoría, conectores A/B, C/D multiinstitución, hardening y revisión técnica validados.
-La ruta ciudadana HTTP real recupera ambas credenciales; la cuenta sintética temporal
-se eliminó completamente. La legacy se preserva por decisión explícita. **No listo
-para producción**: los cinco pendientes de producción se mantienen separados abajo.
-Se inició la Foundation frontend y la primera RAES Web de lectura; las altas por
-rol esperan aprobación de la consulta de identidad administrativa. Sin despliegues.
+Estado actual al 2026-11-19: PR #16 integrado en main
+`e356f8d6ce02de58a66ad76ebf599f83e06010d9` con sus 27 commits conservados.
+PR #17 `feat/raes-academic-review` reconciliado mediante merge de main dentro de
+la rama, conservando sus 16 commits previos. Permanece Draft; no se fusiona a
+main ni se despliega. Prototipo funcional; los bloqueos de producción siguen abiertos.
+
+## Reconciliación académica con hardening #16 — 2026-11-19
+
+- [x] 16 conflictos resueltos individualmente: 12 textuales y cuatro archivos
+  `next-env.d.ts` eliminados. Sin squash, rebase ni reescritura histórica.
+- [x] CI/lint tipado/typegen/CSP/no-store/guards/validación upstream de #16 junto
+  con detección, revisión transaccional y guards canónicos de #17.
+- [x] Reconstrucción única: 22 migraciones archivadas → cinco correctivas #16 →
+  dos académicas #17. Composición local de cuatro proyectos, RLS/grants/RPC,
+  exclusión ciudadano/admin y denegación de escrituras canónicas sin aprobación.
+- [x] Copia limpia sin .env ni artefactos iniciales: frozen install, security scan,
+  archivo DDL, lint, typecheck, 333 tests, audit producción/completo y cinco builds.
+- [x] Browser principal 26/26 y académico 9/9; A→pendiente→B por HTTP real local,
+  Server Actions, AUDITOR sin decisión, 429, CSP/nonce/no-store y perfiles bloqueados.
+- [x] OCR real local con píxeles sintéticos y límites; parser de etiquetas completas
+  preservado. Operador `--verify-completed --local` y postcheck `--local` PASS.
+- [x] Baseline original 47 + 97 = 144 intacto; 22 evidencias históricas idénticas,
+  incluyendo FAIL antiguo. Su causa exacta sigue indeterminada: no se reetiqueta.
+- [x] Cero llamadas a Supabase remoto; no fixtures, baseline, aprobaciones ni datos
+  institucionales remotos repetidos. Sergio continúa sin perfil por decisión previa.
+- [x] Dependencias remediadas de #16 intactas; audit sin hallazgos. Excepción braces
+  sin cambios, vencida el 18-11-2026 y no utilizada para el PASS actual.
+
+Detalle, matriz de conflictos e inventario: [informe de reconciliación](reports/academic-review-reconciliation-2026-11-19.md).
+El estado de CI se comprueba sobre el nuevo head después del push.
+
+## Revisión pre-deploy histórica — 2026-10-19
+
+- [x] Inventario/baseline y matriz de los diez workspaces.
+- [x] Lint real, CI, Node/pnpm fijados y test propio de connector-udea.
+- [x] 256 tests, typecheck, builds declarados y 26 pruebas browser locales.
+- [x] Instalación/build sin .env, dist ni next-env tracked; repetición browser
+  aislada PASS tras suspensión de la Mac (sin relajar timeouts/retries de tests).
+- [x] Excepción HIGH dev exacta GHSA-vfj7-8cjw-p6xm aprobada hasta 18-11-2026;
+  audit completo conserva el advisory, producción sin vulnerabilidades reportadas.
+- [x] RLS/grants/Advisor de cuatro proyectos; cinco correcciones DB aprobadas y
+  aplicadas, cero TRUNCATE browser, separación de perfiles por UUID y conteos intactos.
+- [x] Política ciudadana aprobada: SUSPENDIDO/CERRADO bloqueados con 403; onboarding
+  sin perfil/PENDIENTE_VERIFICACION conservado, sin alterar cuentas existentes.
+  Commit `b3eee17`, regresiones API/HTTP/browser y repetición ciudadana real C/D
+  con limpieza y consulta posterior de cero residuos.
+- [x] Auth mínimo 12 en RAES/Credenly y signup público RAES deshabilitado, aprobado.
+- [x] 22 migraciones históricas recuperadas + cinco correctivas; reconstrucción de
+  cuatro esquemas en PostgreSQL/WASM con comparación de código/constraints/permisos.
+- [x] Carrera de fuente/persona corregida; límites OCR/imagen, CSP/nonces, cabeceras,
+  no-store privado, caché assets, listados completos/acotados y errores saneados.
+- [x] QA real administrativa y ciudadana C/D: dos instituciones desde RAES, cero
+  persistencia académica Credenly, limpieza verificada de cuentas/relaciones temporales.
+- [x] OCR Tesseract local real sobre imagen sintética: PASS, sin DB ni claim de KYC.
+- [x] Escaneo actual + historial reciente y bundles browser sin secretos detectados.
+- [x] Runbooks de recovery/rotación, propuesta de retención y matriz de entorno.
+- [ ] Decisión/validación de identidad real antes de exposición pública (BLOCKER).
+- [ ] Ensayo completo de restore de datos/plataforma, RPO/RTO y almacenamiento seguro.
+- [ ] Control global de abuso/proxy/operación antes de Internet público.
+- [ ] Alternativa de protección de contraseñas filtradas sin plan pago, con aprobación.
+- [ ] Aprobar retención y ensayar rotaciones; no se ejecutaron purgas/rotaciones reales.
+
+Detalle, hallazgos, evidencias y límites: [gate pre-deploy](reports/predeploy-quality-gate.md),
+[API](reports/predeploy-api-security.md), [DB](reports/predeploy-db.md),
+[dependencias](reports/predeploy-dependencies.md), [operación](operations.md).
+
+## Diagnóstico de cambios institucionales — 2026-10-19
+
+- [x] Revisado flujo institución → conector → RAES → Credenly/Web.
+- [x] Confirmada ejecución manual de una sola pasada; iniciar APIs/webs no sincroniza.
+- [x] Lectura real: Poli 12/13 coinciden; la divergente es la legacy
+  `SIM-POLI-2025-0001` (origen VIGENTE, RAES REVOCADA v3), preservada según decisión
+  previa. UdeA 18/18 coinciden; sin altas RAES faltantes ni fuente inválida.
+- [x] Sin cambios de cuentas/datos académicos ni excepciones de ownership/terminales.
+- [x] Documentados comandos, necesidad de recargar y límites de automatización en
+  [sincronización](synchronization.md) y [diagnóstico](reports/institution-sync-diagnosis.md).
+
+## Registro histórico de fases anteriores
+
+Las entradas siguientes conservan su fecha, cifras y decisiones originales.
+Referencias a 117/208 tests, falta de lint, DDL inicial ausente o PR #15 abierto
+corresponden a ese momento. El estado actual y las correcciones posteriores se
+registran arriba; no se reescribe ni elimina la evidencia histórica.
 
 ## Etapa 0 — Infraestructura de datos
 - [x] Institución A.

@@ -70,7 +70,7 @@ async function fixture(options: Options, run: (records: Record<string, unknown>[
       id: personId, tipo_documento: "CC", numero_documento: documentNumber, primer_nombre: "Synthetic",
       segundo_nombre: null, primer_apellido: "Person", segundo_apellido: null,
     }]);
-    if (table === "credenciales") return Response.json(options.emptyCredentials ? [] : [{ id: "credential-id", persona_id: personId, version_actual: 1 }]);
+    if (table === "credenciales") return Response.json(options.emptyCredentials ? [] : [{ id: "credential-id", persona_id: personId, version_actual: 1 }], { headers: { "content-range": options.emptyCredentials ? "*/0" : "0-0/1" } });
     if (table === "credencial_versiones") return Response.json([{ credencial_id: "credential-id", numero_version: 1, titulo: "Synthetic" }]);
     throw new Error(`Unexpected table: ${table}`);
   };

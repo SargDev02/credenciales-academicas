@@ -13,7 +13,7 @@ async function api(id,action,actor=ids.admin,body={}){return fetch(`${qa.raes}/a
 
 test('HTTP proposal stays invisible to citizen until actual browser approval; next GET returns B and repeat approval does not duplicate',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.name));
- const first=await citizen();expect(first.version.titulo).toBe('Título sintético inicial');const id=await propose('Título sintético aprobado B');
+ const first=await citizen();expect(first.version.titulo).toBe('Título sintético inicial');const detection=await qa.detectTitle('Título sintético aprobado B',lease.id);expect(detection.summary.canonicalWrites).toBe(0);expect(detection.summary.proposalsCreated).toBe(1);const id=detection.id;
  expect((await citizen()).version.titulo).toBe(first.version.titulo);await login(page);await page.getByRole('link',{name:'Validaciones',exact:true}).click();await page.getByRole('link',{name:'Revisar solicitud →'}).click();
  await expect(page.getByRole('region',{name:'Comparación académica'})).toContainText('Título sintético aprobado B');
  await page.getByRole('button',{name:'Aceptar',exact:true}).click();const dialog=page.getByRole('dialog');await expect(dialog).toContainText('Esta acción incorporará el cambio al registro oficial RAES.');await page.keyboard.press('Escape');await expect(dialog).not.toBeVisible();
@@ -43,4 +43,32 @@ test('private credential errors also prevent caching',async()=>{
 });
 test('invalid filters, empty and missing states are explicit',async({page})=>{
  await login(page);await page.goto(qa.base+'/validations?pageSize=101');await expect(page.getByRole('alert').filter({hasText:'Filtros no válidos'})).toBeVisible();await page.goto(qa.base+'/validations?q=NO-SUCH-SYNTHETIC-CODE');await expect(page.getByText('Sin solicitudes para estos filtros',{exact:true})).toBeVisible();await page.goto(qa.base+'/validations/00000000-0000-4000-8000-999999999999');await expect(page.getByRole('heading',{name:'Solicitud no disponible'})).toBeVisible();
+});
+
+
+test('academic screens retain nonce CSP and private no-store with Server Action sessions',async({page})=>{
+ await login(page);
+ const response=await page.goto(qa.base+'/validations');
+ expect(response.headers()['cache-control']).toContain('no-store');
+ const csp=response.headers()['content-security-policy'];expect(csp).toContain("script-src 'self' 'nonce-");expect(csp).not.toContain('unsafe-eval');
+ const nonce=csp.match(/'nonce-([^']+)'/)[1];
+ expect(await page.locator('script:not([src])').evaluateAll(nodes=>nodes.every(n=>n.nonce.length>0))).toBe(true);
+ expect(nonce.length).toBeGreaterThan(0);
+});
+test('SUSPENDIDO/CERRADO deny academic reads before contacting RAES',async()=>{
+ try{
+  for(const estado of ['SUSPENDIDO','CERRADO']){
+   qa.state.citizenState=estado;const before=qa.calls.filter(c=>c.realm==='raes').length;
+   const response=await fetch(qa.credenly+'/api/v1/credentials',{headers:{Authorization:'Bearer '+qa.tokenFor(qa.citizenId)}});
+   expect(response.status).toBe(403);expect((await response.json()).error).toBe('CITIZEN_ACCOUNT_RESTRICTED');
+   expect(qa.calls.filter(c=>c.realm==='raes').length).toBe(before);
+  }
+ }finally{qa.state.citizenState='ACTIVO';}
+});
+test('academic decision admission returns sanitized 429 without new canonical writes',async()=>{
+ const before=(await qa.db.query('select count(*)::int n from credencial_versiones')).rows[0].n;
+ const responses=[];for(let i=0;i<21;i++)responses.push(await api('invalid','approve'));
+ expect(responses.some(r=>r.status===404)).toBe(true);const last=responses.at(-1);expect(last.status).toBe(429);
+ expect(Number(last.headers.get('retry-after'))).toBeGreaterThan(0);expect(last.headers.get('cache-control')).toBe('private, no-store');
+ expect((await qa.db.query('select count(*)::int n from credencial_versiones')).rows[0].n).toBe(before);
 });

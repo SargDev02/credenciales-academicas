@@ -55,3 +55,14 @@ UUID y relaciones, con email actualizado a `valentina@yopmail.com`, buzón y log
 validados. El administrador sintético `admin@credenly.com` se aprovisionó después,
 con UUID propio y cero relaciones ciudadanas. Ver [autenticación](authentication.md),
 [frontend](frontend.md) e [informe de aprovisionamiento](reports/2026-10-19-credenly-admin-provisioning.md).
+
+## Hardening pre-deploy
+
+Se conserva la separación de los cuatro proyectos. Controles HTTP comunes en
+web-core no contienen lógica académica ni acceso a DB; las APIs siguen siendo la
+autoridad de permisos. Las webs usan CSP con nonce, cookies HttpOnly separadas y
+respuestas privadas sin caché; los assets mantienen caché. La separación de
+perfiles Credenly también se verifica por triggers PostgreSQL aprobados, sin email
+como autoridad. Los límites locales de solicitudes/OCR no son un rate limiter
+distribuido. PGlite solo existe como herramienta de desarrollo para reconstrucción
+DDL; nunca sustituye Supabase ni participa en el runtime del producto.

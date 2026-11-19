@@ -7,12 +7,17 @@ import { getInstitutions } from "../../../lib/admin-api";
 import { formatDate } from "../../../lib/admin-model";
 import { fieldLabel, reviewStateLabels, reviewTone, reviewTypeLabels } from "../../../lib/academic-review-model";
 export const metadata={title:"Validaciones académicas"};
+async function loadValidations(filters: Parameters<typeof getAcademicReviews>[0]) {
+ try { return { ok: true as const, value: await Promise.all([getAcademicReviews(filters),getInstitutions()]) }; }
+ catch(error) { if(!(error instanceof WebApiError))throw error;return { ok: false as const, error }; }
+}
 export default async function Validations({searchParams}:{searchParams:Promise<Record<string,string|string[]|undefined>>}) {
  const params=Object.fromEntries(Object.entries(await searchParams).filter(([,value])=>value!==""&&value!==undefined)),parsed=reviewFiltersSchema.safeParse({...params,estado:params.estado??"PENDIENTE"});
  if(!parsed.success)return <Alert title="Filtros no válidos" tone="danger">Revisa los filtros y la paginación. <Link href="/validations">Restablecer consulta</Link></Alert>;
  const filters=parsed.data;
- try {
-  const [result,institutions]=await Promise.all([getAcademicReviews(filters),getInstitutions()]);
+ const loaded=await loadValidations(filters);
+ if(!loaded.ok){const error=loaded.error;return <Alert title={error.status===403?"Acceso no permitido":"Validaciones no disponibles"} tone="danger">{error.message} <Link href="/validations">Volver a consultar</Link></Alert>;}
+ const [result,institutions]=loaded.value;
   const pageHref=(page:number)=>`/validations?${new URLSearchParams(Object.entries({...filters,page}).map(([k,v])=>[k,String(v)]))}`;
   return <>
    <PageHeading eyebrow="REVISIÓN ACADÉMICA" title="Validaciones">Las instituciones proponen cambios. RAES decide qué incorporar al registro oficial.</PageHeading>
@@ -34,5 +39,5 @@ export default async function Validations({searchParams}:{searchParams:Promise<R
     </Card>)}</div>:<Card><EmptyState title="Sin solicitudes para estos filtros">Las novedades reportadas por las instituciones aparecerán aquí. Los registros anteriores al baseline siguen aprobados.</EmptyState></Card>}
    <nav className="review-pagination" aria-label="Páginas de validaciones">{filters.page>1&&<Link href={pageHref(filters.page-1)}>← Anterior</Link>}{filters.page*filters.pageSize<result.meta.total&&<Link href={pageHref(filters.page+1)}>Siguiente →</Link>}</nav>
   </>;
- }catch(error){if(!(error instanceof WebApiError))throw error;return <Alert title={error.status===403?"Acceso no permitido":"Validaciones no disponibles"} tone="danger">{error.message} <Link href="/validations">Volver a consultar</Link></Alert>;}
+
 }

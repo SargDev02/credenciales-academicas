@@ -255,3 +255,12 @@ test("public requests omit Authorization and preserve only known error codes", a
     }
   }
 });
+
+
+test("restricted citizen code survives sanitization without exposing upstream details", async () => {
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => Response.json({ error: "CITIZEN_ACCOUNT_RESTRICTED", message: "private SQL marker" }, { status: 403 });
+  try {
+    await assert.rejects(apiRequest("https://api.example", "/api/v1/auth/me", { validate: valid }), error => error instanceof WebApiError && error.status === 403 && error.code === "CITIZEN_ACCOUNT_RESTRICTED" && !error.message.includes("SQL"));
+  } finally { globalThis.fetch = original; }
+});

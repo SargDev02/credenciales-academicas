@@ -12,7 +12,7 @@ async function fixture(count: number, missingVersion: boolean, run: () => Promis
     if (table === "personas_maestra") return Response.json([{ id: "person" }]);
     if (table === "credenciales") {
       const offset = Number(url.searchParams.get("offset") ?? 0);
-      return Response.json(Array.from({ length: Math.min(1000, count - offset) }, (_, i) => ({ id: `c${offset + i}`, version_actual: 2 })));
+      return Response.json(Array.from({ length: Math.min(1000, count - offset) }, (_, i) => ({ id: `c${offset + i}`, version_actual: 2 })), { headers: { "content-range": `${offset}-${Math.min(count - 1, offset + 999)}/${count}` } });
     }
     assert.equal(table, "credencial_versiones");
     assert.ok(url.searchParams.get("or")?.includes("numero_version.eq.2"));
@@ -28,4 +28,8 @@ test("más de 1000 credenciales se devuelven con sus versiones vigentes", async 
 }));
 test("una versión vigente ausente produce error íntegro en vez de respuesta parcial", async () => fixture(1, true, async () => {
   await assert.rejects(listCredentialsForPerson("person"), e => e instanceof ConsumerReadError && e.code === "CREDENTIAL_CURRENT_VERSION_MISSING");
+}));
+
+test("credential reads reject excessive result counts instead of looping indefinitely", async () => fixture(10001, false, async () => {
+  await assert.rejects(listCredentialsForPerson("person"), e => e instanceof ConsumerReadError && e.status === 503 && e.code === "CREDENTIAL_LIST_UNSTABLE_OR_TOO_LARGE");
 }));

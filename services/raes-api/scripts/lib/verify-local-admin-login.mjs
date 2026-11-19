@@ -23,7 +23,7 @@ export async function verifyLocalAdminLogin({ email,password,accessToken,profile
   writeFileSync('/tmp/raes-admin-reconnection-result.json',JSON.stringify(evidence,null,2)+'\n',{mode:0o600});
   console.log(JSON.stringify(evidence));
  }finally{
-  if(!browserToken){const cookies=(await context.cookies()).filter(c=>c.name.startsWith('raes-web-auth'));const raw=cookies.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true})).map(c=>c.value).join('');if(raw){try{browserToken=JSON.parse(raw.startsWith('base64-')?Buffer.from(raw.slice(7),'base64url').toString():raw).access_token;}catch{}}}
+  if(!browserToken){const cookies=(await context.cookies()).filter(c=>c.name.startsWith('raes-web-auth'));const raw=cookies.sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true})).map(c=>c.value).join('');if(raw){try{browserToken=JSON.parse(raw.startsWith('base64-')?Buffer.from(raw.slice(7),'base64url').toString():raw).access_token;}catch{ /* Optional local diagnostic or startup readiness poll; no private error output. */ }}}
   try{if(!loggedOut&&browserToken)await revokeSession(browserToken);}finally{await browser.close();}
  }
 }

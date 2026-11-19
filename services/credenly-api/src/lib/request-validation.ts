@@ -3,7 +3,7 @@ import { z, type ZodType } from "zod";
 export class RequestValidationError extends Error {
   constructor(public readonly status: 400 | 413, public readonly code: string, message: string) { super(message); }
 }
-export async function readBoundedBody(request: Request, limit: number): Promise<ArrayBuffer> {
+export async function readBoundedBody(request: Pick<Request, "headers" | "body">, limit: number): Promise<ArrayBuffer> {
   if (Number(request.headers.get("content-length") ?? 0) > limit) throw new RequestValidationError(413, "BODY_TOO_LARGE", "La solicitud supera el tamaño permitido");
   const chunks: Uint8Array[] = [];
   const reader = request.body?.getReader();

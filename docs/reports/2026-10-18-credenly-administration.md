@@ -1,5 +1,8 @@
 # Informe de cambios importantes: administración y separación de cuentas en Credenly
 
+> Informe histórico de su fase. El estado actual de lint, migraciones, PRs y
+> validaciones está en [el gate pre-deploy](predeploy-quality-gate.md).
+
 **Fecha:** 18 de octubre de 2026.
 **Estado original:** diagnóstico y propuesta; alcance mínimo aprobado e implementado después, según el bloque de actualización siguiente.
 **Alcance original del informe:** documentación. La implementación posterior autorizada se registra en `docs/progress.md`; la separación real de cuentas sigue pendiente.
