@@ -5,7 +5,9 @@ import { reconstructSchema, readProjectFile } from "../lib/schema-fixture.mjs";
 const manifest = JSON.parse(readProjectFile("supabase/bootstrap/manifest.json"));
 const reference = JSON.parse(readProjectFile("docs/reports/evidence/predeploy-db-post-catalog.json")).projects;
 for (const project of ["raes", "credenly", "poli", "udea"]) test(`empty PostgreSQL/WASM reconstructs ${project} DDL and security constraints`, async () => {
-  const db = await reconstructSchema(project);
+  // RAES needs the frozen #16 stage for its historical catalog comparison;
+  // the other three projects also validate the default current reconstruction.
+  const db = await reconstructSchema(project, { stage: project === "raes" ? "hardening" : "current" });
   try {
     const actual = await db.query(`select c.relname as name,c.relrowsecurity as rls from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r' order by c.relname`);
     assert.deepEqual(actual.rows, reference[project].catalog.tables.map(t => ({ name: t.name, rls: t.rls })));

@@ -1,0 +1,143 @@
+{
+  "auditedAt": "2026-11-09T17:59:36.843Z",
+  "projects": {
+    "raes": {
+      "ref": "askqizcwemmydwcgrewp",
+      "counts": {
+        "sedes": 16,
+        "scopes": 9,
+        "auditoria": 170,
+        "programas": 20,
+        "auth_users": 1,
+        "clientes_api": 1,
+        "credenciales": 33,
+        "instituciones": 2,
+        "programa_sede": 46,
+        "perfiles_admin": 1,
+        "auth_identities": 1,
+        "operaciones_api": 41,
+        "persona_fuentes": 32,
+        "personas_maestra": 31,
+        "cliente_api_scopes": 2,
+        "credencial_eventos": 41,
+        "integracion_scopes": 16,
+        "cliente_api_secretos": 1,
+        "credencial_versiones": 41,
+        "integracion_secretos": 2,
+        "integraciones_institucionales": 2
+      },
+      "migrations": [
+        {
+          "version": "20261109143347",
+          "name": "initial_raes_schema"
+        },
+        {
+          "version": "20261109143351",
+          "name": "tune_raes_indexes_and_rls"
+        },
+        {
+          "version": "20261109143355",
+          "name": "register_initial_credential_transaction"
+        },
+        {
+          "version": "20261109143358",
+          "name": "credential_lifecycle_versioning"
+        },
+        {
+          "version": "20261109143401",
+          "name": "api_clients"
+        },
+        {
+          "version": "20261109143404",
+          "name": "admin_provisioning_rpc"
+        },
+        {
+          "version": "20261109143410",
+          "name": "api_client_audit"
+        },
+        {
+          "version": "20261109143416",
+          "name": "restrict_provisioning_rpc"
+        },
+        {
+          "version": "20261109143423",
+          "name": "scopes"
+        },
+        {
+          "version": "20261109143429",
+          "name": "least_privilege_browser_roles"
+        },
+        {
+          "version": "20261109161812",
+          "name": "academic_review"
+        },
+        {
+          "version": "20261109162351",
+          "name": "academic_review_preserve_unchanged_catalogs"
+        }
+      ],
+      "allApplicationTablesRls": true,
+      "browserGrants": 0,
+      "browserColumnGrants": 0
+    },
+    "credenly": {
+      "ref": "xvzylegwuxmxqcgdjjrq",
+      "counts": {
+        "perfiles": 1,
+        "auth_users": 4,
+        "comparticiones": 5,
+        "perfiles_admin": 1,
+        "auditoria_admin": 79,
+        "auth_identities": 4,
+        "vinculaciones_raes": 1,
+        "accesos_compartidos": 9,
+        "verificaciones_identidad": 1
+      },
+      "migrations": [
+        {
+          "version": "20261109143450",
+          "name": "initial_credenly_schema"
+        },
+        {
+          "version": "20261109143455",
+          "name": "tune_credenly_rls"
+        },
+        {
+          "version": "20261109143501",
+          "name": "confirm_raes_link"
+        },
+        {
+          "version": "20261109143508",
+          "name": "local_ocr_traceability"
+        },
+        {
+          "version": "20261109143511",
+          "name": "restrict_raes_link_rpc"
+        },
+        {
+          "version": "20261109143513",
+          "name": "restrict_profile_write_columns"
+        },
+        {
+          "version": "20261109143521",
+          "name": "credenly_admin_identity"
+        },
+        {
+          "version": "20261109143527",
+          "name": "credenly_admin_audit"
+        },
+        {
+          "version": "20261109143632",
+          "name": "least_privilege_browser_roles"
+        },
+        {
+          "version": "20261109143635",
+          "name": "enforce_credenly_profile_exclusion"
+        }
+      ],
+      "allApplicationTablesRls": true,
+      "browserGrants": 0,
+      "browserColumnGrants": 0
+    }
+  }
+}

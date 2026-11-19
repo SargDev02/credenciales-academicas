@@ -30,12 +30,12 @@ const healthy: Health = {
   checkedAt: "2026-10-19T00:10:00Z",
   httpStatus: 200,
   status: "ready",
-  components: { database: "up", auth: "configured", raes: "up" },
+  components: { database: "up", auth: "up", raes: "up" },
 };
-test("health keeps Auth configured distinct from a login check", () => {
+test("health reports a real Auth API check without claiming a user login", () => {
   const state = servicePresentation(healthy);
   assert.equal(state.operational, true);
-  assert.equal(state.components[1]!.availableLabel, "Configurado");
+  assert.equal(state.components[1]!.availableLabel, "Disponible");
   assert.match(
     state.components[1]!.description,
     /No simula un inicio de sesión/,
@@ -51,7 +51,7 @@ test("dependency failure or readiness 503 never renders an operational system", 
     },
     {
       ...healthy,
-      components: { ...healthy.components, auth: "unavailable" as const },
+      components: { ...healthy.components, auth: "down" as const },
     },
   ])
     assert.equal(servicePresentation(data).operational, false);

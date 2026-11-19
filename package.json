@@ -4,11 +4,12 @@
   "description": "Monorepo de RAES, Credenly y conectores institucionales",
   "scripts": {
     "typecheck": "pnpm -r typecheck && tsc -p tsconfig.tools.json",
-    "lint": "node scripts/check-workspace-scripts.mjs && pnpm -r lint && eslint scripts tests playwright.config.ts eslint.config.mjs --max-warnings 0",
+    "lint": "node scripts/check-workspace-scripts.mjs && pnpm -r lint && eslint scripts tests playwright.config.ts playwright.academic-review.config.mjs eslint.config.mjs --max-warnings 0",
     "test": "node scripts/check-workspace-scripts.mjs && pnpm -r test && node --test scripts/test/*.test.mjs",
     "test:frontend:browser": "playwright test",
     "audit:gate": "node scripts/audit-dependencies.mjs",
-    "security:scan": "node scripts/scan-repository-secrets.mjs"
+    "security:scan": "node scripts/scan-repository-secrets.mjs",
+    "test:academic-review:browser": "playwright test --config playwright.academic-review.config.mjs"
   },
   "engines": {
     "node": ">=22.13.0"

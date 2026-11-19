@@ -1,0 +1,631 @@
+{
+  "date": "2026-11-19",
+  "branch": "feat/raes-academic-review",
+  "originalHead": "f8e865abcfe8a1f3bad64d0368a50aed1d151e96",
+  "mergedMain": "e356f8d6ce02de58a66ad76ebf599f83e06010d9",
+  "mergeMethod": "merge commit, no squash/rebase",
+  "validationEnvironment": {
+    "node": "24.22.0",
+    "pnpm": "12.8.1",
+    "cleanCopy": true,
+    "dotenvFiles": 0,
+    "initialBuildArtifacts": 0,
+    "remoteSupabaseRequests": 0,
+    "localDatabase": "PGlite 0.5.8; platform/Auth transport simulated"
+  },
+  "gates": {
+    "frozen": {
+      "command": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile"
+      ],
+      "exit": 0,
+      "seconds": 0.8,
+      "remoteSecretsInEnvironment": false
+    },
+    "security": {
+      "command": [
+        "pnpm",
+        "security:scan"
+      ],
+      "exit": 0,
+      "seconds": 0.12,
+      "remoteSecretsInEnvironment": false
+    },
+    "archive": {
+      "command": [
+        "node",
+        "scripts/verify-schema-archive.mjs"
+      ],
+      "exit": 0,
+      "seconds": 0.04,
+      "remoteSecretsInEnvironment": false
+    },
+    "lint": {
+      "command": [
+        "pnpm",
+        "lint"
+      ],
+      "exit": 0,
+      "seconds": 14.45,
+      "remoteSecretsInEnvironment": false
+    },
+    "typecheck": {
+      "command": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 6.18,
+      "remoteSecretsInEnvironment": false
+    },
+    "tests": {
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 24.31,
+      "remoteSecretsInEnvironment": false
+    },
+    "audit-prod": {
+      "command": [
+        "pnpm",
+        "audit",
+        "--prod"
+      ],
+      "exit": 0,
+      "seconds": 0.58,
+      "remoteSecretsInEnvironment": false
+    },
+    "audit": {
+      "command": [
+        "pnpm",
+        "audit:gate"
+      ],
+      "exit": 0,
+      "seconds": 0.5,
+      "remoteSecretsInEnvironment": false
+    },
+    "builds": {
+      "command": [
+        "pnpm",
+        "-r",
+        "--if-present",
+        "build"
+      ],
+      "exit": 0,
+      "seconds": 7.52,
+      "remoteSecretsInEnvironment": false
+    },
+    "browser": {
+      "command": [
+        "pnpm",
+        "test:frontend:browser"
+      ],
+      "exit": 0,
+      "seconds": 43.25,
+      "remoteSecretsInEnvironment": false
+    },
+    "academic-browser": {
+      "command": [
+        "pnpm",
+        "test:academic-review:browser"
+      ],
+      "exit": 0,
+      "seconds": 12.37,
+      "remoteSecretsInEnvironment": false
+    },
+    "db-composition": {
+      "command": [
+        "node",
+        "--test",
+        "scripts/test/schema-bootstrap.test.mjs",
+        "scripts/test/schema-academic-composition.test.mjs"
+      ],
+      "exit": 0,
+      "seconds": 3.21,
+      "remoteSecretsInEnvironment": false
+    },
+    "ocr": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@credenly/api",
+        "exec",
+        "tsx",
+        "scripts/verify-local-ocr.ts"
+      ],
+      "exit": 0,
+      "seconds": 2.56,
+      "remoteSecretsInEnvironment": false
+    },
+    "operator-completed": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/api",
+        "exec",
+        "node",
+        "scripts/verify-academic-review-live.mjs",
+        "--verify-completed",
+        "--local"
+      ],
+      "exit": 0,
+      "seconds": 1.14,
+      "remoteSecretsInEnvironment": false
+    },
+    "postcheck": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/api",
+        "exec",
+        "node",
+        "scripts/verify-academic-review-postcheck.mjs",
+        "--local"
+      ],
+      "exit": 0,
+      "seconds": 1.04,
+      "remoteSecretsInEnvironment": false
+    },
+    "historical-reproducer": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/api",
+        "exec",
+        "node",
+        "scripts/reproduce-academic-review-fail.mjs"
+      ],
+      "exit": 0,
+      "seconds": 0.25,
+      "remoteSecretsInEnvironment": false
+    }
+  },
+  "results": {
+    "unitContractSqlOperatorTests": 333,
+    "browserMain": 26,
+    "browserAcademic": 9,
+    "builds": 5,
+    "archiveMigrations": 22,
+    "hardeningMigrations": 5,
+    "academicMigrations": 2,
+    "canonicalWrites": 0,
+    "credenlyAcademicWrites": 0,
+    "liveReading": "local HTTP A -> pending A -> approved B, same credential UUID",
+    "baselinePreserved": {
+      "poli": 47,
+      "udea": 97,
+      "total": 144
+    },
+    "remoteStateNotRevalidated": true,
+    "remoteExpectedState": {
+      "authUsers": 4,
+      "citizenProfiles": 1,
+      "sergioProfile": "deliberately absent"
+    },
+    "bracesException": "unchanged, expired 2026-11-18, not used by audit with findings=[]"
+  },
+  "historicEvidenceIntegrity": [
+    {
+      "file": "docs/reports/evidence/academic-review-baseline.json",
+      "sha256": "18f748eb17c572479211bdd168358e90c269926139eecae6e01621aba08f2115",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-catalog-migration-applied.json",
+      "sha256": "5413774dd6edc84586955dc1e3ae2e03c03fb1c82ad0701c68cd803480529b69",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-file-inventory.json",
+      "sha256": "cd789d9381181a0b1220c455f885117371a15031c935253434b6607e2cd9d443",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-final-counts.json",
+      "sha256": "102ba479e4c4d820118b862746112f30b2273917244b21d543138be73382cd88",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-live-first-attempt.json",
+      "sha256": "7bcc9108fdc14c13684b348a46bc56a2bbdfeed5ce8c9844502cd456d10e9748",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-live-postcheck.json",
+      "sha256": "24fb4d6f66ecdaa0480f7b84a27a71f5649479538d4d5b0f81e004183921cebf",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-live-resume-attempt.json",
+      "sha256": "5bf2ef30d7f5f5ccac7863d4e0cd4de0b0160ea3375bb1a76b7080157b929914",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-migration-applied.json",
+      "sha256": "6f2ac5f0b3fe9192af0771766b2999bebca768584746edeb2a4b9aa8021a657e",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-migration-preflight.json",
+      "sha256": "c397b8a3a3e9421caf160ebf6f77c2d5c0c66663a8a41ab479ccaddcb3c0edf1",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-ocr-diagnostic.json",
+      "sha256": "c5b50991a7146ca227f7aecad9171a495a19b98b1e014ef94db5b163e425342c",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-ocr-fixed.json",
+      "sha256": "76498fdb8594e46a86f1454ca3e07b7e11de449c7ebffb80674acbaf49d0bf9b",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-permissions.json",
+      "sha256": "45d3aec87a4f598cc02c01373b19f5f025a68a6b60f19842d362c00bb362416e",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-quality.json",
+      "sha256": "8f45d1ea7e1505ae19c7cc842f7d82294011c0637b92fd691e44a9ee5793816c",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/academic-review-real-exclusion.json",
+      "sha256": "de7cd719a0841fc9d2f697435ebb77e4c8501175d98a63f3bc7512effd00d2dc",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/historical-integrity.json",
+      "sha256": "1357529f557f892747b60602197ff7c9b45e32a5fa96c331c1b54bda723afb0a",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/live-credenly.json",
+      "sha256": "3ac1997910d0301795748600b61a29fedefef0000b7ddc3d00dd97109901458a",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/offline-reproduction.json",
+      "sha256": "c3e96b43ebb0efb8cd10fc51b3f5608ff4e3af7d5c5febbd5cee6179e78459d3",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/operator-completed.json",
+      "sha256": "26f0e0e07558935a4a1417d2319d7918c2630b1d04ad27678df8acaef02f4473",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/postcheck.json",
+      "sha256": "0174f634c35d59611a12c6f4c18ffdbd60bb3844bf9e0c089008ec1df791f538",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/udea-detection.json",
+      "sha256": "e7a1a094c75cfd04f820db1550a5bc8bfcf7d5f200fab1055f1feb5f60ff3908",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/validation.json",
+      "sha256": "17b08eca90888df48fdbcd570e4a66308806a043a25cd9e9786e56db79990ad6",
+      "unchanged": true
+    },
+    {
+      "file": "docs/reports/evidence/operator-incident-2026-11-09/version-expectation-reproduction.json",
+      "sha256": "495f8c96be33000ce130a92e298e15e36177f33e1c464bb92ae1ef6dd0a2561a",
+      "unchanged": true
+    }
+  ],
+  "changedFilesComparedToMain": [
+    ".github/workflows/ci.yml",
+    "apps/credenly-web/AGENTS.md",
+    "apps/credenly-web/CLAUDE.md",
+    "apps/credenly-web/src/lib/admin-model.test.ts",
+    "apps/credenly-web/src/lib/admin-model.ts",
+    "apps/credenly-web/src/lib/admin-presentation.test.ts",
+    "apps/credenly-web/src/lib/admin-presentation.ts",
+    "apps/raes-web/AGENTS.md",
+    "apps/raes-web/CLAUDE.md",
+    "apps/raes-web/package.json",
+    "apps/raes-web/src/app/(admin)/dashboard/page.tsx",
+    "apps/raes-web/src/app/(admin)/validations/[id]/page.tsx",
+    "apps/raes-web/src/app/(admin)/validations/loading.tsx",
+    "apps/raes-web/src/app/(admin)/validations/not-found.tsx",
+    "apps/raes-web/src/app/(admin)/validations/page.tsx",
+    "apps/raes-web/src/app/app.css",
+    "apps/raes-web/src/components/navigation.tsx",
+    "apps/raes-web/src/components/review-decision.tsx",
+    "apps/raes-web/src/lib/academic-review-actions.ts",
+    "apps/raes-web/src/lib/academic-review-api.ts",
+    "apps/raes-web/src/lib/academic-review-model.test.ts",
+    "apps/raes-web/src/lib/academic-review-model.ts",
+    "apps/raes-web/src/lib/provisioning-model.ts",
+    "docs/academic-review.md",
+    "docs/api.md",
+    "docs/architecture.md",
+    "docs/development.md",
+    "docs/frontend.md",
+    "docs/progress.md",
+    "docs/proposals/academic-review-remote-fixture.md",
+    "docs/proposals/ocr-document-label-boundaries.md",
+    "docs/proposals/restored-auth-token-normalization.md",
+    "docs/reports/academic-review-operator-incident-2026-11-09.md",
+    "docs/reports/academic-review-reconciliation-2026-11-19.md",
+    "docs/reports/academic-review-status-2026-11-09.md",
+    "docs/reports/evidence/academic-review-baseline.json",
+    "docs/reports/evidence/academic-review-catalog-migration-applied.json",
+    "docs/reports/evidence/academic-review-file-inventory.json",
+    "docs/reports/evidence/academic-review-final-counts.json",
+    "docs/reports/evidence/academic-review-live-first-attempt.json",
+    "docs/reports/evidence/academic-review-live-postcheck.json",
+    "docs/reports/evidence/academic-review-live-resume-attempt.json",
+    "docs/reports/evidence/academic-review-migration-applied.json",
+    "docs/reports/evidence/academic-review-migration-preflight.json",
+    "docs/reports/evidence/academic-review-ocr-diagnostic.json",
+    "docs/reports/evidence/academic-review-ocr-fixed.json",
+    "docs/reports/evidence/academic-review-permissions.json",
+    "docs/reports/evidence/academic-review-quality.json",
+    "docs/reports/evidence/academic-review-real-exclusion.json",
+    "docs/reports/evidence/academic-review-reconciliation-2026-11-19.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/historical-integrity.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/live-credenly.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/offline-reproduction.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/operator-completed.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/postcheck.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/udea-detection.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/validation.json",
+    "docs/reports/evidence/operator-incident-2026-11-09/version-expectation-reproduction.json",
+    "docs/reports/evidence/raes-admin-authorized-password-reset.json",
+    "docs/reports/evidence/reconnection-auth-normalization.json",
+    "docs/reports/evidence/reconnection-auth-settings.json",
+    "docs/reports/evidence/reconnection-client-auth.json",
+    "docs/reports/evidence/reconnection-counts.json",
+    "docs/reports/evidence/reconnection-credenly-logins.json",
+    "docs/reports/evidence/reconnection-health-final.json",
+    "docs/reports/evidence/reconnection-live-client.json",
+    "docs/reports/evidence/reconnection-raes-login.json",
+    "docs/reports/evidence/reconnection-schema.json",
+    "docs/reports/supabase-reconnection-2026-11-09.md",
+    "docs/synchronization.md",
+    "package.json",
+    "packages/connector-core/src/academic-review.ts",
+    "packages/connector-core/src/index.ts",
+    "packages/connector-core/src/raes-client.ts",
+    "packages/connector-core/src/runner.ts",
+    "packages/connector-core/src/source.ts",
+    "packages/connector-core/src/sync.test.ts",
+    "packages/connector-core/src/sync.ts",
+    "packages/contracts/src/academic-review.ts",
+    "packages/contracts/src/index.ts",
+    "playwright.academic-review.config.mjs",
+    "playwright.config.ts",
+    "pnpm-lock.yaml",
+    "scripts/lib/academic-review-db.mjs",
+    "scripts/lib/academic-review-fixture.mjs",
+    "scripts/lib/schema-fixture.mjs",
+    "scripts/test/academic-review-operator.test.mjs",
+    "scripts/test/academic-review.test.mjs",
+    "scripts/test/schema-academic-composition.test.mjs",
+    "scripts/test/schema-bootstrap.test.mjs",
+    "scripts/verify-schema-archive.mjs",
+    "services/connector-poli/package.json",
+    "services/connector-poli/src/cli.ts",
+    "services/connector-poli/src/sync.ts",
+    "services/connector-udea/package.json",
+    "services/connector-udea/src/cli.ts",
+    "services/connector-udea/src/options.ts",
+    "services/connector-udea/src/sync.ts",
+    "services/connector-udea/src/wiring.test.ts",
+    "services/credenly-api/AGENTS.md",
+    "services/credenly-api/CLAUDE.md",
+    "services/credenly-api/package.json",
+    "services/credenly-api/scripts/reset-admin-password.mjs",
+    "services/credenly-api/scripts/reset-citizen-password.mjs",
+    "services/credenly-api/scripts/verify-citizen-login.mjs",
+    "services/credenly-api/src/app/api/v1/admin/health/route.ts",
+    "services/credenly-api/src/app/api/v1/credentials/route.ts",
+    "services/credenly-api/src/app/api/v1/health/ready/route.ts",
+    "services/credenly-api/src/lib/ocr-document-parser.test.ts",
+    "services/credenly-api/src/lib/ocr-document-parser.ts",
+    "services/credenly-api/src/lib/raes-client.test.ts",
+    "services/credenly-api/src/lib/readiness.test.ts",
+    "services/raes-api/AGENTS.md",
+    "services/raes-api/CLAUDE.md",
+    "services/raes-api/package.json",
+    "services/raes-api/scripts/academic-review-baseline.ts",
+    "services/raes-api/scripts/lib/academic-review-completed.mjs",
+    "services/raes-api/scripts/lib/academic-review-idempotence.mjs",
+    "services/raes-api/scripts/lib/academic-review-local.mjs",
+    "services/raes-api/scripts/lib/synthetic-review-document.mjs",
+    "services/raes-api/scripts/lib/verify-local-admin-login.mjs",
+    "services/raes-api/scripts/reproduce-academic-review-fail.mjs",
+    "services/raes-api/scripts/reset-admin-password.mjs",
+    "services/raes-api/scripts/verify-academic-review-live.mjs",
+    "services/raes-api/scripts/verify-academic-review-postcheck.mjs",
+    "services/raes-api/src/app/api/v1/academic-review/detections/route.ts",
+    "services/raes-api/src/app/api/v1/academic-review/proposals/route.ts",
+    "services/raes-api/src/app/api/v1/admin/academic-reviews/[id]/approve/route.ts",
+    "services/raes-api/src/app/api/v1/admin/academic-reviews/[id]/reject/route.ts",
+    "services/raes-api/src/app/api/v1/admin/academic-reviews/[id]/route.ts",
+    "services/raes-api/src/app/api/v1/admin/academic-reviews/route.ts",
+    "services/raes-api/src/app/api/v1/credentials/annulments/route.ts",
+    "services/raes-api/src/app/api/v1/credentials/corrections/route.ts",
+    "services/raes-api/src/app/api/v1/credentials/revocations/route.ts",
+    "services/raes-api/src/app/api/v1/credentials/route.ts",
+    "services/raes-api/src/app/api/v1/persons/[personId]/credentials/route.ts",
+    "services/raes-api/src/app/api/v1/sync/campuses/route.ts",
+    "services/raes-api/src/app/api/v1/sync/institution/route.ts",
+    "services/raes-api/src/app/api/v1/sync/persons/route.ts",
+    "services/raes-api/src/app/api/v1/sync/program-campuses/route.ts",
+    "services/raes-api/src/app/api/v1/sync/programs/route.ts",
+    "services/raes-api/src/lib/academic-review.test.ts",
+    "services/raes-api/src/lib/academic-review.ts",
+    "services/raes-api/src/lib/api-error.ts",
+    "services/raes-api/src/lib/scopes.ts",
+    "supabase/bootstrap/README.md",
+    "supabase/bootstrap/manifest.json",
+    "supabase/fixtures/academic-review/README.md",
+    "supabase/fixtures/academic-review/manifest.json",
+    "supabase/fixtures/academic-review/poli.sql",
+    "supabase/raes/migrations/20261109161812_academic_review.sql",
+    "supabase/raes/migrations/20261109162351_academic_review_preserve_unchanged_catalogs.sql",
+    "tests/frontend/academic-review.spec.mjs",
+    "tests/helpers/academic-review-fixture.mjs"
+  ],
+  "ci": "First published merge failed at typecheck, retained in initialCi; corrected lifecycle rerun is checked after follow-up push.",
+  "mergeCommit": "846742c6ffa21a6b740a244eed773fb95a29cc53",
+  "initialCi": {
+    "runId": 44618870449,
+    "head": "846742c6ffa21a6b740a244eed773fb95a29cc53",
+    "status": "FAIL",
+    "step": "pnpm typecheck",
+    "errors": [
+      "TS2307: @raes/contracts exports dist missing for RAES Web",
+      "TS7006: downstream inferred any after unresolved contracts"
+    ],
+    "precedingGates": "frozen install, security scan, DDL validation and lint passed",
+    "diagnosis": "Missing RAES Web lifecycle build for its new workspace dependency; previous generated artifacts masked local check. Not a Supabase/domain defect."
+  },
+  "coldRegression": {
+    "cold-reproduction": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/web",
+        "typecheck"
+      ],
+      "exit": 1,
+      "seconds": 1.11,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-fixed": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/web",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 1.66,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-install": {
+      "command": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile"
+      ],
+      "exit": 0,
+      "seconds": 1.44,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-lint": {
+      "command": [
+        "pnpm",
+        "lint"
+      ],
+      "exit": 0,
+      "seconds": 14.62,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-consumer": {
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/web",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 2.56,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-typecheck": {
+      "command": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 4.94,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-tests": {
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 24.58,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-audit": {
+      "command": [
+        "pnpm",
+        "audit:gate"
+      ],
+      "exit": 0,
+      "seconds": 0.49,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-audit-prod": {
+      "command": [
+        "pnpm",
+        "audit",
+        "--prod"
+      ],
+      "exit": 0,
+      "seconds": 0.39,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-security": {
+      "command": [
+        "pnpm",
+        "security:scan"
+      ],
+      "exit": 0,
+      "seconds": 0.22,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-archive": {
+      "command": [
+        "node",
+        "scripts/verify-schema-archive.mjs"
+      ],
+      "exit": 0,
+      "seconds": 0.04,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-builds": {
+      "command": [
+        "pnpm",
+        "-r",
+        "--if-present",
+        "build"
+      ],
+      "exit": 0,
+      "seconds": 8.07,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-browser": {
+      "command": [
+        "pnpm",
+        "test:frontend:browser"
+      ],
+      "exit": 0,
+      "seconds": 40.83,
+      "remoteSecretsInEnvironment": false
+    },
+    "cold-ci-academic-browser": {
+      "command": [
+        "pnpm",
+        "test:academic-review:browser"
+      ],
+      "exit": 0,
+      "seconds": 13.12,
+      "remoteSecretsInEnvironment": false
+    }
+  }
+}

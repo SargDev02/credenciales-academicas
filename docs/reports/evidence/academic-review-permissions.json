@@ -1,0 +1,233 @@
+{
+  "checkedAt": "2026-11-09T16:29:56.089Z",
+  "projects": {
+    "raes": {
+      "ref": "askqizcwemmydwcgrewp",
+      "migrations": [
+        {
+          "name": "initial_raes_schema",
+          "version": "20261109143347"
+        },
+        {
+          "name": "tune_raes_indexes_and_rls",
+          "version": "20261109143351"
+        },
+        {
+          "name": "register_initial_credential_transaction",
+          "version": "20261109143355"
+        },
+        {
+          "name": "credential_lifecycle_versioning",
+          "version": "20261109143358"
+        },
+        {
+          "name": "api_clients",
+          "version": "20261109143401"
+        },
+        {
+          "name": "admin_provisioning_rpc",
+          "version": "20261109143404"
+        },
+        {
+          "name": "api_client_audit",
+          "version": "20261109143410"
+        },
+        {
+          "name": "restrict_provisioning_rpc",
+          "version": "20261109143416"
+        },
+        {
+          "name": "scopes",
+          "version": "20261109143423"
+        },
+        {
+          "name": "least_privilege_browser_roles",
+          "version": "20261109143429"
+        },
+        {
+          "name": "academic_review",
+          "version": "20261109161812"
+        },
+        {
+          "name": "academic_review_preserve_unchanged_catalogs",
+          "version": "20261109162351"
+        }
+      ],
+      "allPublicTablesRls": true,
+      "browserTableGrants": 0,
+      "browserColumnGrants": 0,
+      "reviewBrowserRpcExecution": 0,
+      "advisors": {
+        "httpStatus": 200,
+        "items": [
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "auth_leaked_password_protection",
+            "level": "WARN"
+          }
+        ]
+      }
+    },
+    "credenly": {
+      "ref": "xvzylegwuxmxqcgdjjrq",
+      "migrations": [
+        {
+          "name": "initial_credenly_schema",
+          "version": "20261109143450"
+        },
+        {
+          "name": "tune_credenly_rls",
+          "version": "20261109143455"
+        },
+        {
+          "name": "confirm_raes_link",
+          "version": "20261109143501"
+        },
+        {
+          "name": "local_ocr_traceability",
+          "version": "20261109143508"
+        },
+        {
+          "name": "restrict_raes_link_rpc",
+          "version": "20261109143511"
+        },
+        {
+          "name": "restrict_profile_write_columns",
+          "version": "20261109143513"
+        },
+        {
+          "name": "credenly_admin_identity",
+          "version": "20261109143521"
+        },
+        {
+          "name": "credenly_admin_audit",
+          "version": "20261109143527"
+        },
+        {
+          "name": "least_privilege_browser_roles",
+          "version": "20261109143632"
+        },
+        {
+          "name": "enforce_credenly_profile_exclusion",
+          "version": "20261109143635"
+        }
+      ],
+      "allPublicTablesRls": true,
+      "browserTableGrants": 0,
+      "browserColumnGrants": 0,
+      "reviewBrowserRpcExecution": 0,
+      "advisors": {
+        "httpStatus": 200,
+        "items": [
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "rls_enabled_no_policy",
+            "level": "INFO"
+          },
+          {
+            "name": "auth_leaked_password_protection",
+            "level": "WARN"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -22,3 +22,9 @@ for (const migration of manifest.postBaselineMigrations ?? []) {
   if (createHash("sha256").update(sql).digest("hex") !== migration.sha256) throw new Error("Approved corrective migration checksum mismatch");
 }
 console.log(`${manifest.postBaselineMigrations?.length ?? 0} approved corrective migration checksums verified.`);
+
+for (const migration of manifest.academicReviewMigrations) {
+  const sql = readFileSync(new URL(`../${migration.file}`, import.meta.url));
+  if (createHash("sha256").update(sql).digest("hex") !== migration.sha256) throw new Error("Academic migration checksum mismatch");
+}
+console.log(`${manifest.academicReviewMigrations.length} ordered academic evolution checksums verified.`);

@@ -13,7 +13,7 @@ export async function GET(request: Request) {
       status: body.status === "ready" ? "ready" : "not_ready",
       components: {
         database: components.database === "up" ? "up" : "down",
-        auth: components.auth === "configured" ? "configured" : "unavailable",
+        auth: components.auth === "up" ? "up" : "down",
         raes: components.raes === "up" ? "up" : "down",
       },
     };

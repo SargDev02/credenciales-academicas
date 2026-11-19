@@ -1,3 +1,14 @@
+# Detección y revisión académica
+
+Desde la activación del corte del 2026-11-09, los conectores detectan y presentan
+propuestas. La escritura canónica requiere aprobación administrativa. Comandos,
+contratos, baseline y operación en [revisión académica](academic-review.md).
+`sync` es alias de detect-and-submit; las rutas de escritura descritas abajo
+son HISTÓRICAS y ahora responden409 ACADEMIC_REVIEW_REQUIRED. No usarlas para
+incorporar datos ni para programar sincronización automática.
+
+## Referencia histórica anterior al corte
+
 # Sincronización académica base
 
 Esta etapa introduce los primeros endpoints de escritura institucional sobre RAES.
@@ -102,7 +113,7 @@ credencial; falta una política explícita de orden para ese caso antes de produ
 ## Cuándo llega un cambio a la web
 
 Los conectores actuales son comandos de una sola ejecución: leen la fuente,
-sincronizan y terminan. Iniciar RAES API/las webs no inicia los conectores. El
+detectan cambios, presentan propuestas y terminan. Iniciar RAES API/las webs no inicia los conectores. El
 repositorio no configura un worker, tarea periódica o suscripción a cambios de las
 bases institucionales. Una edición en Supabase no se envía automáticamente a RAES.
 
@@ -114,14 +125,16 @@ pnpm --filter @raes/connector-poli sync
 pnpm --filter @raes/connector-udea sync
 ```
 
-Estos comandos **escriben en RAES por su API**: revisar antes qué registros se
-cambiaron. Para una corrección exclusivamente académica puede limitarse el comando
-al código institucional con `sync:credentials -- --credential-code=<codigo>`.
+Estos comandos registran observaciones/propuestas por RAES API; no escriben
+el estado académico canónico. Puede limitarse la detección al código institucional
+con `detect -- --credential-code=<codigo>`.
 No ejecutar dos procesos concurrentes para una misma fuente.
 
 La secuencia esperada para una credencial administrada y VIGENTE en RAES es:
-cambiar el origen, ejecutar su conector, comprobar `credentialsCorrected` y
-recargar la web. RAES conserva el contenido anterior mediante versiones/eventos.
+cambiar el origen, ejecutar detección y comprobar la propuesta PENDIENTE.
+RAES Admin debe aprobarla antes de que la siguiente consulta web muestre el cambio.
+Mientras esté pendiente o si se rechaza, se conserva el contenido aprobado.
+RAES conserva versiones/eventos y los detectores reportan `canonicalWrites: 0`.
 Credenly consulta RAES por HTTP con `cache: no-store`; no lee las bases
 institucionales ni mantiene snapshots académicos. Una pestaña ya abierta necesita
 una nueva consulta (recargar); no recibe cambios por push.
@@ -137,3 +150,12 @@ Si un cambio no aparece, revisar el resumen del conector:
 
 El [diagnóstico de 2026-10-19](reports/institution-sync-diagnosis.md) distingue
 el envío manual del caso legacy histórico observado, sin modificar datos académicos.
+
+
+## Reconciliación vigente con el quality gate
+
+Los comandos `sync` se conservan solo como alias de detección; no aplican datos
+académicos. No existen los antiguos modos `--only`, `sync:base` o
+`sync:credentials`. Usar `detect` para presentar propuestas. La aceptación o
+rechazo pertenece a RAES Admin. No volver a generar los cortes existentes de
+47/97 huellas (144 total) ni repetir fixtures o aprobaciones remotos al integrar Git.

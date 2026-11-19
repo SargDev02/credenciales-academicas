@@ -242,6 +242,9 @@ importers:
 
   apps/raes-web:
     dependencies:
+      '@raes/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@raes/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -450,6 +453,9 @@ importers:
 
   services/raes-api:
     dependencies:
+      '@raes/connector-core':
+        specifier: workspace:*
+        version: link:../../packages/connector-core
       '@raes/contracts':
         specifier: workspace:*
         version: link:../../packages/contracts

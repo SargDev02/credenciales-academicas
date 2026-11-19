@@ -3,11 +3,13 @@ import { Card, PageHeading, EmptyState } from "@raes/ui";
 import { getInstitutions, getApiClients } from "../../../lib/admin-api";
 import { InstitutionTable } from "../../../components/institution-table";
 import { formatDate } from "../../../lib/admin-model";
+import { getAcademicReviews } from "../../../lib/academic-review-api";
 export const metadata = { title: "Resumen" };
 export default async function Dashboard() {
-  const [institutions, clients] = await Promise.all([
+  const [institutions, clients, reviews] = await Promise.all([
     getInstitutions(),
     getApiClients(),
+    getAcademicReviews({estado:"PENDIENTE",pageSize:1}).then(result=>({total:result.meta.total})).catch(()=>({total:null})),
   ]);
   const recent = [...institutions]
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
@@ -24,6 +26,12 @@ export default async function Dashboard() {
         Consulta las instituciones y los servicios registrados en RAES.
       </PageHeading>
       <div className="admin-stats">
+        <Card>
+          <span className="stat-label">Pendientes de revisión</span>
+          <strong className="stat-value">{reviews.total ?? "—"}</strong>
+          {reviews.total === null ? <span className="ui-hint">Consulta no disponible</span> : reviews.total > 0 ? <span className="ui-hint">Hay cambios esperando decisión</span> : <span className="ui-hint">Sin cambios pendientes</span>}
+          <Link href="/validations">Ver validaciones →</Link>
+        </Card>
         <Card>
           <span className="stat-label">Instituciones visibles</span>
           <strong className="stat-value">{institutions.length}</strong>

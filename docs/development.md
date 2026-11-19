@@ -72,7 +72,11 @@ RAES/Credenly y `--profile /ruta/al/perfil/instituciones.toml` para las fuentes.
 Un perfil personalizado es un TOML con endpoints públicos y un nombre de almacén
 local; no contiene tokens. El login se guarda en el llavero del sistema.
 
-## Verificación multiinstitución C/D
+## Verificación multiinstitución C/D — procedimiento histórico
+
+No repetir este procedimiento ni registrar nuevos baselines al reconciliar Git.
+La evidencia ya aplicada se conserva; las pruebas actuales usan solo fixtures
+locales/WASM y revisión administrativa.
 
 Los fixtures aprobados y aplicados una vez se describen exactamente en
 `supabase/fixtures/multi-institution/README.md`. No volver a aplicar sus SQL: abortan
@@ -204,3 +208,11 @@ Prueba manual OCR sin cuentas ni DB:
 `pnpm --filter @credenly/api exec tsx scripts/verify-local-ocr.ts`.
 Genera píxeles sintéticos en memoria, valida preflight y ejecuta Tesseract local.
 El modelo se puede descargar en el primer arranque; ningún traineddata se versiona.
+## Revisión académica y proyectos restaurados
+
+Usar el perfil CLI `proyecto-gobernacion` para RAES/Credenly restaurados y conservar
+el perfil institucional para las fuentes. No reaplicar DDL por diferencias de
+timestamp: [reconexión](reports/supabase-reconnection-2026-11-09.md).
+Los comandos sync documentados históricamente arriba ya no aplican datos: son
+alias detect-and-submit. Guía actual de corte, detección, API y pruebas en
+[academic-review.md](academic-review.md).

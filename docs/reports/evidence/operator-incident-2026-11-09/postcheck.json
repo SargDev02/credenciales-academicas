@@ -1,0 +1,116 @@
+{
+  "checkedAt": "2026-11-09T18:51:59.631Z",
+  "mode": "postcheck",
+  "result": "PASS",
+  "trace": [
+    {
+      "name": "beforeCounts",
+      "data": {
+        "personas_maestra": 31,
+        "persona_fuentes": 32,
+        "credenciales": 33,
+        "credencial_versiones": 41,
+        "credencial_eventos": 41,
+        "operaciones_api": 41
+      }
+    },
+    {
+      "name": "detection",
+      "data": {
+        "operation": "DETECT_AND_SUBMIT",
+        "studentsObserved": 1,
+        "credentialsObserved": 1,
+        "proposalsCreated": 0,
+        "observationsUnchanged": 2,
+        "canonicalWrites": 0
+      }
+    },
+    {
+      "name": "replay",
+      "data": {
+        "id": "7cdec780-ff39-4ca9-99cf-a8e742eff025",
+        "estado": "APROBADA",
+        "replayed": true,
+        "recursoRaesId": "3611d73f-e7bc-47a9-96cc-45e77ac47dc7"
+      }
+    },
+    {
+      "name": "afterCounts",
+      "data": {
+        "personas_maestra": 31,
+        "persona_fuentes": 32,
+        "credenciales": 33,
+        "credencial_versiones": 41,
+        "credencial_eventos": 41,
+        "operaciones_api": 41
+      }
+    }
+  ],
+  "realCitizenHttpProof": "academic-review-live-resume-attempt.json",
+  "detection": {
+    "operation": "DETECT_AND_SUBMIT",
+    "studentsObserved": 1,
+    "credentialsObserved": 1,
+    "proposalsCreated": 0,
+    "observationsUnchanged": 2,
+    "canonicalWrites": 0
+  },
+  "replay": {
+    "transport": "Management SQL, service_role, ROLLBACK (not HTTP)",
+    "id": "7cdec780-ff39-4ca9-99cf-a8e742eff025",
+    "estado": "APROBADA",
+    "replayed": true,
+    "recursoRaesId": "3611d73f-e7bc-47a9-96cc-45e77ac47dc7"
+  },
+  "canonicalCounts": {
+    "personas_maestra": 31,
+    "persona_fuentes": 32,
+    "credenciales": 33,
+    "credencial_versiones": 41,
+    "credencial_eventos": 41,
+    "operaciones_api": 41
+  },
+  "allElevenCanonicalTableHashesUnchanged": true,
+  "citizenAndAdminProfilesUnchanged": true,
+  "existingAuthIdentityFieldsUnchanged": true,
+  "sergioCitizenProfileAbsent": true,
+  "unexpectedPendingBefore": 0,
+  "unexpectedPendingAfter": 0,
+  "requests": [
+    {
+      "id": "19cccf59-e73e-45b2-ac3b-915fbf9bd8ed",
+      "tipo": "NUEVO_ESTUDIANTE",
+      "estado": "APROBADA"
+    },
+    {
+      "id": "7cdec780-ff39-4ca9-99cf-a8e742eff025",
+      "tipo": "ACTUALIZACION_CREDENCIAL",
+      "estado": "APROBADA"
+    }
+  ],
+  "temporaryUsersConfirmedAbsent": [
+    "0d384284-c36a-4b42-8646-5cde347b218f",
+    "dd58d56c-8d24-40db-9566-3817bf474355"
+  ],
+  "residues": {
+    "links": 1,
+    "users": 0,
+    "shares": 5,
+    "profiles": 1,
+    "sessions": 0,
+    "authUsers": 4,
+    "identities": 0,
+    "shareAccesses": 9,
+    "verifications": 1
+  },
+  "credential": {
+    "id": "3611d73f-e7bc-47a9-96cc-45e77ac47dc7",
+    "code": "RAES-CRD-00000033",
+    "version": 2,
+    "title": "Credencial sintetica revision B"
+  },
+  "citizenSource": "RAES",
+  "persistedByCredenly": false,
+  "academicWritesCredenly": 0,
+  "outputPath": "/tmp/academic-review-postcheck-1794250306361-25504.json"
+}

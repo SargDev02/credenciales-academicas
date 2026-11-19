@@ -34,7 +34,7 @@ export function prepareCreation(
     if (
       !values.length ||
       values.length > 20 ||
-      values.some((v) => !/^[a-z]+:[a-z]+$/.test(v) || v.length > 80)
+      values.some((v) => !/^[a-z]+(?:-[a-z]+)*:[a-z]+$/.test(v) || v.length > 80)
     )
       errors.scopes =
         "Escribe uno o más permisos separados por comas (recurso:acción).";

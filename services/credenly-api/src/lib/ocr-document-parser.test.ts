@@ -86,3 +86,24 @@ test("rechaza cuando no logra identificar tipo y número de documento", () => {
   assert.equal(decision.estado, "RECHAZADA");
   assert.ok(decision.motivoFallo);
 });
+
+for (const nameFirst of [false, true]) {
+  test(`DOCUMENTO keeps the real identifier rather than NO inside NOMBRES; nameFirst=${nameFirst}`, () => {
+    const identity = 'DOCUMENTO: SYNTH-RVW-20261109-001';
+    const names = 'NOMBRES: SINTETICA\nAPELLIDOS: REVISION';
+    const parsed = parseColombianIdentityDocument(`CEDULA DE CIUDADANIA\n${nameFirst ? names + '\n' + identity : identity + '\n' + names}`);
+    assert.equal(parsed.numeroDocumento, 'SYNTH-RVW-20261109-001');
+    assert.equal(decideIdentityVerification(parsed, 0.93).estado, 'APROBADA');
+  });
+}
+test('NOMBRES without any document number cannot supply a false identity', () => {
+  const parsed = parseColombianIdentityDocument('CEDULA DE CIUDADANIA\nNOMBRES: SINTETICA\nAPELLIDOS: REVISION');
+  assert.equal(parsed.numeroDocumento, null);
+  assert.equal(decideIdentityVerification(parsed, 0.99).estado, 'RECHAZADA');
+});
+for (const label of ['NO', 'N°', 'NUIP', 'NUMERO', 'IDENTIFICACION']) {
+  test(`complete ${label} document label remains supported`, () => {
+    const parsed = parseColombianIdentityDocument(`CEDULA DE CIUDADANIA\nNOMBRES: SINTETICA\n${label}: SYNTH-CD-001\nAPELLIDOS: REVISION`);
+    assert.equal(parsed.numeroDocumento, 'SYNTH-CD-001');
+  });
+}

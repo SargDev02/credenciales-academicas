@@ -2,7 +2,7 @@ import {
   institutionalAuthErrorResponse,
 } from "./institution-auth";
 
-export type ApiErrorStatus = 400 | 404 | 409 | 413 | 500;
+export type ApiErrorStatus = 400 | 403 | 404 | 409 | 413 | 500 | 503;
 
 export class ApiError extends Error {
   constructor(

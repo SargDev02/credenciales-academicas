@@ -11,7 +11,7 @@ export async function GET(
     params: Promise<{ personId: string }>;
   },
 ) {
-  return auditedClientOperation(request, "CREDENTIALS_READ", "credentials:read", async () => {
+  const response = await auditedClientOperation(request, "CREDENTIALS_READ", "credentials:read", async () => {
     const { personId } = await context.params;
     z.uuid().parse(personId);
     const credentials = await listCredentialsForPerson(personId);
@@ -60,4 +60,6 @@ export async function GET(
       }),
     };
   });
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }

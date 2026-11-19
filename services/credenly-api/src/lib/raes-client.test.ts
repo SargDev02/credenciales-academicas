@@ -45,3 +45,26 @@ test("Credenly rejects malformed/oversized upstream responses and sanitizes erro
     }
   } finally { globalThis.fetch = original; }
 });
+
+
+test("each request returns the current RAES version A then B without a snapshot", async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async (input, init) => {
+    assert.equal(String(input), "https://raes-api-fixture.example/api/v1/persons/synthetic-person/credentials");
+    assert.equal(init?.cache, "no-store");
+    assert.equal(init?.redirect, "error");
+    assert.ok(init?.signal);
+    calls++;
+    return Response.json({ data: [{ ...fixtureCredential, estadoActual: "VIGENTE", versionActual: calls, version: {
+      numeroVersion: calls, tipo: "DIPLOMA", categoria: "TITULO", titulo: calls === 1 ? "A" : "B",
+      descripcion: null, fechaEmision: "2026-01-01", fechaGrado: null, estadoReportado: "VIGENTE",
+      numeroActa: null, numeroFolio: null, numeroLibro: null, createdAt: "2026-01-01",
+    } }] });
+  };
+  try {
+    assert.equal((await getRaesCredentialsForPerson("synthetic-person"))[0]?.version?.titulo, "A");
+    assert.equal((await getRaesCredentialsForPerson("synthetic-person"))[0]?.version?.titulo, "B");
+    assert.equal(calls, 2);
+  } finally { globalThis.fetch = original; }
+});

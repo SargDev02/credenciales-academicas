@@ -1,0 +1,11 @@
+{
+  "appliedAt": "2026-11-09T16:18:12.609Z",
+  "projectRef": "askqizcwemmydwcgrewp",
+  "name": "academic_review",
+  "version": "20261109161812",
+  "sha256": "09fb994f0aca8c755baba12fdc1716f3d904c48be45a274ddb32114d0b881c15",
+  "previousLocalVersion": "20261109134656",
+  "historicalMigrationsReapplied": 0,
+  "historicalMigrationsUnchanged": true,
+  "allElevenCanonicalTableHashesUnchanged": true
+}

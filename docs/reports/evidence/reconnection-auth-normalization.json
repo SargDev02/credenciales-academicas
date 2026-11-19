@@ -1,0 +1,23 @@
+{
+  "appliedAt": "2026-11-09T15:31:58.188Z",
+  "projectRef": "askqizcwemmydwcgrewp",
+  "authorizedUserId": "a17656ca-1950-4ec9-af47-2514178a65ea",
+  "normalizedColumns": [
+    "confirmation_token",
+    "recovery_token",
+    "email_change_token_new",
+    "email_change"
+  ],
+  "transactionAssertions": "PASS",
+  "result": [
+    {
+      "evidence": {
+        "userId": "a17656ca-1950-4ec9-af47-2514178a65ea",
+        "identitiesUnchanged": true,
+        "remainingNullFields": 0,
+        "allPublicTablesUnchanged": true,
+        "otherUserFieldsUnchanged": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "appliedAt": "2026-11-09T16:23:51.550Z",
+  "projectRef": "askqizcwemmydwcgrewp",
+  "name": "academic_review_preserve_unchanged_catalogs",
+  "version": "20261109162351",
+  "sha256": "aec33f5c8978867d3629058ae6204a10ade2751d1ad1278e2b74c605d3b42726",
+  "rollbackPreflight": "PASS",
+  "canonicalRowsUnchanged": true,
+  "previousFeatureMigrationUnchanged": true
+}

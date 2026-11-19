@@ -1,0 +1,67 @@
+{
+  "startedAt": "2026-11-09T17:41:18.643Z",
+  "fixture": {
+    "document": "SYNTH-RVW-20261109-001",
+    "credentialCode": "SYNTH-POLI-REVIEW-20261109-001",
+    "ids": {
+      "student": "fef04b81-da0a-42b3-8298-14ef89b2dd25",
+      "enrollment": "b41a55b6-db8d-4b1f-acc5-0e77a92a12d9",
+      "credential": "094615f8-10d9-495f-8233-dcacb0fb8c55"
+    },
+    "sourceProject": "fswppckzhvpcbybslnop",
+    "sourceInstitutionNit": "890980136-6",
+    "titleA": "Credencial sintetica revision A",
+    "titleB": "Credencial sintetica revision B"
+  },
+  "stages": [
+    {
+      "name": "ADMIN_AUTHENTICATED"
+    },
+    {
+      "name": "THREE_SOURCE_ROWS_CREATED"
+    },
+    {
+      "name": "NEW_GROUP_PENDING_CANONICAL_UNCHANGED",
+      "requestId": "19cccf59-e73e-45b2-ac3b-915fbf9bd8ed",
+      "detection": {
+        "operation": "DETECT_AND_SUBMIT",
+        "studentsObserved": 1,
+        "credentialsObserved": 1,
+        "proposalsCreated": 1,
+        "observationsUnchanged": 0,
+        "canonicalWrites": 0
+      }
+    },
+    {
+      "name": "NEW_GROUP_APPROVED",
+      "requestId": "19cccf59-e73e-45b2-ac3b-915fbf9bd8ed",
+      "personId": "77cf8d08-fd62-42ac-94bf-404a653b7fec"
+    },
+    {
+      "name": "TEMPORARY_ACCOUNT_AND_CITIZEN_ROWS_REMOVED"
+    }
+  ],
+  "academicWritesCredenly": 0,
+  "before": {
+    "personas_maestra": 30,
+    "persona_fuentes": 31,
+    "credenciales": 32,
+    "credencial_versiones": 39,
+    "credencial_eventos": 39,
+    "operaciones_api": 39
+  },
+  "temporaryId": "0d384284-c36a-4b42-8646-5cde347b218f",
+  "result": "FAIL",
+  "failedStage": "DOCUMENT_OCR",
+  "preexistingAcademicAndCitizenRowsUnchanged": true,
+  "cleanup": {
+    "authAbsent": true,
+    "citizenRows": {
+      "perfiles": 0,
+      "verificaciones_identidad": 0,
+      "vinculaciones_raes": 0,
+      "comparticiones": 0
+    },
+    "sessionsClosed": true
+  }
+}

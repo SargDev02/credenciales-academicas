@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import { Writable } from "node:stream";
 import { createInterface } from "node:readline/promises";
 import { config } from "dotenv";
@@ -8,7 +9,12 @@ import { createClient } from "@supabase/supabase-js";
 config({ path: ".env.local", quiet: true });
 const args = process.argv.slice(2);
 const checkOnly = args.includes("--check");
-const positional = args.filter((arg) => arg !== "--check");
+const verifyLocal = args.includes("--verify-local");
+const expectedUserArg = args.find(arg => arg.startsWith("--expected-user-id="));
+const expectedProjectArg = args.find(arg => arg.startsWith("--expected-project-ref="));
+const expectedUserId = expectedUserArg?.slice("--expected-user-id=".length);
+const expectedProjectRef = expectedProjectArg?.slice("--expected-project-ref=".length);
+const positional = args.filter((arg) => arg !== "--check" && arg !== "--verify-local" && arg !== expectedUserArg && arg !== expectedProjectArg);
 let password;
 let confirmation;
 let sessionClient;
@@ -17,7 +23,7 @@ class ResetError extends Error {}
 
 async function main() {
   if (positional.length !== 2 || positional[0] !== "--email" || !/^\S+@\S+\.\S+$/.test(positional[1])) {
-    throw new ResetError("Uso: pnpm --filter @raes/api admin:reset-password --email cuenta@dominio [--check]");
+    throw new ResetError("Uso: pnpm --filter @raes/api admin:reset-password --email cuenta@dominio [--check] [--verify-local]");
   }
   if (!checkOnly && (!process.stdin.isTTY || !process.stdout.isTTY)) {
     throw new ResetError("Ejecuta el comando en tu terminal interactiva. No se acepta contraseña mediante pipes o argumentos.");
@@ -26,6 +32,7 @@ async function main() {
   const url = process.env.RAES_SUPABASE_URL;
   const key = process.env.RAES_SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key || new URL(url).protocol !== "https:") throw new ResetError("Revisa la configuración local de RAES API.");
+  if (expectedProjectArg && (!/^[a-z]{20}$/.test(expectedProjectRef ?? "") || new URL(url).hostname !== `${expectedProjectRef}.supabase.co`)) throw new ResetError("El proyecto no corresponde al destino autorizado. No se realizó el cambio.");
   const options = {
     auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
     global: { fetch: (input, init = {}) => fetch(input, { ...init, signal: init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(15000)]) : AbortSignal.timeout(15000) }) },
@@ -42,6 +49,7 @@ async function main() {
   }
   if (matches.length !== 1) throw new ResetError("Se requiere una única cuenta existente con perfil administrativo ACTIVO para ese correo.");
   const profile = matches[0];
+  if (expectedUserArg && (!expectedUserId || profile.id !== expectedUserId)) throw new ResetError("El UUID no corresponde a la cuenta autorizada. No se realizó el cambio.");
   console.log(`Cuenta: ${email} · ${profile.rol} · ${new URL(url).hostname}`);
   if (checkOnly) {
     console.log("Comprobación correcta. No se cambió ninguna contraseña.");
@@ -72,12 +80,23 @@ async function main() {
   updated = true;
   sessionClient = createClient(url, key, options);
   const login = await sessionClient.auth.signInWithPassword({ email, password });
-  password = undefined; confirmation = undefined;
   if (login.error || login.data.user?.id !== profile.id || !login.data.session) {
     throw new ResetError("La contraseña se cambió, pero no fue posible verificar el inicio de sesión. No repitas el cambio automáticamente.");
   }
+  if (verifyLocal) {
+    try {
+      const { verifyLocalAdminLogin } = await import("./lib/verify-local-admin-login.mjs");
+      await verifyLocalAdminLogin({ email, password, accessToken: login.data.session.access_token, profile,
+        revokeSession: async (token) => { const result = await db.auth.admin.signOut(token, "local"); if (result.error) throw new ResetError("No se confirmó el cierre de la sesión web de comprobación."); },
+      });
+    } catch {
+      throw new ResetError("La contraseña cambió, pero la verificación API/web local no terminó. Revisa los servidores antes de volver a probar; no repitas el reset automáticamente.");
+    }
+  }
+  password = undefined; confirmation = undefined;
   const after = await db.from("perfiles_admin").select("id,nombres,apellidos,rol,estado").eq("id", profile.id).single();
   if (after.error || JSON.stringify(after.data) !== JSON.stringify(profile)) throw new ResetError("La contraseña se cambió; se requiere revisar el perfil administrativo.");
+  writeFileSync("/tmp/raes-admin-password-reset-result.json", JSON.stringify({ verifiedAt: new Date().toISOString(), projectRef: new URL(url).hostname.split(".")[0], userId: profile.id, role: profile.rol, state: profile.estado, passwordReset: true, loginVerified: true, profileUnchanged: true }, null, 2) + "\n", { mode: 0o600 });
   console.log("Contraseña restablecida e inicio de sesión verificado. Perfil y rol conservados.");
 }
 try { await main(); }

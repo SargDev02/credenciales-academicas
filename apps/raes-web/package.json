@@ -9,7 +9,10 @@
     "start": "next start -p 3000",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "predev": "pnpm --filter @raes/contracts build",
+    "prebuild": "pnpm --filter @raes/contracts build",
+    "pretypecheck": "pnpm --filter @raes/contracts build"
   },
   "dependencies": {
     "@raes/ui": "workspace:*",
@@ -19,7 +22,8 @@
     "next": "16.4.6",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "server-only": "0.0.1"
+    "server-only": "0.0.1",
+    "@raes/contracts": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

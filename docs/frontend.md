@@ -401,3 +401,16 @@ rechazado elimina sus cookies de sesión y muestra un mensaje de cuenta restring
 no lo confunde con una identidad administrativa. ACTIVO, perfil ausente y
 PENDIENTE_VERIFICACION conservan onboarding. La verificación pública mantiene el
 ciclo propio del enlace. [Decisión y alcance](proposals/citizen-profile-access.md).
+## Validaciones académicas RAES
+
+La bandeja `/validations` y `/validations/[id]` usa las nuevas APIs administrativas
+de revisión. Dashboard muestra el conteo real pendiente; ADMIN/SUPERADMIN deciden
+y AUDITOR consulta. Diálogos con confirmación/motivo, comparación por campo,
+paginación y estados terminales/supersedidos. Mantiene los tokens Figma y añade
+únicamente composición de pantalla; no modifica el archivo de diseño.
+Credenly sigue leyendo en vivo el estado aprobado, con headers privados/no-store.
+Contrato, pruebas y límites en [revisión académica](academic-review.md).
+
+Readiness Credenly ahora comprueba Auth mediante una llamada real: la API y el
+panel administrativo proyectan `up/down` y «Disponible»; no confunden configuración
+con disponibilidad ni esa consulta de salud con un login ciudadano.

@@ -1,3 +1,4 @@
+import { writeFileSync } from "node:fs";
 import { Writable } from "node:stream";
 import { createInterface } from "node:readline/promises";
 import { createClient } from "@supabase/supabase-js";
@@ -7,7 +8,9 @@ import { createClient } from "@supabase/supabase-js";
 class ResetError extends Error {}
 const args = process.argv.slice(2);
 const checkOnly = args.includes("--check");
-const positional = args.filter((arg) => arg !== "--check");
+const expectedArg = args.find(arg => arg.startsWith("--expected-user-id="));
+const expectedId = expectedArg?.slice("--expected-user-id=".length);
+const positional = args.filter((arg) => arg !== "--check" && arg !== expectedArg);
 let password;
 let confirmation;
 let sessionClient;
@@ -37,6 +40,7 @@ async function main() {
     if (account || result.data.users.length < 100) break;
   }
   if (!account) throw new ResetError("No se encontró esa cuenta existente en Credenly Auth. No se creará una nueva.");
+  if (expectedId && account.id !== expectedId) throw new ResetError("El UUID de la cuenta no corresponde al objetivo autorizado. No se realizó el cambio.");
   if (!account.email_confirmed_at) throw new ResetError("La cuenta aún no tiene correo confirmado. Este comando no omite esa confirmación.");
   async function citizenState() {
     const [profile, link] = await Promise.all([
@@ -44,7 +48,13 @@ async function main() {
       db.from("vinculaciones_raes").select("*").eq("usuario_id", account.id).maybeSingle(),
     ]);
     if (profile.error || link.error) throw new ResetError("No fue posible comprobar el perfil y la vinculación de la cuenta.");
-    return JSON.stringify({ profile: profile.data, link: link.data });
+    const verification = await db.from("verificaciones_identidad").select("*").eq("usuario_id",account.id).order("id");
+    const shares = await db.from("comparticiones").select("*").eq("usuario_id",account.id).order("id");
+    if(verification.error || shares.error)throw new ResetError("No fue posible comprobar las verificaciones y comparticiones.");
+    const shareIds=shares.data.map(s=>s.id);
+    const accesses=shareIds.length?await db.from("accesos_compartidos").select("*").in("comparticion_id",shareIds).order("id"):{data:[],error:null};
+    if(accesses.error)throw new ResetError("No fue posible comprobar los accesos compartidos.");
+    return JSON.stringify({ profile:profile.data,link:link.data,verifications:verification.data,shares:shares.data,accesses:accesses.data });
   }
   const before = await citizenState();
   console.log(`Cuenta: ${email} · Credenly · ${new URL(url).hostname}`);
@@ -79,7 +89,8 @@ async function main() {
     throw new ResetError("La contraseña se cambió, pero no fue posible verificar el inicio de sesión. No repitas el cambio automáticamente.");
   }
   if (await citizenState() !== before) throw new ResetError("La contraseña se cambió; se requiere revisar el perfil y la vinculación.");
-  console.log("Contraseña restablecida e inicio de sesión verificado. Perfil y vinculación RAES conservados.");
+  writeFileSync("/tmp/valentina-password-reset-result.json",JSON.stringify({verifiedAt:new Date().toISOString(),userId:account.id,passwordReset:true,loginVerified:true,citizenRelationsUnchanged:true,academicWrites:0},null,2)+"\n",{mode:0o600});
+  console.log("Contraseña restablecida e inicio de sesión verificado. Perfil, verificación, vinculación, comparticiones y accesos conservados.");
 }
 try { await main(); }
 catch (error) {

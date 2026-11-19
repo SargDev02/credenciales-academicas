@@ -1,0 +1,41 @@
+[
+  {
+    "client": "Credenly",
+    "httpStatus": 200,
+    "scopes": [
+      "credentials:read",
+      "persons:resolve"
+    ],
+    "canonicalId": "ff026215-16a5-43ff-a338-f8da4ebcb733"
+  },
+  {
+    "client": "Poli",
+    "httpStatus": 200,
+    "scopes": [
+      "persons:sync",
+      "institution:sync",
+      "credentials:revoke",
+      "credentials:read",
+      "credentials:create",
+      "credentials:correct",
+      "credentials:annul"
+    ],
+    "canonicalId": "90cf33b3-232c-4f85-932d-bf1d94390bad",
+    "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a"
+  },
+  {
+    "client": "UdeA",
+    "httpStatus": 200,
+    "scopes": [
+      "persons:sync",
+      "institution:sync",
+      "credentials:revoke",
+      "credentials:read",
+      "credentials:create",
+      "credentials:correct",
+      "credentials:annul"
+    ],
+    "canonicalId": "d07c9d21-a08c-4fad-a398-9d7959cda860",
+    "institutionId": "6d6a4b44-db0b-40a3-9863-0fc12f9f0d8b"
+  }
+]

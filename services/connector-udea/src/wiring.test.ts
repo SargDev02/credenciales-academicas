@@ -7,7 +7,7 @@ import {
   createInstitutionSourceClient,
   type InstitutionalSnapshot,
 } from "./source";
-import { synchronize } from "./sync";
+import { detect } from "./sync";
 
 const config = {
   UDEA_SUPABASE_URL: "https://udea.fixture.invalid",
@@ -34,19 +34,10 @@ test("UdeA configuration errors identify fields without reflecting credential va
     (error) => error instanceof Error && !error.message.includes(marker),
   );
 });
-test("CLI preserves sync modes and credential selection; unknown options fail closed", () => {
-  assert.deepEqual(parseArgs([]), { mode: "all", credentialCode: null });
-  assert.deepEqual(
-    parseArgs([
-      "--",
-      "--only=credentials",
-      "--credential-code= SYNTH-UDEA-QA ",
-    ]),
-    { mode: "credentials", credentialCode: "SYNTH-UDEA-QA" },
-  );
-  assert.equal(parseArgs(["--only=base"]).mode, "base");
-  assert.throws(() => parseArgs(["--only=unexpected"]));
-  assert.throws(() => parseArgs(["--unknown"]));
+test("CLI detects proposals and rejects retired sync modes", () => {
+  assert.deepEqual(parseArgs([]), { credentialCode: null });
+  assert.deepEqual(parseArgs(["--", "--credential-code= SYNTH-UDEA-QA "]), { credentialCode: "SYNTH-UDEA-QA" });
+  for (const flag of ["--only=base", "--only=credentials", "--unknown"]) assert.throws(() => parseArgs([flag]));
 });
 test("source client sends only the UdeA server credential to the UdeA project", async () => {
   const original = globalThis.fetch;
@@ -75,7 +66,7 @@ test("source client sends only the UdeA server credential to the UdeA project", 
     globalThis.fetch = original;
   }
 });
-test("UdeA client uses its namespace and integration when calling the shared synchronization core", async () => {
+test("UdeA submits observations with its own integration and zero canonical writes", async () => {
   const original = globalThis.fetch;
   const seen: { url: string; authorization: string | null; body: unknown }[] =
     [];
@@ -85,7 +76,7 @@ test("UdeA client uses its namespace and integration when calling the shared syn
       authorization: new Headers(init?.headers).get("authorization"),
       body: JSON.parse(String(init?.body)) as unknown,
     });
-    return Response.json({ data: { id: "local-fixture" } });
+    return Response.json({ data: { observaciones: [{ id: "00000000-0000-4000-8000-000000000501", estado: "PENDIENTE", nueva: true }] } });
   };
   try {
     const raes = new RaesClient(config);
@@ -101,28 +92,25 @@ test("UdeA client uses its namespace and integration when calling the shared syn
       campuses: [],
       programs: [],
       programCampuses: [],
-      students: [],
+      students: [{ id: "SYNTH-STUDENT", tipo_documento: "CC", numero_documento: "SYNTH-UDEA-QA", primer_nombre: "Persona", segundo_nombre: null, primer_apellido: "Sintética", segundo_apellido: null }],
       enrollments: [],
       credentials: [],
     };
-    const result = await synchronize(snapshot, raes, {
-      mode: "base",
-      credentialCode: null,
-    });
-    assert.equal(result.institution, 1);
-    assert.equal(result.credentialsCreatedOrReplayed, 0);
+    const result = await detect(snapshot, raes, "00000000-0000-4000-8000-000000000601");
+    assert.equal(result.proposalsCreated, 1);
+    assert.equal(result.canonicalWrites, 0);
     assert.equal(seen.length, 1);
     assert.equal(
       seen[0]?.url,
-      `${config.RAES_API_BASE_URL}/api/v1/sync/institution`,
+      `${config.RAES_API_BASE_URL}/api/v1/academic-review/proposals`,
     );
     assert.equal(
       seen[0]?.authorization,
       `Bearer ${config.RAES_UDEA_CLIENT_ID}.${config.RAES_UDEA_CLIENT_SECRET}`,
     );
     assert.equal(
-      (seen[0]?.body as { nombre: string }).nombre,
-      snapshot.institution.nombre,
+      (seen[0]?.body as { observacion: { persona: { identificadorOrigen: string } } }).observacion.persona.identificadorOrigen,
+      "SYNTH-STUDENT",
     );
   } finally {
     globalThis.fetch = original;

@@ -66,3 +66,21 @@ mínimo de auth.users/auth.uid/roles. No incluye GoTrue, PostgREST, Storage, cor
 concurrencia entre conexiones ni un restore de datos/backups. El ensayo integral
 de Supabase y la recuperación de datos siguen pendientes; no se presenta como
 una recuperación certificada ni se borró/recreó ninguna base remota.
+
+
+## Composición actual con revisión académica
+
+El manifest conserva sin cambios las 22 entradas históricas y las cinco
+correcciones de permisos. `academicReviewMigrations` añade, en orden,
+20261109161812 y 20261109162351 con SHA-256. Existe una sola ruta local:
+`scripts/lib/schema-fixture.mjs`: archivo histórico → hardening → revisión.
+La copia inicial duplicada bajo supabase/raes/bootstrap se retiró; sus bytes
+históricos se conservan aquí. No ejecutar ambas cadenas.
+
+`reconstructSchema(project)` reconstruye la etapa actual en PostgreSQL/WASM.
+La opción `stage: "hardening"` conserva la comparación con el catálogo histórico
+de PR #16 sin reescribir esa evidencia. Las pruebas académicas y el fixture
+browser usan el mismo constructor con un hook local de siembra previo a review.
+La prueba schema-academic-composition comprueba RLS, grants/RPC y guard canónico
+en una instalación vacía. Esto no aplica migraciones a Supabase ni constituye
+un restore de datos o una prueba de concurrencia de la plataforma completa.

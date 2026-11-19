@@ -1,0 +1,10 @@
+{
+  "mode": "resume-check",
+  "result": "FAIL",
+  "diagnostic": {
+    "stage": "PRECHECK",
+    "code": "RESUME_EXPECTS_VERSION_A_USE_VERIFY_COMPLETED"
+  },
+  "fixtureAlreadyVersion": 2,
+  "writes": 0
+}

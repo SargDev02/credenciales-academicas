@@ -1,0 +1,75 @@
+{
+  "expectedId": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+  "accountMutations": 0,
+  "passwordAuthentication": "SUPABASE_REAL_LOGIN_OK",
+  "login": "REAL_WEB_PASSWORD_LOGIN_OK",
+  "id": "0b0c1230-994a-4940-9c89-f330975ac9d6",
+  "authConfirmedAt": "2026-10-17T16:10:33.921256Z",
+  "routes": {
+    "auth/me": {
+      "httpStatus": 200
+    },
+    "profile": {
+      "httpStatus": 200
+    },
+    "identity-verifications": {
+      "httpStatus": 200
+    },
+    "raes/link": {
+      "httpStatus": 200
+    },
+    "credentials": {
+      "httpStatus": 200
+    },
+    "shares": {
+      "httpStatus": 200
+    }
+  },
+  "credentials": [
+    {
+      "id": "307a43bd-f9f3-4e1f-9b69-88ae75eb62ad",
+      "code": "RAES-CRD-00000002",
+      "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a",
+      "state": "ANULADA",
+      "version": 2
+    },
+    {
+      "id": "2921c117-d4ac-4132-9e4d-2c4d87f8c5fc",
+      "code": "RAES-CRD-00000001",
+      "institutionId": "63829b97-c4d7-4467-a56a-f98c0c1f2c3a",
+      "state": "REVOCADA",
+      "version": 3
+    }
+  ],
+  "source": "RAES",
+  "persistedByCredenly": false,
+  "shares": {
+    "count": 5,
+    "ids": [
+      "78a1f3f7-8054-40cd-a8ec-74335b7e5679",
+      "f7eaf485-0da9-41ef-9c60-3355c363c11a",
+      "11268939-d23e-416e-b6d0-f5ad72e43bc5",
+      "336602a8-ba92-4634-9356-d3a1716a4ffa",
+      "73714b1b-bf5c-433e-952a-84a48420c398"
+    ]
+  },
+  "webRoutes": [
+    "/onboarding",
+    "/credentials",
+    "/shares",
+    "/credentials/[id]"
+  ],
+  "hydrationErrors": 0,
+  "adminLogin": {
+    "id": "bf79e684-6004-49f2-9ad3-b0ab6105b76f",
+    "role": "ADMIN_CREDENLY",
+    "httpStatus": 200,
+    "browserLogin": "PASS",
+    "citizenIsolationHttp": 403,
+    "adminIsolationHttp": 403
+  },
+  "separateSessionCookies": true,
+  "adminTestSessionClosed": true,
+  "testSessionClosed": true,
+  "passwordCheckSessionClosed": true
+}
