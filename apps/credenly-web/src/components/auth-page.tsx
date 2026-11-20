@@ -1,3 +1,4 @@
+import { selfRegistrationAllowed } from "@raes/web-core/pilot";
 import Link from "next/link";
 import { Alert, Card } from "@raes/ui";
 import { getWebConfig } from "../lib/env";
@@ -11,6 +12,7 @@ export function AuthPage({
   next?: string;
   failed?: boolean;
 }) {
+  const closedPilot = !selfRegistrationAllowed();
   let configured = true;
   try {
     getWebConfig();
@@ -44,19 +46,20 @@ export function AuthPage({
             registro si aún no confirmaste la cuenta.
           </Alert>
         )}
-        {configured ? (
+        {closedPilot && mode === "register" ? (<Alert title="Piloto cerrado" tone="warning">El acceso funciona por invitación. Solicita una cuenta sintética autorizada al administrador.</Alert>) : configured ? (
           <AuthForm mode={mode} next={next} />
         ) : (
           <Alert title="Acceso pendiente de configuración" tone="warning">
             Configura la conexión con Auth y Credenly API.
           </Alert>
         )}
-        <p>
+        {mode === "login" && <p><Link href="/forgot-password">¿Olvidaste tu contraseña?</Link></p>}
+        {closedPilot ? <p>Acceso por invitación al piloto.</p> : <p>
           {mode === "login" ? "¿Es tu primera visita? " : "¿Ya tienes cuenta? "}
           <Link href={mode === "login" ? "/register" : "/login"}>
             {mode === "login" ? "Crear cuenta" : "Iniciar sesión"}
           </Link>
-        </p>
+        </p>}
       </Card>
       <p className="ui-hint">
         Prototipo · Tus datos académicos permanecen en RAES.

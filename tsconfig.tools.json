@@ -2,7 +2,9 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "types": ["node"],
+    "types": [
+      "node"
+    ],
     "jsx": "react-jsx",
     "allowJs": true
   },
@@ -12,7 +14,12 @@
     "apps/*/next.config.ts",
     "services/*/next.config.ts",
     "apps/*/scripts/**/*.ts",
-    "services/*/scripts/**/*.ts"
+    "services/*/scripts/**/*.ts",
+    "scripts/**/*.ts"
   ],
-  "exclude": ["node_modules", "**/.next", "**/dist"]
+  "exclude": [
+    "node_modules",
+    "**/.next",
+    "**/dist"
+  ]
 }

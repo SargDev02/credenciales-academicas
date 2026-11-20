@@ -1,21 +1,26 @@
+import { requestId } from "@raes/web-core/observability";
 import { webContentSecurityPolicy } from "@raes/web-core/security";
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { adminCookieName } from "./lib/admin-model";
 import { getWebConfig } from "./lib/env";
 export async function proxy(request: NextRequest) {
+  const id=requestId(request.headers.get("x-request-id"));
+  request.headers.set("x-request-id",id);
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
   const csp = webContentSecurityPolicy(nonce, process.env.NODE_ENV === "development");
   // Overwrite client-supplied values before Next derives script nonces.
   request.headers.set("x-nonce", nonce);
   request.headers.set("Content-Security-Policy", csp);
   let response = NextResponse.next({ request });
+  response.headers.set("X-Request-Id",id);
   response.headers.set("Cache-Control", "private, no-store");
   response.headers.set("Content-Security-Policy", csp);
   let config;
   try {
     config = getWebConfig();
   } catch {
+    if(process.env.NODE_ENV === "production" && !["test","local"].includes(process.env.APP_ENV ?? "")) return NextResponse.json({error:"CONFIGURATION_UNAVAILABLE"},{status:503,headers:{"Cache-Control":"private, no-store","X-Request-Id":id,"Content-Security-Policy":csp}});
     return response;
   }
   const administrative =
@@ -40,7 +45,8 @@ export async function proxy(request: NextRequest) {
           response.cookies.set(value.name, value.value, value.options);
         for (const [key, value] of Object.entries(headers))
           response.headers.set(key, value);
-        response.headers.set("Cache-Control", "private, no-store");
+        response.headers.set("X-Request-Id",id);
+  response.headers.set("Cache-Control", "private, no-store");
   response.headers.set("Content-Security-Policy", csp);
       },
     },

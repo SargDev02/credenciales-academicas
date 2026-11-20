@@ -1,4 +1,6 @@
 "use server";
+import { headers } from "next/headers";
+import { enforceWebAdmission } from "@raes/web-core/admission";
 import { redirect } from "next/navigation";
 import { apiRequest } from "@raes/web-core";
 import { createScopedWebAuth, clearScopedWebSessionCookies } from "./auth";
@@ -24,6 +26,7 @@ export async function adminLogin(
     password.length > 256
   )
     return { error: "Revisa el correo y la contraseña." };
+  try { await enforceWebAdmission("CREDENLY","login",email,await headers()); } catch { return {error:"No fue posible admitir la solicitud. Intenta más tarde."}; }
   const auth = await createScopedWebAuth(adminCookieName, true);
   const { data, error } = await auth.auth.signInWithPassword({
     email: email.trim(),
