@@ -1,3 +1,4 @@
+import { validateProductionConfig } from "@raes/connector-core";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -12,7 +13,7 @@ const envPath = process.env.CONNECTOR_ENV_FILE
   ? resolve(process.cwd(), process.env.CONNECTOR_ENV_FILE)
   : defaultEnvPath;
 
-config({ path: envPath });
+config({ path: envPath, quiet: true });
 
 const envSchema = z.object({
   POLI_SUPABASE_URL: z.string().url(),
@@ -25,6 +26,7 @@ const envSchema = z.object({
 export type ConnectorEnv = z.infer<typeof envSchema>;
 
 export function getConnectorEnv(): ConnectorEnv {
+  validateProductionConfig(process.env, "poli");
   const parsed = envSchema.safeParse(process.env);
 
   if (!parsed.success) {

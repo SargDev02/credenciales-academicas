@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { getRaesSupabaseAdmin } from "@/lib/supabase-admin";
 
 export const runtime = "nodejs";
@@ -7,22 +8,23 @@ export async function GET() {
   try {
     const supabase = getRaesSupabaseAdmin();
 
+    const authResult=await supabase.auth.admin.listUsers({page:1,perPage:1});
     const { error } = await supabase
       .from("instituciones")
       .select("id", { head: true, count: "exact" })
       .limit(1);
 
-    if (error) {
-      console.error("RAES database readiness check failed", {
-        code: error.code,
-      });
+    const authUp=!authResult.error && Array.isArray(authResult.data.users);
+    if (error || !authUp) {
+      operationalLog("raes-api","DEPENDENCY_DOWN");
 
       return Response.json(
         {
           status: "not_ready",
           service: "raes-api",
           components: {
-            database: "down",
+            database: error ? "down" : "up",
+            auth: authUp ? "up" : "down",
           },
         },
         { status: 503 },
@@ -34,11 +36,12 @@ export async function GET() {
       service: "raes-api",
       components: {
         database: "up",
+        auth: "up",
       },
       timestamp: new Date().toISOString(),
     });
   } catch {
-    console.error("RAES readiness configuration failed");
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     return Response.json(
       {

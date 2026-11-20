@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import type { ScopeCode } from "./scopes";
 import {
   getSecretLookupPrefix,
@@ -50,9 +51,7 @@ export async function authenticateApiClient(
     .maybeSingle();
 
   if (clientError) {
-    console.error("API client authentication lookup failed", {
-      code: clientError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new ApiClientAuthError(
       500,
@@ -82,9 +81,7 @@ export async function authenticateApiClient(
     .maybeSingle();
 
   if (secretError) {
-    console.error("API client secret lookup failed", {
-      code: secretError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new ApiClientAuthError(
       500,
@@ -119,9 +116,7 @@ export async function authenticateApiClient(
     .eq("cliente_api_id", client.id);
 
   if (scopesError) {
-    console.error("API client scope lookup failed", {
-      code: scopesError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new ApiClientAuthError(
       500,
@@ -195,7 +190,7 @@ export function apiClientAuthErrorResponse(
     );
   }
 
-  console.error("Unexpected API client authentication error");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

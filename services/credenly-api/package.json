@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "next dev -p 3002",
     "build": "next build",
-    "start": "next start -p 3002",
+    "start": "APP_ENV=production next start -p ${PORT:-3002}",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts scripts/lib/*.test.mjs",
     "admin:provision": "node --env-file=.env.local --env-file=../../apps/credenly-web/.env.local scripts/provision-credenly-admin.mjs",
     "citizen:reset-password": "node --env-file=.env.local scripts/reset-citizen-password.mjs",
     "lint": "eslint . --max-warnings 0",
-    "admin:reset-password": "node --env-file=.env.local scripts/reset-admin-password.mjs"
+    "admin:reset-password": "node --env-file=.env.local scripts/reset-admin-password.mjs",
+    "prestart": "APP_ENV=production tsx ../../scripts/check-runtime.ts credenly-api"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

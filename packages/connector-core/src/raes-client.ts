@@ -1,3 +1,4 @@
+import { requestId } from "@raes/web-core/observability";
 import { detectionLeaseSchema, proposalReceiptSchema, type AcademicObservation } from "@raes/contracts";
 import { credencialNuevaSchema } from "@raes/contracts";
 import type {
@@ -44,6 +45,7 @@ type MutationHeaders = {
 };
 
 export class RaesClient {
+  readonly correlationId = requestId();
   private readonly authorization: string;
   private readonly baseUrl: string;
 
@@ -164,10 +166,12 @@ export class RaesClient {
     path: string,
     body?: unknown,
     mutationHeaders?: MutationHeaders,
+    attempt = 0,
   ): Promise<unknown> {
     const headers: Record<string, string> = {
       Authorization: this.authorization,
       Accept: "application/json",
+          "X-Request-Id": this.correlationId,
     };
 
     if (body !== undefined) {
@@ -196,6 +200,14 @@ export class RaesClient {
       throw new RaesApiError(502, "RAES_UNAVAILABLE", "No fue posible conectar con RAES API");
     }
 
+    if (response.status === 429 && attempt === 0 && method === "POST" && path === "/api/v1/academic-review/proposals") {
+      const delay=Number(response.headers.get("Retry-After"));
+      if(Number.isInteger(delay)&&delay>=1&&delay<=60){
+        await response.body?.cancel();
+        await new Promise(resolve=>setTimeout(resolve,delay*1000));
+        return this.request(method,path,body,mutationHeaders,1);
+      }
+    }
     const payload = await parseResponse(response);
 
     if (!response.ok) {

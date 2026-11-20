@@ -1,3 +1,5 @@
+import { pilotUserAllowed } from "@raes/web-core/pilot";
+import { operationalLog } from "@raes/web-core/observability";
 import { extractBearerToken, CitizenAuthError } from "./auth";
 import { getCredenlySupabaseAdmin } from "./supabase-admin";
 
@@ -30,6 +32,7 @@ export async function authenticateCredenlyAdmin(
       "SESSION_INVALID",
       "La sesión administrativa no es válida o expiró",
     );
+  if(!pilotUserAllowed(data.user.id)) throw new CredenlyAdminError(403,"PILOT_ACCESS_DENIED","El acceso está limitado al piloto autorizado");
   const result = await db
     .from("perfiles_admin")
     .select("id,nombres,apellidos,rol,estado")
@@ -71,7 +74,7 @@ export function adminErrorResponse(error: unknown) {
         headers: { "Cache-Control": "private, no-store" },
       },
     );
-  console.error("Credenly administrative request failed");
+  operationalLog("credenly-api","DEPENDENCY_DOWN");
   return Response.json(
     {
       error: "ADMIN_UNAVAILABLE",

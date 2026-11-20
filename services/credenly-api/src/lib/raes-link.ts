@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { getCredenlySupabaseAdmin } from "./supabase-admin";
 import {
   RaesClientError,
@@ -215,7 +216,7 @@ export function raesIntegrationErrorResponse(
     );
   }
 
-  console.error("Unexpected Credenly RAES integration error");
+  operationalLog("credenly-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

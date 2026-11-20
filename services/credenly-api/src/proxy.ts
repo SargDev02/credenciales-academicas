@@ -1,12 +1,13 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { apiRequestLimit, LocalRequestLimiter } from "@raes/web-core/security";
-const limiter = new LocalRequestLimiter();
-export function proxy(request: NextRequest) {
-  const admission = limiter.consume(apiRequestLimit(request.nextUrl.pathname, request.method));
-  if (!admission.allowed) return NextResponse.json(
-    { error: "RATE_LIMITED", message: "Demasiadas solicitudes. Intenta más tarde" },
-    { status: 429, headers: { "Retry-After": String(admission.retryAfter), "Cache-Control": "private, no-store" } },
-  );
-  return NextResponse.next();
+import { enforceApiAdmission, admissionResponse } from "@raes/web-core/admission";
+import { requestId } from "@raes/web-core/observability";
+export async function proxy(request: NextRequest) {
+  const id = requestId(request.headers.get("x-request-id"));
+  request.headers.set("x-request-id",id);
+  try { await enforceApiAdmission(request,"CREDENLY"); }
+  catch(error) { return admissionResponse(error,"credenly-api",id); }
+  const response=NextResponse.next({request});
+  response.headers.set("X-Request-Id",id);
+  return response;
 }
 export const config = { matcher: "/api/:path*" };

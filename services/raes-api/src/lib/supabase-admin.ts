@@ -21,6 +21,7 @@ export function getRaesSupabaseAdmin(): SupabaseClient {
         detectSessionInUrl: false,
       },
       global: {
+        fetch: (input,init) => fetch(input,{...init,signal:init?.signal?AbortSignal.any([init.signal,AbortSignal.timeout(10000)]):AbortSignal.timeout(10000)}),
         headers: {
           "X-Client-Info": "raes-api",
         },

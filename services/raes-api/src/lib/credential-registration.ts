@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import type { CredencialNueva } from "@raes/contracts";
 
 import { ApiError } from "./api-error";
@@ -148,7 +149,7 @@ function mapCredentialRegistrationError(message: string): ApiError {
     );
   }
 
-  console.error("Credential registration RPC failed");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return new ApiError(
     500,

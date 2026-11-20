@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { z } from "zod";
 import { ApiError, apiErrorResponse } from "./api-error";
 
@@ -53,7 +54,7 @@ export async function auditedClientOperation(
         ...(resourceId ? { resourceId } : {}),
       });
     } catch {
-      console.error("RAES API client audit unavailable", { operation });
+      operationalLog("raes-api","DEPENDENCY_DOWN");
       return Response.json({
         error: "AUDIT_UNAVAILABLE",
         message: "No fue posible registrar la operación; intenta nuevamente",

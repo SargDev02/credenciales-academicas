@@ -26,3 +26,11 @@ test("connector rejects malformed state before it can drive any academic mutatio
     assert.equal(await client.getCredentialState("missing"), null);
   } finally { globalThis.fetch = original; }
 });
+
+test('proposal admission retry honors a short Retry-After once, preserving payload and correlation',async()=>{
+ const {academicObservationSchema}=await import('@raes/contracts');
+ const observation=academicObservationSchema.parse({persona:{identificadorOrigen:'synthetic',tipoDocumento:'CC',numeroDocumento:'SYNTHETIC',primerNombre:'Synthetic',segundoNombre:null,primerApellido:'Test',segundoApellido:null},sourceUpdatedAt:null,credenciales:[]});
+ const original=globalThis.fetch;let count=0;const bodies:string[]=[];
+ globalThis.fetch=async(_input,init)=>{bodies.push(String(init?.body));assert.ok(new Headers(init?.headers).get('X-Request-Id'));return ++count===1?Response.json({error:'RATE_LIMITED'},{status:429,headers:{'Retry-After':'1'}}):Response.json({data:{observaciones:[]}});};
+ try{assert.deepEqual(await client.submitReview('00000000-0000-4000-8000-000000000001',observation),{observaciones:[]});assert.equal(count,2);assert.equal(bodies[0],bodies[1]);}finally{globalThis.fetch=original;}
+});

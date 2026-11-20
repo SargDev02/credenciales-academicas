@@ -1,3 +1,5 @@
+import { pilotUserAllowed } from "@raes/web-core/pilot";
+import { operationalLog } from "@raes/web-core/observability";
 import type { User } from "@supabase/supabase-js";
 
 import { getCredenlySupabaseAdmin } from "./supabase-admin";
@@ -50,6 +52,7 @@ export async function authenticateCitizen(request: Request): Promise<User> {
     );
   }
 
+  if(!pilotUserAllowed(data.user.id)) throw new CitizenAuthError(403,"PILOT_ACCESS_DENIED","El acceso está limitado al piloto autorizado");
   // Administrative identity never automatically inherits citizen access, even
   // when the admin profile is inactive. No email or editable metadata decisions.
   const admin = await supabase
@@ -115,7 +118,7 @@ export function citizenAuthErrorResponse(error: unknown): Response {
     );
   }
 
-  console.error("Credenly authentication failed");
+  operationalLog("credenly-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {
