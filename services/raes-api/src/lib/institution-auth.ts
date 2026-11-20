@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import type { ScopeCode } from "./scopes";
 import {
   getSecretLookupPrefix,
@@ -50,9 +51,7 @@ export async function authenticateInstitution(
     .maybeSingle();
 
   if (integrationError) {
-    console.error("Institutional authentication lookup failed", {
-      code: integrationError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new InstitutionalAuthError(
       500,
@@ -88,9 +87,7 @@ export async function authenticateInstitution(
     .maybeSingle();
 
   if (secretError) {
-    console.error("Institutional secret lookup failed", {
-      code: secretError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new InstitutionalAuthError(
       500,
@@ -125,9 +122,7 @@ export async function authenticateInstitution(
     .eq("integracion_id", integration.id);
 
   if (scopesError) {
-    console.error("Institutional scope lookup failed", {
-      code: scopesError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new InstitutionalAuthError(
       500,
@@ -202,7 +197,7 @@ export function institutionalAuthErrorResponse(
     );
   }
 
-  console.error("Unexpected institutional authentication error");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

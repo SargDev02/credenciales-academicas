@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { inspectImageBounds, ImageBoundsError } from "./image-bounds";
 import { getCredenlySupabaseAdmin } from "./supabase-admin";
 import {
@@ -178,7 +179,7 @@ export async function processIdentityDocument(
       throw error;
     }
 
-    console.error("Local OCR processing failed");
+    operationalLog("credenly-api","DEPENDENCY_DOWN");
 
     throw new IdentityVerificationError(
       500,
@@ -230,7 +231,7 @@ export function identityVerificationErrorResponse(
     );
   }
 
-  console.error("Unexpected identity verification error");
+  operationalLog("credenly-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

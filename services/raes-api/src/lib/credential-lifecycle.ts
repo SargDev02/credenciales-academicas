@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import type {
   AnulacionCredencial,
   CorreccionCredencial,
@@ -238,7 +239,7 @@ function mapCredentialLifecycleError(message: string): ApiError {
     );
   }
 
-  console.error("Credential lifecycle RPC failed");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return new ApiError(
     500,

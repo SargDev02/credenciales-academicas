@@ -1,3 +1,4 @@
+import { validateProductionConfig } from "@raes/web-core/deployment";
 import { z } from "zod";
 
 const serverEnvSchema = z.object({
@@ -10,6 +11,7 @@ export type ServerEnv = z.infer<typeof serverEnvSchema>;
 let cachedEnv: ServerEnv | undefined;
 
 export function getServerEnv(): ServerEnv {
+  validateProductionConfig(process.env, "raes-api");
   if (cachedEnv) {
     return cachedEnv;
   }

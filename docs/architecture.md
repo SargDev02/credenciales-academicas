@@ -66,3 +66,18 @@ perfiles Credenly también se verifica por triggers PostgreSQL aprobados, sin em
 como autoridad. Los límites locales de solicitudes/OCR no son un rate limiter
 distribuido. PGlite solo existe como herramienta de desarrollo para reconstrucción
 DDL; nunca sustituye Supabase ni participa en el runtime del producto.
+
+## Preparación de producción para un piloto cerrado
+
+El alcance decidido es sintético y cerrado. El guard de cohorte es adicional a la
+autorización por perfil/rol: no otorga permisos ni crea usuarios. Las webs envían
+admisión de Auth a su propia API con un secreto de servidor; la API consume una
+RPC atómica privada en su propia DB. Se mantiene el freno local como protección
+adicional, y falla cerrado si el almacén compartido no está disponible.
+
+La recuperación tiene cookies/pruebas separadas, sin convertir un enlace de
+recuperación en una sesión ciudadana/administrativa normal. El navegador no llama
+a tablas privadas ni recibe claves privilegiadas. Credenly sigue leyendo RAES por
+HTTP y nunca persiste académicos. Nuevas tablas/funciones operativas y su cadena
+DDL están versionadas, no aplicadas remotamente. Detalle y decisiones externas:
+[preparación del piloto](production/README.md).

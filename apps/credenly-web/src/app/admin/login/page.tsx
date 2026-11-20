@@ -51,6 +51,6 @@ export default function AdminLogin() {
           Ir al acceso ciudadano<span aria-hidden="true"> →</span>
         </Link>
       </Card>
-    </main>
+    <p><Link href="/admin/forgot-password">Recuperar contraseña administrativa</Link></p></main>
   );
 }

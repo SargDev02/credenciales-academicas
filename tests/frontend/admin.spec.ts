@@ -61,7 +61,7 @@ async function api(path: string, id?: string) {
   });
 }
 
-test("admin login has distinct identity, labels, errors and no registration/recovery controls", async ({
+test("admin login has distinct identity, labels, errors and no registration and separate recovery", async ({
   page,
 }) => {
   await page.goto(`${qa.base}/admin`);
@@ -86,8 +86,9 @@ test("admin login has distinct identity, labels, errors and no registration/reco
     "password",
   );
   await expect(
-    page.getByRole("link", { name: /registr|recuper/i }),
+    page.getByRole("link", { name: /registr/i }),
   ).toHaveCount(0);
+  await expect(page.getByRole("link", {name:"Recuperar contraseña administrativa"})).toHaveAttribute("href","/admin/forgot-password");
   for (const width of [360, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 1000 });
     expect(

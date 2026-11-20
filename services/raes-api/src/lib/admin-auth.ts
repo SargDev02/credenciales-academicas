@@ -1,3 +1,5 @@
+import { pilotUserAllowed } from "@raes/web-core/pilot";
+import { operationalLog } from "@raes/web-core/observability";
 import type { User } from "@supabase/supabase-js";
 
 import { getRaesSupabaseAdmin } from "./supabase-admin";
@@ -71,6 +73,7 @@ export async function authenticateAdmin(
     );
   }
 
+  if(!pilotUserAllowed(userData.user.id)) throw new AdminAuthError(403,"PILOT_ACCESS_DENIED","El acceso está limitado al piloto autorizado");
   const { data: profileData, error: profileError } = await supabase
     .from("perfiles_admin")
     .select("id,nombres,apellidos,rol,estado")
@@ -78,9 +81,7 @@ export async function authenticateAdmin(
     .maybeSingle();
 
   if (profileError) {
-    console.error("RAES admin profile lookup failed", {
-      code: profileError.code,
-    });
+    operationalLog("raes-api","DEPENDENCY_DOWN");
 
     throw new AdminAuthError(
       500,
@@ -126,7 +127,7 @@ export function adminAuthErrorResponse(
     );
   }
 
-  console.error("Unexpected RAES admin authentication error");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

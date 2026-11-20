@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { getRaesSupabaseAdmin } from "./supabase-admin";
 
 type CredentialRow = {
@@ -216,7 +217,7 @@ export function consumerReadErrorResponse(
     );
   }
 
-  console.error("Unexpected RAES consumer read error");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

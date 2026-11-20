@@ -291,6 +291,9 @@ importers:
       '@raes/contracts':
         specifier: workspace:*
         version: link:../contracts
+      '@raes/web-core':
+        specifier: workspace:*
+        version: link:../web-core
       '@supabase/supabase-js':
         specifier: 2.117.2
         version: 2.117.2
@@ -344,6 +347,10 @@ importers:
         version: 5.9.3
 
   packages/web-core:
+    dependencies:
+      '@supabase/supabase-js':
+        specifier: 2.117.2
+        version: 2.117.2
     devDependencies:
       '@types/node':
         specifier: ^20

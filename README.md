@@ -2,6 +2,11 @@
 
 Proyecto de integración y verificación de credenciales académicas.
 
+PR #16 y #17 integrados. Se prepara un **piloto cerrado con datos sintéticos** en
+`chore/production-readiness`, sin despliegue ni cambios remotos.
+[Preparación y acciones externas](docs/production/README.md) ·
+[Operación y despliegues separados](docs/production/operations.md).
+
 ## Arquitectura
 
 ```text

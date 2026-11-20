@@ -6,7 +6,13 @@
   "exports": {
     ".": "./src/http.ts",
     "./config": "./src/config.ts",
-    "./security": "./src/security.ts"
+    "./security": "./src/security.ts",
+    "./deployment": "./src/deployment.ts",
+    "./admission": "./src/admission.ts",
+    "./observability": "./src/observability.ts",
+    "./recovery": "./src/recovery.ts",
+    "./recovery-server": "./src/recovery-server.ts",
+    "./pilot": "./src/pilot.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -17,5 +23,8 @@
     "@types/node": "^20",
     "tsx": "^4.20.0",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "2.117.2"
   }
 }

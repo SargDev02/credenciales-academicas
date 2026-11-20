@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import type {
   Institucion,
   Persona,
@@ -427,11 +428,8 @@ export async function syncPerson(
   };
 }
 
-function throwDatabaseError(action: string, databaseCode?: string): never {
-  console.error("RAES academic synchronization failed", {
-    action,
-    databaseCode,
-  });
+function throwDatabaseError(_action: string, _databaseCode?: string): never {
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   throw new ApiError(
     500,

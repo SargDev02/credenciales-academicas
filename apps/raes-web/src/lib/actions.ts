@@ -1,4 +1,6 @@
 "use server";
+import { headers } from "next/headers";
+import { enforceWebAdmission } from "@raes/web-core/admission";
 import { redirect } from "next/navigation";
 import { apiRequest, safeReturnPath } from "@raes/web-core";
 import { createWebAuth, clearWebSessionCookies } from "./auth";
@@ -20,6 +22,8 @@ export async function login(
     password.length > 256
   )
     return { error: "Revisa el correo y la contraseña." };
+  try { await enforceWebAdmission("RAES","login",email,await headers()); }
+  catch { return {error:"No fue posible admitir la solicitud. Intenta más tarde."}; }
   const auth = await createWebAuth(true);
   const { data, error } = await auth.auth.signInWithPassword({
     email: email.trim(),

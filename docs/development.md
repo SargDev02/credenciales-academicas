@@ -216,3 +216,17 @@ timestamp: [reconexión](reports/supabase-reconnection-2026-11-09.md).
 Los comandos sync documentados históricamente arriba ya no aplican datos: son
 alias detect-and-submit. Guía actual de corte, detección, API y pruebas en
 [academic-review.md](academic-review.md).
+
+## Comprobaciones de production-readiness
+
+Las pruebas canónicas continúan sin .env remotos. La suite principal incluye el
+proyecto password-recovery con Auth/PKCE y APIs locales. La suite académica sigue
+separada y conserva A → pendiente A → B aprobado. Los tests raíz incorporan permisos
+de RPC operativas, cuotas compartidas, privacidad dry-run, entrega de secretos y
+backup/restore físico WASM de datos sintéticos. No ejecutar operadores reales para
+"completar" estos gates. El ensayo no certifica GoTrue ni SMTP alojados.
+
+`pnpm production:check /ruta/owner-inputs.json` verifica evidencia externa declarada
+para el commit actual; la plantilla se entrega bloqueada. No contiene secretos ni
+hace llamadas remotas. `pnpm backup:verify /ruta/bundle/manifest.json` comprueba
+integridad e inventario; no restaura ni certifica la procedencia del backup.

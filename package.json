@@ -9,7 +9,9 @@
     "test:frontend:browser": "playwright test",
     "audit:gate": "node scripts/audit-dependencies.mjs",
     "security:scan": "node scripts/scan-repository-secrets.mjs",
-    "test:academic-review:browser": "playwright test --config playwright.academic-review.config.mjs"
+    "test:academic-review:browser": "playwright test --config playwright.academic-review.config.mjs",
+    "production:check": "node scripts/verify-production-inputs.mjs",
+    "backup:verify": "node scripts/verify-backup-bundle.mjs"
   },
   "engines": {
     "node": ">=22.13.0"

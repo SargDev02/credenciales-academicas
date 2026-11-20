@@ -1,3 +1,4 @@
+import { configurationUrl, deploymentMode, validateProductionConfig } from "./deployment";
 export type WebAuthConfig = {
   url: string;
   publishableKey: string;
@@ -8,6 +9,7 @@ export function readWebConfig(
   env: Record<string, string | undefined>,
   product: "RAES" | "CREDENLY",
 ): WebAuthConfig {
+  validateProductionConfig(env, product === "RAES" ? "raes-web" : "credenly-web");
   const prefix = `${product}_WEB_`;
   const url = env[`${prefix}SUPABASE_URL`];
   const key = env[`${prefix}SUPABASE_PUBLISHABLE_KEY`];
@@ -21,6 +23,7 @@ export function readWebConfig(
     !["http:", "https:"].includes(new URL(api).protocol)
   )
     throw new Error("La configuración web requiere URLs válidas.");
+  configurationUrl(api, `${product}_API_BASE_URL`, deploymentMode(env) === "production");
   let isAnon = false;
   try {
     isAnon =

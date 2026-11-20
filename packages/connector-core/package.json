@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
-    "@supabase/supabase-js": "2.117.2"
+    "@supabase/supabase-js": "2.117.2",
+    "@raes/web-core": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import {
   formatApiBearer,
   generateClientId,
@@ -340,7 +341,7 @@ export function provisioningErrorResponse(
     );
   }
 
-  console.error("Unexpected RAES provisioning error");
+  operationalLog("raes-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

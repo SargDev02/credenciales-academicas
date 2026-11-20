@@ -1,3 +1,4 @@
+import { validateProductionConfig } from "@raes/connector-core";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,6 +25,7 @@ export type ConnectorEnv = z.infer<typeof envSchema>;
 
 export function getConnectorEnv(): ConnectorEnv {
   config({ path: envPath, quiet: true });
+  validateProductionConfig(process.env, "udea");
   return parseConnectorEnv(process.env);
 }
 

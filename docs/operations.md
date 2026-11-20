@@ -1,5 +1,10 @@
 # Operación y recuperación del prototipo
 
+Referencia histórica. Para el estado actual de esta rama, consultar
+[operación del piloto cerrado](production/operations.md) y su
+[clasificación de readiness](production/README.md). Los pendientes de este
+documento describen la auditoría anterior, no los resultados nuevos.
+
 Procedimiento pre-deploy del 2026-10-19. No habilita un despliegue ni constituye
 un restore certificado. Las operaciones sobre datos reales, rotaciones, purgas
 y recuperación de cuentas requieren autorización del propietario para ese evento.

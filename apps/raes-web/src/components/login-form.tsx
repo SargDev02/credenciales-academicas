@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { Alert, Button, Input } from "@raes/ui";
 import { login } from "../lib/actions";
@@ -36,6 +37,7 @@ export function LoginForm({ next }: { next: string }) {
       <Button type="submit" busy={pending}>
         {pending ? "Validando acceso…" : "Iniciar sesión"}
       </Button>
+      <Link href="/forgot-password">¿Olvidaste tu contraseña?</Link>
       <p className="ui-hint">
         Acceso exclusivo para personal autorizado de RAES.
       </p>

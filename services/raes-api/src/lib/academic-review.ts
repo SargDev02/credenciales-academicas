@@ -1,3 +1,4 @@
+import { operationalLog, requestId } from "@raes/web-core/observability";
 import { z, type ZodType } from "zod";
 import {
   academicApprovalSchema, academicDecisionSchema, finishDetectionSchema,
@@ -97,8 +98,9 @@ export async function decideAcademicReview(request: Request, id: string, action:
     if (!z.uuid().safeParse(id).success) throw new ApiError(404, "REVIEW_NOT_FOUND", "La solicitud no está disponible");
     const input = await parseJsonBody(request, action === "APROBAR" ? academicApprovalSchema : academicDecisionSchema);
     const data = await reviewRpc("decidir_revision_academica", { p_admin_id: admin.profile.id, p_solicitud_id: id, p_accion: action, p_motivo: input.motivo }, reviewDecisionResponseSchema.shape.data);
+    operationalLog("raes-api","ACADEMIC_DECISION_SUCCEEDED",{requestId:requestId(request.headers.get("x-request-id")),status:200});
     return privateReviewResponse({ data });
-  } catch (error) { return reviewErrorResponse(error); }
+  } catch (error) { const response=reviewErrorResponse(error);operationalLog("raes-api","ACADEMIC_DECISION_FAILED",{requestId:requestId(request.headers.get("x-request-id")),status:response.status});return response; }
 }
 export async function retiredInstitutionalWrite(request: Request): Promise<Response> {
   try {

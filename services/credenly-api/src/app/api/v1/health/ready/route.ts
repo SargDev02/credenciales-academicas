@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { getRaesClientIdentity } from "@/lib/raes-client";
 import { getCredenlySupabaseAdmin } from "@/lib/supabase-admin";
 
@@ -28,13 +29,11 @@ export async function GET() {
         databaseResult.status === "fulfilled" &&
         databaseResult.value.error
       ) {
-        console.error("Credenly database readiness failed", {
-          code: databaseResult.value.error.code,
-        });
+        operationalLog("credenly-api","DEPENDENCY_DOWN");
       }
 
       if (raesResult.status === "rejected") {
-        console.error("Credenly RAES readiness failed");
+        operationalLog("credenly-api","DEPENDENCY_DOWN");
       }
 
       return Response.json(
@@ -62,7 +61,7 @@ export async function GET() {
       timestamp: new Date().toISOString(),
     });
   } catch {
-    console.error("Credenly readiness configuration failed");
+    operationalLog("credenly-api","DEPENDENCY_DOWN");
 
     return Response.json(
       {

@@ -1,4 +1,8 @@
 "use server";
+import { headers } from "next/headers";
+import { enforceWebAdmission } from "@raes/web-core/admission";
+import { pilotEmailAllowed, selfRegistrationAllowed } from "@raes/web-core/pilot";
+import { siteOrigin } from "@raes/web-core/deployment";
 import { redirect } from "next/navigation";
 import { apiRequest, safeReturnPath, WebApiError } from "@raes/web-core";
 import { getWebConfig } from "./env";
@@ -22,10 +26,14 @@ export async function authenticate(
     return { error: "Revisa el correo y la contraseña." };
   if (mode !== "login" && mode !== "register")
     return { error: "Solicitud no válida." };
+  try { await enforceWebAdmission("CREDENLY",mode,email,await headers()); }
+  catch { return {error:"No fue posible admitir la solicitud. Intenta más tarde."}; }
+  if(mode === "register" && !selfRegistrationAllowed()) return {message:"El piloto cerrado funciona por invitación. Solicita acceso al administrador."};
   const auth = await createWebAuth(true);
   if (mode === "register") {
+    if(!pilotEmailAllowed(email))return {message:"El registro está limitado a las cuentas autorizadas para el piloto."};
     const site = new URL(
-      process.env.CREDENLY_WEB_SITE_URL ?? "http://localhost:3003",
+      siteOrigin(process.env, "CREDENLY"),
     );
     const result = await auth.auth.signUp({
       email: email.trim(),

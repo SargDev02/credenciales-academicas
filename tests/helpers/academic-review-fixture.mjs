@@ -85,7 +85,7 @@ export async function startReviewFixture(){
  });
  server.listen(3543);await once(server,'listening');
  const inherited=Object.fromEntries(['PATH','HOME','TMPDIR','LANG'].flatMap(k=>process.env[k]?[[k,process.env[k]]]:[]));
- const common={...inherited,NODE_ENV:'production',NODE_EXTRA_CA_CERTS:cert};
+ const common={...inherited,NODE_ENV:'production',APP_ENV:'test',NODE_EXTRA_CA_CERTS:cert};
  function start(dir,port,env){const child=spawn(process.execPath,['node_modules/next/dist/bin/next','start','-p',String(port)],{cwd:join(root,dir),env:{...common,...env},stdio:'ignore'});children.push(child);}
  start('services/raes-api',3341,{RAES_SUPABASE_URL:upstream+'/raes',RAES_SUPABASE_SERVICE_ROLE_KEY:'fixture-service-key-local-only-12345'});
  start('services/credenly-api',3342,{CREDENLY_SUPABASE_URL:upstream+'/credenly',CREDENLY_SUPABASE_SERVICE_ROLE_KEY:'fixture-service-key-local-only-12345',RAES_API_BASE_URL:raes,RAES_CREDENLY_CLIENT_ID:clientId,RAES_CREDENLY_CLIENT_SECRET:secret});

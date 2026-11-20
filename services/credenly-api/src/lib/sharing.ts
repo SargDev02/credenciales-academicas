@@ -1,3 +1,4 @@
+import { operationalLog } from "@raes/web-core/observability";
 import { z } from "zod";
 
 import { getServerEnv } from "./env";
@@ -130,9 +131,7 @@ export async function createShare(
 
   if (error || !data) {
     if (error) {
-      console.error("Share creation failed", {
-        code: error.code,
-      });
+      operationalLog("credenly-api","DEPENDENCY_DOWN");
     }
 
     throw new ShareError(
@@ -336,11 +335,7 @@ async function logShareAccess(
     });
 
   if (error) {
-    console.error("Share access audit failed", {
-      shareId,
-      resultado,
-      code: error.code,
-    });
+    operationalLog("credenly-api","DEPENDENCY_DOWN");
     throw new ShareError(503, "ACCESS_AUDIT_UNAVAILABLE", "No fue posible registrar el acceso; intenta nuevamente");
   }
 }
@@ -517,7 +512,7 @@ export function shareErrorResponse(error: unknown): Response {
     );
   }
 
-  console.error("Unexpected share error");
+  operationalLog("credenly-api","DEPENDENCY_DOWN");
 
   return Response.json(
     {

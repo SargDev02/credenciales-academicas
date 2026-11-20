@@ -8,7 +8,7 @@
     "dev": "next dev -p 3001",
     "prebuild": "pnpm --filter @raes/contracts build",
     "build": "next build",
-    "start": "next start -p 3001",
+    "start": "APP_ENV=production next start -p ${PORT:-3001}",
     "pretypecheck": "pnpm --filter @raes/contracts build",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "tsx --test src/lib/*.test.ts",
@@ -16,7 +16,8 @@
     "bootstrap:superadmin": "tsx scripts/bootstrap-superadmin.ts",
     "admin:reset-password": "node scripts/reset-admin-password.mjs",
     "lint": "eslint . --max-warnings 0",
-    "academic-review:baseline": "tsx scripts/academic-review-baseline.ts"
+    "academic-review:baseline": "tsx scripts/academic-review-baseline.ts",
+    "prestart": "APP_ENV=production tsx ../../scripts/check-runtime.ts raes-api"
   },
   "dependencies": {
     "@raes/contracts": "workspace:*",
