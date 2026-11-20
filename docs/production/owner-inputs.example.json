@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "release": "OWNER_REQUIRED",
+  "verifiedAt": null,
+  "rpoSeconds": null,
+  "rtoSeconds": null,
+  "scope": "closed-synthetic-pilot",
+  "actions": {
+    "domainsAndHosting": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "trustedIngress": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "hostedAuthAndMail": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "passwordRecoveryDeliveryAndRevocation": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "leakedPasswordProtection": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "identityExposurePolicy": {
+      "verified": true,
+      "evidenceReference": "owner-decision-2026-11-19-closed-synthetic-pilot"
+    },
+    "retentionPolicy": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "secretsCustodyAndRotation": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "backupRestoreAndRpoRto": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "monitoringAlerts": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "institutionalConnectors": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    },
+    "versionedMigrationsApproval": {
+      "verified": false,
+      "evidenceReference": "OWNER_REQUIRED"
+    }
+  }
+}

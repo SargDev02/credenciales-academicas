@@ -1,0 +1,392 @@
+{
+  "version": 1,
+  "date": "2026-11-19",
+  "scope": "closed-synthetic-pilot",
+  "base": "d48c772485d56e4d06696c4ce3b67f5a3761332d",
+  "validatedCodeHead": "33053676169a2e458ca3119b7ed5ea749eb92f7b",
+  "runtime": {
+    "node": "24.22.0",
+    "pnpm": "12.8.1"
+  },
+  "remoteSupabaseRequests": 0,
+  "realMailSent": false,
+  "remoteAuthStateRequeried": false,
+  "remoteMutations": 0,
+  "newMigrationsAppliedRemotely": false,
+  "tests": {
+    "total": 368,
+    "passed": 368,
+    "skipped": 0
+  },
+  "buildWorkspaces": [
+    "@raes/contracts",
+    "@raes/api",
+    "@credenly/api",
+    "@raes/web",
+    "@credenly/web"
+  ],
+  "browser": {
+    "main": {
+      "passed": 34,
+      "total": 34
+    },
+    "academic": {
+      "passed": 9,
+      "total": 9
+    }
+  },
+  "audit": {
+    "productionKnownVulnerabilities": 0,
+    "gateFindings": [],
+    "exceptionsModified": false
+  },
+  "invariants": {
+    "historicalEvidenceFilesUnchanged": 44,
+    "baselineFingerprints": {
+      "poli": 47,
+      "udea": 97,
+      "total": 144
+    },
+    "canonicalWritesInLocalReplay": 0,
+    "sergioProfileNotRestored": true,
+    "existingAccountsUnchanged": true
+  },
+  "initialBrowserFailure": {
+    "exit": 1,
+    "passed": 33,
+    "failed": 1,
+    "cause": "429 message contract changed by shared admission adapter",
+    "fixCommit": "33053676169a2e458ca3119b7ed5ea749eb92f7b",
+    "thresholdOrAssertionWeakened": false
+  },
+  "gates": [
+    {
+      "gate": "frozen",
+      "command": [
+        "pnpm",
+        "install",
+        "--frozen-lockfile"
+      ],
+      "exit": 0,
+      "seconds": 1.43,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "8b3fceeec8503e008c630ae25b469c63b708b43d0200d28a90f830960812423b"
+    },
+    {
+      "gate": "security",
+      "command": [
+        "pnpm",
+        "security:scan"
+      ],
+      "exit": 0,
+      "seconds": 0.14,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "cc77e271cd14df52e76aad86922d5dd0b8cd2efd398e8202531fbf3e7e33e12d"
+    },
+    {
+      "gate": "archive",
+      "command": [
+        "node",
+        "scripts/verify-schema-archive.mjs"
+      ],
+      "exit": 0,
+      "seconds": 0.03,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "bbf7cf667e19e9b399b59ad278befd6874dc52b30fe2fa869a1c9221f5d80633"
+    },
+    {
+      "gate": "cold",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/web",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 3.55,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "105a24ac2d966ae813295b9e74e760720250e57cefad444df411f45e06fdc132"
+    },
+    {
+      "gate": "lint-final",
+      "command": [
+        "pnpm",
+        "lint"
+      ],
+      "exit": 0,
+      "seconds": 17.24,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "32c40f28e667621a69185c1492a41eee6712c7f59164e46655cb6ac92f660f04"
+    },
+    {
+      "gate": "types-final",
+      "command": [
+        "pnpm",
+        "typecheck"
+      ],
+      "exit": 0,
+      "seconds": 6.7,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "924d21e13750c124cb9327d805f8ce383ea4b4063018a1f38142e07a1a48ae45"
+    },
+    {
+      "gate": "tests-final",
+      "command": [
+        "pnpm",
+        "test"
+      ],
+      "exit": 0,
+      "seconds": 25.76,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "2cd53ba3a55eefc0dc41fdc37ad5b61d01b44e80827443182b9d2ea5e1c7f775"
+    },
+    {
+      "gate": "prod-audit",
+      "command": [
+        "pnpm",
+        "audit",
+        "--prod"
+      ],
+      "exit": 0,
+      "seconds": 0.53,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "15950a68a7ed99c59779717acefdceb3f69cfd31bde67d2c954f2a3cea4d7955"
+    },
+    {
+      "gate": "audit",
+      "command": [
+        "pnpm",
+        "audit:gate"
+      ],
+      "exit": 0,
+      "seconds": 0.57,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "945e64acf60e3138d0da751072984f1c01ec9ca3ce3869836feb35341e1ecf9e"
+    },
+    {
+      "gate": "builds-final",
+      "command": [
+        "pnpm",
+        "-r",
+        "--if-present",
+        "build"
+      ],
+      "exit": 0,
+      "seconds": 3.87,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "d4dcb4464cc5b7eb66cc1e5c6687039068062a4599fd582a3531e9b2ad8abe9f"
+    },
+    {
+      "gate": "browser-final",
+      "command": [
+        "pnpm",
+        "test:frontend:browser"
+      ],
+      "exit": 0,
+      "seconds": 46.55,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "a7da6ec00d17600575224241f91216410961ea2d64cb0fc4a1b4cecc7cff723a"
+    },
+    {
+      "gate": "academic-browser-final",
+      "command": [
+        "pnpm",
+        "test:academic-review:browser"
+      ],
+      "exit": 0,
+      "seconds": 11.67,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "4f10fcb253b2f034cf943cf6fe12738a09c6ca82dbae7e0d125b1adf5f517a28"
+    },
+    {
+      "gate": "ocr",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@credenly/api",
+        "exec",
+        "tsx",
+        "scripts/verify-local-ocr.ts"
+      ],
+      "exit": 0,
+      "seconds": 2.67,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "3293a249f40a12291ff5aeeb1c0cc66436300ac91ce42c8de73ee57f1cb54fbd"
+    },
+    {
+      "gate": "operator",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/api",
+        "exec",
+        "node",
+        "scripts/verify-academic-review-live.mjs",
+        "--verify-completed",
+        "--local"
+      ],
+      "exit": 0,
+      "seconds": 1.14,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "c161efa96f4d9680285bd076c52a1127e390d778afa3efe6219ec7e51f983718"
+    },
+    {
+      "gate": "postcheck",
+      "command": [
+        "pnpm",
+        "--filter",
+        "@raes/api",
+        "exec",
+        "node",
+        "scripts/verify-academic-review-postcheck.mjs",
+        "--local"
+      ],
+      "exit": 0,
+      "seconds": 1.06,
+      "remoteSecretsInEnvironment": false,
+      "logSha256": "1136ecc2a62c7ea2cbf6029e6be34646535be999deac907d182a39bb320daaa3"
+    }
+  ],
+  "changedFiles": [
+    ".env.example",
+    "README.md",
+    "apps/credenly-web/.env.example",
+    "apps/credenly-web/package.json",
+    "apps/credenly-web/src/app/admin/auth/recovery/page.tsx",
+    "apps/credenly-web/src/app/admin/forgot-password/page.tsx",
+    "apps/credenly-web/src/app/admin/login/page.tsx",
+    "apps/credenly-web/src/app/admin/reset-password/page.tsx",
+    "apps/credenly-web/src/app/api/health/ready/route.ts",
+    "apps/credenly-web/src/app/api/health/route.ts",
+    "apps/credenly-web/src/app/auth/callback/route.ts",
+    "apps/credenly-web/src/app/auth/recovery/page.tsx",
+    "apps/credenly-web/src/app/forgot-password/page.tsx",
+    "apps/credenly-web/src/app/reset-password/page.tsx",
+    "apps/credenly-web/src/components/admin-password-forms.tsx",
+    "apps/credenly-web/src/components/auth-page.tsx",
+    "apps/credenly-web/src/components/password-forms.tsx",
+    "apps/credenly-web/src/instrumentation.ts",
+    "apps/credenly-web/src/lib/admin-actions.ts",
+    "apps/credenly-web/src/lib/admin-recovery-actions.ts",
+    "apps/credenly-web/src/lib/auth-actions.ts",
+    "apps/credenly-web/src/lib/recovery-actions.ts",
+    "apps/credenly-web/src/proxy.ts",
+    "apps/raes-web/.env.example",
+    "apps/raes-web/package.json",
+    "apps/raes-web/src/app/api/health/ready/route.ts",
+    "apps/raes-web/src/app/api/health/route.ts",
+    "apps/raes-web/src/app/auth/recovery/page.tsx",
+    "apps/raes-web/src/app/forgot-password/page.tsx",
+    "apps/raes-web/src/app/reset-password/page.tsx",
+    "apps/raes-web/src/components/login-form.tsx",
+    "apps/raes-web/src/components/password-forms.tsx",
+    "apps/raes-web/src/instrumentation.ts",
+    "apps/raes-web/src/lib/actions.ts",
+    "apps/raes-web/src/lib/auth.ts",
+    "apps/raes-web/src/lib/recovery-actions.ts",
+    "apps/raes-web/src/proxy.ts",
+    "docs/architecture.md",
+    "docs/authentication.md",
+    "docs/development.md",
+    "docs/environment.md",
+    "docs/frontend.md",
+    "docs/operations.md",
+    "docs/production/README.md",
+    "docs/production/operations.md",
+    "docs/production/owner-inputs.example.json",
+    "docs/progress.md",
+    "docs/reports/evidence/production-readiness-2026-11-19.json",
+    "docs/reports/production-readiness-2026-11-19.md",
+    "package.json",
+    "packages/connector-core/package.json",
+    "packages/connector-core/src/index.ts",
+    "packages/connector-core/src/raes-client.test.ts",
+    "packages/connector-core/src/raes-client.ts",
+    "packages/connector-core/src/runner.test.ts",
+    "packages/connector-core/src/runner.ts",
+    "packages/connector-core/src/source-bounds.test.ts",
+    "packages/connector-core/src/source.ts",
+    "packages/web-core/package.json",
+    "packages/web-core/src/admission.test.ts",
+    "packages/web-core/src/admission.ts",
+    "packages/web-core/src/config.ts",
+    "packages/web-core/src/deployment.test.ts",
+    "packages/web-core/src/deployment.ts",
+    "packages/web-core/src/observability.ts",
+    "packages/web-core/src/pilot.ts",
+    "packages/web-core/src/recovery-server.ts",
+    "packages/web-core/src/recovery.test.ts",
+    "packages/web-core/src/recovery.ts",
+    "packages/web-core/src/security.ts",
+    "playwright.config.ts",
+    "pnpm-lock.yaml",
+    "scripts/check-runtime.ts",
+    "scripts/lib/schema-fixture.mjs",
+    "scripts/monitor-service.mjs",
+    "scripts/test/backup-bundle.test.mjs",
+    "scripts/test/operational-gates.test.mjs",
+    "scripts/test/production-security.test.mjs",
+    "scripts/test/restore-rehearsal.test.mjs",
+    "scripts/test/schema-bootstrap.test.mjs",
+    "scripts/test/secure-output.test.mjs",
+    "scripts/test/startup-guard.test.mjs",
+    "scripts/verify-backup-bundle.mjs",
+    "scripts/verify-production-inputs.mjs",
+    "scripts/verify-schema-archive.mjs",
+    "services/connector-poli/.env.example",
+    "services/connector-poli/src/env.ts",
+    "services/connector-udea/.env.example",
+    "services/connector-udea/src/env.ts",
+    "services/credenly-api/.env.example",
+    "services/credenly-api/package.json",
+    "services/credenly-api/scripts/maintain-privacy.ts",
+    "services/credenly-api/src/app/api/v1/health/ready/route.ts",
+    "services/credenly-api/src/app/api/v1/internal/admission/route.ts",
+    "services/credenly-api/src/instrumentation.ts",
+    "services/credenly-api/src/lib/admin-auth.ts",
+    "services/credenly-api/src/lib/auth.ts",
+    "services/credenly-api/src/lib/env.ts",
+    "services/credenly-api/src/lib/identity-verification.ts",
+    "services/credenly-api/src/lib/pilot-access.test.ts",
+    "services/credenly-api/src/lib/raes-link.ts",
+    "services/credenly-api/src/lib/sharing.ts",
+    "services/credenly-api/src/lib/supabase-admin.ts",
+    "services/credenly-api/src/proxy.ts",
+    "services/raes-api/.env.example",
+    "services/raes-api/package.json",
+    "services/raes-api/scripts/bootstrap-institution-a.ts",
+    "services/raes-api/scripts/lib/monitoring.ts",
+    "services/raes-api/scripts/lib/secure-output.mjs",
+    "services/raes-api/scripts/manage-secret.ts",
+    "services/raes-api/scripts/monitor-queue.ts",
+    "services/raes-api/src/app/api/v1/health/ready/route.ts",
+    "services/raes-api/src/app/api/v1/internal/admission/route.ts",
+    "services/raes-api/src/instrumentation.ts",
+    "services/raes-api/src/lib/academic-review.ts",
+    "services/raes-api/src/lib/academic-sync.ts",
+    "services/raes-api/src/lib/admin-auth.ts",
+    "services/raes-api/src/lib/admin-provisioning.ts",
+    "services/raes-api/src/lib/api-client-auth.ts",
+    "services/raes-api/src/lib/audited-client-operation.ts",
+    "services/raes-api/src/lib/consumer-read.ts",
+    "services/raes-api/src/lib/credential-lifecycle.ts",
+    "services/raes-api/src/lib/credential-registration.ts",
+    "services/raes-api/src/lib/env.ts",
+    "services/raes-api/src/lib/institution-auth.ts",
+    "services/raes-api/src/lib/monitoring.test.ts",
+    "services/raes-api/src/lib/pilot-access.test.ts",
+    "services/raes-api/src/lib/readiness.test.ts",
+    "services/raes-api/src/lib/supabase-admin.ts",
+    "services/raes-api/src/proxy.ts",
+    "supabase/bootstrap/manifest.json",
+    "supabase/credenly/migrations/20261119215837_production_security.sql",
+    "supabase/raes/migrations/20261119215836_production_security.sql",
+    "tests/frontend/admin.spec.ts",
+    "tests/frontend/recovery.spec.mjs",
+    "tests/helpers/academic-review-fixture.mjs",
+    "tests/helpers/credenly-admin-fixture.ts",
+    "tests/helpers/recovery-fixture.mjs",
+    "tsconfig.tools.json"
+  ],
+  "externalAcceptance": "BLOCKED pending owner evidence; CI success is not deployment authorization"
+}

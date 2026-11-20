@@ -1,5 +1,32 @@
 # Progreso
 
+## Preparación del piloto cerrado 2026-11-19
+
+Main base `d48c772485d56e4d06696c4ce3b67f5a3761332d`, PR #16/#17 integrados.
+Rama `chore/production-readiness`. El propietario confirmó piloto cerrado sintético;
+no se implementa KYC ni se autoriza uso público con personas reales.
+
+- Configuración estricta para seis procesos; start productivo validado, sin fallback
+  localhost, secretos separados, cohortes y proxy confiable obligatorio.
+- Recuperación PKCE y sesiones separadas para RAES Admin/Credenly ciudadano/admin,
+  respuestas no enumerables, confirmación POST y actualización autorizada.
+- Admisión compartida por PostgreSQL, manteniendo límites locales. Dos migraciones
+  nuevas solo versionadas; no se aplican ni reparan bases remotas.
+- Observabilidad, probes, backlog, entrega protegida/rotación de secretos,
+  privacidad dry-run y ensayo local de backup/restore con preservación de datos.
+- Gates locales: 368/368 tests, lint/typecheck/audits, cinco builds, navegador
+  principal 34/34, académico 9/9, OCR/SQL/restore y operadores PASS. CI se
+  comprueba sobre el head del PR Draft; resultados finales en
+  [informe de readiness](reports/production-readiness-2026-11-19.md).
+- Baseline 47/97/144, evidencias históricas y estado deliberado de Sergio conservados.
+  No se consultan/modifican cuentas o datos remotos ni se repiten fixtures.
+
+[Clasificación de hallazgos y dos grupos finales](production/README.md): repositorio
+implementado frente a acciones externas que requieren configuración/decisiones.
+No se declara la configuración alojada correcta sin comprobarla ni se despliega.
+
+## Estado anterior de reconciliación
+
 Estado actual al 2026-11-19: PR #16 integrado en main
 `e356f8d6ce02de58a66ad76ebf599f83e06010d9` con sus 27 commits conservados.
 PR #17 `feat/raes-academic-review` reconciliado mediante merge de main dentro de

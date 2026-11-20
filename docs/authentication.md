@@ -292,3 +292,24 @@ informe. No cambia cuentas. Para un restablecimiento futuro, usar la utilidad
 ciudadana existente solo con autorización específica y el email actual; no pasar
 la contraseña en argumentos o por chat. Nunca borrar cuentas, desactivar FKs ni
 mover relaciones como mecanismo de recuperación.
+
+## Estado vigente para el piloto cerrado
+
+El primer despliegue aprobado en alcance será un piloto cerrado sintético; todavía
+no se autoriza ejecutarlo. [Preparación actual](production/README.md).
+Las secciones anteriores de bootstrap y verificación remota conservan evidencia
+histórica, no instrucciones para repetir cambios durante esta fase.
+
+Las instituciones usan ahora academic-review:submit para detección/propuestas;
+credentials:read conserva su lectura institucional acotada. Scopes/filas legacy
+pueden permanecer para historial, pero sus rutas de escritura están retiradas y
+los guards SQL impiden usarlas para cambiar el estado canónico. No reactivar sync
+--only, upserts directos ni adopción automática de credenciales históricas.
+
+Se implementan recuperación PKCE separada de las sesiones normales y admisión
+compartida en las DB propias, sin service role en las webs. [Rutas, cookies,
+revocación y configuración alojada pendiente](production/README.md#autenticación-y-recuperación).
+El registro de Credenly local/test se conserva; en producción el piloto funciona
+por invitación, con cohorte por UUID validada por las APIs. Ambos signup alojados
+deben estar cerrados para ese modo. La decisión de red/hosting y su verificación
+permanecen externas; no se cambió Auth remoto en esta rama.

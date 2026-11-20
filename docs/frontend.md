@@ -414,3 +414,20 @@ Contrato, pruebas y límites en [revisión académica](academic-review.md).
 Readiness Credenly ahora comprueba Auth mediante una llamada real: la API y el
 panel administrativo proyectan `up/down` y «Disponible»; no confunden configuración
 con disponibilidad ni esa consulta de salud con un login ciudadano.
+
+## Recuperación y despliegue del piloto cerrado
+
+RAES incorpora /forgot-password, /auth/recovery y /reset-password. Credenly añade
+las mismas rutas ciudadanas y las variantes /admin/... para administración. Son
+Server Actions con PKCE y cookies de recuperación independientes; no se usan
+localStorage, tokens en estado académico ni service role en las webs. El GET del
+enlace no lo consume; el usuario confirma mediante POST. Las listas de cohortes
+no sustituyen los roles de las APIs. Producción bloquea el alta pública y explica
+que el piloto requiere invitación.
+
+Cada web expone /api/health y /api/health/ready; la última comprueba configuración
+y disponibilidad de su API. Los comandos start fuerzan validación productiva;
+los fixtures de navegador declaran APP_ENV=test. La nueva suite password-recovery
+forma parte del navegador principal y se ejecuta también en CI sin correo real.
+Ver [flujo y acciones alojadas](production/README.md) y
+[comandos por servicio](production/operations.md#despliegue-independiente).
