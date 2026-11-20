@@ -6,7 +6,7 @@ const root = new URL("../../", import.meta.url);
 export const readProjectFile = path => readFileSync(new URL(path, root), "utf8");
 export async function reconstructSchema(project, { stage = "current", beforeAcademicReview } = {}) {
   const manifest = JSON.parse(readProjectFile("supabase/bootstrap/manifest.json"));
-  if (!["hardening", "current"].includes(stage) || !manifest.projects[project]) throw new Error("Unsupported reconstruction stage/project");
+  if (!["hardening", "academic", "current"].includes(stage) || !manifest.projects[project]) throw new Error("Unsupported reconstruction stage/project");
   const db = await PGlite.create({ extensions: { pgcrypto } });
   try {
     // Test-only platform substrate. No GoTrue, JWT issuer, email or network.
@@ -28,7 +28,7 @@ export async function reconstructSchema(project, { stage = "current", beforeAcad
     for (const migration of manifest.projects[project]) await db.exec(readProjectFile(`supabase/bootstrap/${project}/${migration.file}`));
     for (const migration of manifest.postBaselineMigrations.filter(m => m.project === project)) await db.exec(readProjectFile(migration.file));
     if (project === "raes") await db.exec(readProjectFile("supabase/bootstrap/raes/scopes.sql"));
-    if (stage === "current") {
+    if (stage !== "hardening") {
       const migrations = manifest.academicReviewMigrations.filter(m => m.project === project);
       if (migrations.length && beforeAcademicReview) await beforeAcademicReview(db);
       for (const migration of migrations) {
@@ -36,6 +36,12 @@ export async function reconstructSchema(project, { stage = "current", beforeAcad
         if (createHash("sha256").update(sql).digest("hex") !== migration.sha256) throw new Error("Academic DDL checksum mismatch");
         await db.exec(sql);
       }
+    }
+    if (stage === "current") for (const migration of manifest.productionMigrations ?? []) {
+      if (migration.project !== project) continue;
+      const sql = readProjectFile(migration.file);
+      if (createHash("sha256").update(sql).digest("hex") !== migration.sha256) throw new Error("Production DDL checksum mismatch");
+      await db.exec(sql);
     }
     return db;
   } catch (error) { await db.close(); throw error; }

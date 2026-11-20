@@ -28,3 +28,9 @@ for (const migration of manifest.academicReviewMigrations) {
   if (createHash("sha256").update(sql).digest("hex") !== migration.sha256) throw new Error("Academic migration checksum mismatch");
 }
 console.log(`${manifest.academicReviewMigrations.length} ordered academic evolution checksums verified.`);
+
+for (const migration of manifest.productionMigrations ?? []) {
+  const sql = readFileSync(new URL(`../${migration.file}`, import.meta.url));
+  if (createHash("sha256").update(sql).digest("hex") !== migration.sha256) throw new Error("Production migration checksum mismatch");
+}
+console.log(`${manifest.productionMigrations?.length ?? 0} versioned production migrations verified (not applied remotely).`);

@@ -25,6 +25,7 @@ export function webContentSecurityPolicy(nonce: string, development: boolean) {
 
 export type RequestLimit = { bucket: string; limit: number; windowMs: number };
 export function apiRequestLimit(path: string, method: string): RequestLimit {
+  if (path.startsWith("/api/v1/academic-review/")) return { bucket: "academic-proposals", limit: 120, windowMs: 60_000 };
   if (path.startsWith("/api/v1/public/shares/")) return { bucket: "public-shares", limit: 120, windowMs: 60_000 };
   if (path === "/api/v1/identity-verifications" && method === "POST") return { bucket: "ocr", limit: 6, windowMs: 60_000 };
   if (path.startsWith("/api/v1/admin/") && method === "POST") return { bucket: "provisioning", limit: 20, windowMs: 60_000 };

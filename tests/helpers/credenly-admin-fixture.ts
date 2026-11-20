@@ -256,6 +256,7 @@ export async function startAdminFixture() {
   const common = {
     ...inherited,
     NODE_ENV: "production" as const,
+    APP_ENV: "test",
     NODE_EXTRA_CA_CERTS: cert,
   };
   const api = spawn(

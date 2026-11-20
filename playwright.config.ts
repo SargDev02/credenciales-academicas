@@ -16,10 +16,11 @@ export default defineConfig({
   },
   projects: [
     ...[360, 768, 1024, 1440].map((width) => ({
-      testIgnore: ["admin.spec.ts", "academic-review.spec.mjs"],
+      testIgnore: ["admin.spec.ts", "academic-review.spec.mjs", "recovery.spec.mjs"],
       name: `width-${width}`,
       use: { viewport: { width, height: 1000 } },
     })),
+    { name: "password-recovery", testMatch: "recovery.spec.mjs", timeout:60000, use:{viewport:{width:1440,height:1000},screenshot:"off"} },
     {
       name: "credenly-admin",
       testMatch: "admin.spec.ts",
@@ -33,6 +34,7 @@ export default defineConfig({
       url: "http://localhost:3200/login",
       // Public pages need valid configuration but never a remote account.
       env: {
+        APP_ENV: "test",
         RAES_WEB_SUPABASE_URL: "https://localhost:9",
         RAES_WEB_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_local_fixture_only",
         RAES_API_BASE_URL: "http://localhost:9",
@@ -43,6 +45,7 @@ export default defineConfig({
       command: "pnpm --filter @credenly/web exec next start -p 3203",
       url: "http://localhost:3203",
       env: {
+        APP_ENV: "test",
         CREDENLY_WEB_SUPABASE_URL: "https://localhost:9",
         CREDENLY_WEB_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_local_fixture_only",
         CREDENLY_API_BASE_URL: "http://localhost:9",

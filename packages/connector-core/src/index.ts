@@ -6,3 +6,5 @@ export * from "./idempotency";
 
 export * from "./academic-review";
 export * from "./runner";
+
+export { validateProductionConfig } from "@raes/web-core/deployment";
