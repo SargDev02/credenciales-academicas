@@ -84,5 +84,5 @@ export async function internalAdmission(request: Request, product: Product, env 
 export function admissionResponse(error: unknown, service: string, id = requestId()): Response {
   const status = error instanceof AdmissionError ? error.status : 503;
   operationalLog(service,status===429?'RATE_LIMITED':'LIMIT_UNAVAILABLE',{requestId:id,status});
-  return Response.json({error:status===429?'RATE_LIMITED':'ADMISSION_UNAVAILABLE',message:'No fue posible admitir la solicitud. Intenta más tarde.'},{status,headers:{'Retry-After':String(error instanceof AdmissionError?error.retryAfter:60),'Cache-Control':'private, no-store','X-Request-Id':id}});
+  return Response.json({error:status===429?'RATE_LIMITED':'ADMISSION_UNAVAILABLE',message:status===429?'Demasiadas solicitudes. Intenta más tarde':'No fue posible admitir la solicitud. Intenta más tarde.'},{status,headers:{'Retry-After':String(error instanceof AdmissionError?error.retryAfter:60),'Cache-Control':'private, no-store','X-Request-Id':id}});
 }

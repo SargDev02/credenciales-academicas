@@ -1,8 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { equalSecret, subjectHash, trustedClientIp, consumeDatabaseLimit, internalAdmission, AdmissionError } from './admission';
+import { equalSecret, subjectHash, trustedClientIp, consumeDatabaseLimit, internalAdmission, admissionResponse, AdmissionError } from './admission';
 import { operationalRecord, requestId } from './observability';
 const secret='synthetic-test-server-secret-with-32-characters';
+test('429 preserves the existing public contract and 503 sanitizes dependency failures',async()=>{
+ const id=requestId(),limited=admissionResponse(new AdmissionError(429,25),'raes-api',id);
+ assert.equal(limited.status,429);
+ assert.deepEqual(await limited.json(),{error:'RATE_LIMITED',message:'Demasiadas solicitudes. Intenta más tarde'});
+ assert.equal(limited.headers.get('retry-after'),'25');
+ assert.equal(limited.headers.get('cache-control'),'private, no-store');
+ assert.equal(limited.headers.get('x-request-id'),id);
+ const unavailable=admissionResponse(new Error('private dependency detail'),'raes-api',id);
+ assert.equal(unavailable.status,503);
+ assert.deepEqual(await unavailable.json(),{error:'ADMISSION_UNAVAILABLE',message:'No fue posible admitir la solicitud. Intenta más tarde.'});
+});
 test('secret checks are bounded, subjects are HMACs and forwarded IPs are ignored unless explicitly trusted',()=>{
  assert.equal(equalSecret(secret,secret),true);assert.equal(equalSecret('wrong',secret),false);assert.equal(equalSecret(null,secret),false);
  assert.equal(subjectHash(secret,' TEST@EXAMPLE.INVALID '),subjectHash(secret,'test@example.invalid'));
