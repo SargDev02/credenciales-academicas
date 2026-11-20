@@ -1,7 +1,8 @@
+import { fileURLToPath } from "node:url";
+import { writeSecretFile } from "./lib/secure-output.mjs";
 import { config } from "dotenv";
 
 import {
-  formatInstitutionBearer,
   generateClientId,
   generateClientSecret,
   getSecretLookupPrefix,
@@ -25,6 +26,8 @@ const INSTITUTION = {
 const INTEGRATION_NAME = "Conector Politécnico";
 
 async function main() {
+  const output=process.argv.find(a=>a.startsWith("--secret-output="))?.slice(16);
+  if(!output)throw new Error("An outside-repository --secret-output path is required; no secrets are printed.");
   const supabase = getRaesSupabaseAdmin();
 
   const { error: scopesUpsertError } = await supabase
@@ -190,6 +193,8 @@ async function main() {
   }
 
   const rawSecret = generateClientSecret();
+  writeSecretFile(output,JSON.stringify({clientId:integration.client_id,clientSecret:rawSecret})+"\n",fileURLToPath(new URL("../../..",import.meta.url)));
+
 
   const { error: insertSecretError } = await supabase
     .from("integracion_secretos")
@@ -207,20 +212,7 @@ async function main() {
   }
 
   console.log("");
-  console.log("SECRETO GENERADO — se mostrará solamente en esta ejecución:");
-  console.log(`Client secret: ${rawSecret}`);
-  console.log(
-    `Authorization: ${formatInstitutionBearer(integration.client_id, rawSecret)}`,
-  );
-  console.log("");
-  console.log(
-    "Guarda el client ID y el secret en un archivo local seguro. No los confirmes en Git ni los compartas por chat.",
-  );
+  console.log(JSON.stringify({secretPrinted:false,secureOutputWritten:true}));
 }
 
-main().catch((error) => {
-  console.error(
-    error instanceof Error ? error.message : "Error inesperado de bootstrap",
-  );
-  process.exitCode = 1;
-});
+main().catch(() => { console.error("Institution bootstrap failed; no private details printed"); process.exitCode=1; });
