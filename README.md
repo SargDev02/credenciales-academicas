@@ -2,8 +2,10 @@
 
 Proyecto de integración y verificación de credenciales académicas.
 
-PR #16 y #17 integrados. Se prepara un **piloto cerrado con datos sintéticos** en
-`chore/production-readiness`, sin despliegue ni cambios remotos.
+PR #16, #17 y #18 integrados. Alcance: **piloto cerrado con datos sintéticos**.
+El cierre técnico anterior al despliegue y sus comprobaciones están en
+[el informe de cierre](docs/reports/predeployment-closeout-2026-11-20.md).
+La activación alojada sigue separada; no se ha desplegado el sistema.
 [Preparación y acciones externas](docs/production/README.md) ·
 [Operación y despliegues separados](docs/production/operations.md).
 
@@ -35,6 +37,13 @@ Credenly API -> Credenly DB + Supabase Auth (datos ciudadanos)
 7. RAES Web y Credenly se desplegarán como aplicaciones independientes.
 
 Consulta [docs/progress.md](docs/progress.md) para el estado del proyecto.
+
+## Inicio local
+
+Se ejecutan cuatro procesos: las dos webs y sus dos APIs. La guía de
+[arranque local completo](docs/development.md#arranque-local-completo) indica
+configuración, puertos, accesos y comprobaciones. Iniciar una web no inicia su API
+ni ejecuta los conectores institucionales.
 
 ## Interfaces
 

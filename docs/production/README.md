@@ -1,9 +1,12 @@
 # Preparación del piloto cerrado RAES y Credenly
 
-Base: main `d48c772485d56e4d06696c4ce3b67f5a3761332d`, PR #16 y #17 integrados.
-Trabajo en `chore/production-readiness`. El propietario decidió el 19 de noviembre
+PR #16, #17 y #18 integrados; main de referencia
+`6707547a51a96e37e4e40c689e1f5767d1381476`. El propietario decidió el 19 de noviembre
 de 2026 que el primer despliegue será un **piloto cerrado con datos sintéticos**.
-No se autoriza todavía despliegue, cambio remoto, rotación ni limpieza real.
+El 20 de noviembre confirmó que este cierre termina **antes del despliegue**:
+no se activa infraestructura ni configuración remota. Los backups y el ensayo
+nativo A1-R ya pasaron; las dos migraciones productivas continúan sin aplicar.
+Ver [cierre predespliegue](../reports/predeployment-closeout-2026-11-20.md).
 
 El repositorio prepara ese alcance. No habilita una oferta pública con datos
 académicos reales. La finalización técnica local y la aceptación de la configuración
@@ -26,7 +29,7 @@ alojada son verificaciones distintas.
 | Auth alojado, SMTP y sesiones | REQUIERE CONFIGURACIÓN REMOTA | Verificar y configurar ambos proyectos; no se presupone su estado actual. |
 | Contraseñas filtradas | REQUIERE DECISIÓN DEL PROPIETARIO | Elegir protección disponible sin contratar planes. Longitud mínima no equivale a detección de filtraciones. |
 | Cohorte y retención | REQUIERE DECISIÓN DEL PROPIETARIO | Aprobar UUIDs/correos sintéticos, plazos y finalidad. No incluir ni restaurar Sergio. |
-| RPO/RTO | REQUIERE DECISIÓN DEL PROPIETARIO | Fijar objetivos y medir restore con una copia real autorizada en un destino aislado. |
+| RPO/RTO | REQUIERE DECISIÓN DEL PROPIETARIO | Restore nativo autorizado y replay offline A1-R PASS; faltan objetivos y custodia independiente para operación alojada. |
 | Hosting, dominios, ingress y alertas | REQUIERE INFRAESTRUCTURA EXTERNA | Elegir plataforma, cerrar acceso, instalar TLS y conectar monitorización. No se contrataron servicios. |
 | Migraciones nuevas | REQUIERE CONFIGURACIÓN REMOTA | Aplicarlas únicamente después de revisión y autorización separada; nunca como parte de build/start. |
 

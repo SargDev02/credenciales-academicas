@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "date": "2026-11-20",
+  "timezone": "America/Bogota",
+  "scope": "predeployment-only-closed-synthetic-pilot",
+  "validatedRuntimeCommit": "6707547a51a96e37e4e40c689e1f5767d1381476",
+  "closeoutBranch": "codex/pilot-completion",
+  "runtimeChanged": false,
+  "runtime": {
+    "node": "24.22.0",
+    "pnpm": "12.8.1",
+    "next": "16.4.6",
+    "react": "19.2.8",
+    "reactDom": "19.2.8",
+    "zodDirectRange": "^4.6.7"
+  },
+  "qualityWorktree": {
+    "freshCheckout": true,
+    "envFilesCopied": false,
+    "initialBuildArtifacts": false,
+    "remoteCredentialsUsed": false
+  },
+  "tests": {
+    "total": 368,
+    "passed": 368,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "main": {
+      "total": 34,
+      "passed": 34
+    },
+    "academic": {
+      "total": 9,
+      "passed": 9
+    }
+  },
+  "builds": {
+    "total": 5,
+    "passed": 5,
+    "workspaces": [
+      "@raes/contracts",
+      "@raes/api",
+      "@credenly/api",
+      "@raes/web",
+      "@credenly/web"
+    ]
+  },
+  "audit": {
+    "productionVulnerabilities": 0,
+    "gateFindings": [],
+    "expiredExceptionExtended": false,
+    "expiredExceptionUsed": false
+  },
+  "localConfig": {
+    "configurationChecks": "PASS",
+    "workspacesValidated": 4,
+    "apiDefaultPortsMatch": true,
+    "envFilesModified": false,
+    "raesWebAuthMatchesRaesApi": true,
+    "credenlyWebAuthMatchesCredenlyApi": true,
+    "productsUseSeparateSupabaseProjects": true,
+    "remoteRequests": 0
+  },
+  "academicLocalOperator": {
+    "result": "PASS",
+    "mode": "LOCAL_WASM",
+    "canonicalWrites": 0,
+    "canonicalRowsUnchanged": true,
+    "remoteRequests": 0
+  },
+  "academicLocalPostcheck": {
+    "result": "PASS",
+    "mode": "LOCAL_WASM",
+    "canonicalWrites": 0,
+    "canonicalRowsUnchanged": true,
+    "remoteRequests": 0
+  },
+  "ocr": {
+    "result": "PASS",
+    "provider": "TESSERACT_LOCAL",
+    "syntheticImage": true,
+    "databaseWrites": 0,
+    "legalIdentityClaim": false
+  },
+  "backupPriorEvidence": {
+    "phase": "A1-R",
+    "date": "2026-11-20",
+    "nativeDumps": "PASS",
+    "authDataRestore": "PASS",
+    "offlineReplay": "PASS",
+    "backupVerify": {
+      "RAES": "PASS",
+      "CREDENLY": "PASS"
+    },
+    "comparedTables": {
+      "RAES": 52,
+      "CREDENLY": 35
+    },
+    "baseline": [
+      47,
+      97
+    ],
+    "baselineTotal": 144,
+    "pending": 0,
+    "credenlyAuthUsers": 4,
+    "credenlyCitizenProfiles": 1,
+    "credenlyAdminProfiles": 1,
+    "ownerCitizenProfileOmissionPreserved": true,
+    "authPlatformBehaviorProven": false,
+    "externalArtifactsVersioned": false
+  },
+  "remoteMutationsThisCloseout": 0,
+  "productionMigrationsApplied": false,
+  "realMailSent": false,
+  "secretsRotated": false,
+  "institutionalFixturesRun": false,
+  "baselineRegenerated": false,
+  "deploymentPerformed": false,
+  "codeMergePerformed": false,
+  "mainCi": {
+    "run": 44660764665,
+    "head": "6707547a51a96e37e4e40c689e1f5767d1381476",
+    "conclusion": "success",
+    "url": "https://github.com/SargDev02/credenciales-academicas/actions/runs/44660764665"
+  },
+  "gates": [
+    {
+      "gate": "frozen-install",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 1.86,
+      "logSha256": "063db95da642b4c834a3e995aa31dcc9f73c56761703f8aac5654256b42fb0a8"
+    },
+    {
+      "gate": "security-history-scan",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 0.2,
+      "logSha256": "19e07931d779a2e5d417d08dd286752c0e5a80aad6ec78e148c1a4af786dd48a"
+    },
+    {
+      "gate": "ddl-archive",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 0.03,
+      "logSha256": "bbf7cf667e19e9b399b59ad278befd6874dc52b30fe2fa869a1c9221f5d80633"
+    },
+    {
+      "gate": "lint",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 15.4,
+      "logSha256": "ed385685de139c498b625aec474809dc108dc8c8ca1c3924a36ad443e3aba802"
+    },
+    {
+      "gate": "cold-web-typecheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 2.73,
+      "logSha256": "105a24ac2d966ae813295b9e74e760720250e57cefad444df411f45e06fdc132"
+    },
+    {
+      "gate": "typecheck-typegen",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 5.44,
+      "logSha256": "e301d6a349a708127c429ad337db36fa3935fd7c61a50e9e9a3f481bfded3f31"
+    },
+    {
+      "gate": "complete-tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 26.24,
+      "logSha256": "f1e0f44a854097e5725e9101dbd7e284554572fece3c8dec4e846b29ffed0215"
+    },
+    {
+      "gate": "academic-local-operator",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 1.03,
+      "logSha256": "976d6b7896b7dbb69554d160c18531d7e474fa96b67973103a20a3551dd8131b"
+    },
+    {
+      "gate": "academic-local-postcheck",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 0.86,
+      "logSha256": "ba3f8b3434d96d31cd59aa7dd2577f3bf65264ffd491a8c76e1e926ed2138fac"
+    },
+    {
+      "gate": "production-audit",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 0.36,
+      "logSha256": "15950a68a7ed99c59779717acefdceb3f69cfd31bde67d2c954f2a3cea4d7955"
+    },
+    {
+      "gate": "audit-gate",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 0.45,
+      "logSha256": "945e64acf60e3138d0da751072984f1c01ec9ca3ce3869836feb35341e1ecf9e"
+    },
+    {
+      "gate": "builds",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 7.95,
+      "logSha256": "ac0a6d9d76233fb1c70ad7b88fcbf59f04d07a22352969c43528ed92e6436e94"
+    },
+    {
+      "gate": "browser-main",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 43.66,
+      "logSha256": "06a698ea1760237e2503cea29cec83321f242ff85cd744682f717a03fcb66373"
+    },
+    {
+      "gate": "browser-academic",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 14.52,
+      "logSha256": "73190fdd8b21203195ca230843bac52b0609f03c211c878d8ec3dcaaa92fcae6"
+    },
+    {
+      "gate": "synthetic-ocr",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationSeconds": 2.88,
+      "logSha256": "3293a249f40a12291ff5aeeb1c0cc66436300ac91ce42c8de73ee57f1cb54fbd"
+    }
+  ],
+  "externalActivationAcceptance": "BLOCKED intentionally until deployment is separately planned; not an unresolved code gate"
+}

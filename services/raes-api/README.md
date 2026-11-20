@@ -5,11 +5,13 @@ Servicio backend central de RAES.
 ## Estado actual
 
 Servicio Next.js con autenticación institucional, clientes API y administración;
-sincronización académica, registro/versionado, correcciones y estados terminales;
-consulta ciudadana e institucional y auditoría de clientes API. Ambos conectores
-han sido validados contra datos fuente existentes. Las interfaces siguen pendientes.
+revisión académica transaccional, registro/versionado, correcciones y estados
+terminales; consulta ciudadana e institucional y auditoría de clientes API. Las
+interfaces RAES Web y Credenly Web están implementadas. Los conectores detectan
+cambios y presentan propuestas; solo ADMIN/SUPERADMIN aprueba su incorporación.
+Durante detección, `canonicalWrites: 0`. Ver [revisión académica](../../docs/academic-review.md).
 
-Los resultados y límites de validación están en `docs/progress.md`. Los cambios de
+Los resultados y límites de validación están en [progreso](../../docs/progress.md). Los cambios de
 permisos se aplican con migraciones nuevas; no se editan los históricos aplicados.
 
 ## Configuración local
@@ -32,7 +34,7 @@ Nunca confirmar ese archivo en Git.
 ## Ejecutar
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm --filter @raes/api typecheck
 pnpm --filter @raes/api dev
 ```
@@ -67,13 +69,18 @@ La autenticación usa:
 Authorization: Bearer <client_id>.<client_secret>
 ```
 
-Para preparar Institución A durante desarrollo:
+Solo para aprovisionar una instalación nueva autorizada de Institución A
+(no para arrancar los proyectos existentes), elegir un directorio seguro existente
+fuera del repositorio y ejecutar:
 
 ```bash
-pnpm --filter @raes/api bootstrap:institution-a
+pnpm --filter @raes/api bootstrap:institution-a --secret-output=/ruta-segura-fuera-del-repositorio/raes-institution-a.json
 ```
 
-El secreto generado se muestra una sola vez y RAES almacena únicamente su hash.
+El secreto nuevo se entrega únicamente al archivo indicado, con permisos 0600 y
+sin sobrescribir archivos existentes; no se imprime en consola. RAES conserva
+solo su hash. Si ya existe un secreto activo, el comando no crea otro ni lo rota
+automáticamente. Custodiar la salida fuera de Git.
 
 Prueba de identidad autenticada:
 
@@ -86,7 +93,12 @@ Consulta [docs/authentication.md](../../docs/authentication.md) para el diseño 
 
 ## Ciclo de vida de credenciales
 
-Endpoints institucionales:
+Las rutas históricas siguientes conservan guards contra escrituras canónicas
+directas. No son el flujo de sincronización de los conectores actuales ni deben
+usarse para saltarse la revisión. La administración incorpora únicamente cambios
+aprobados mediante el [workflow académico](../../docs/academic-review.md).
+
+Rutas históricas protegidas:
 
 ```text
 POST /api/v1/credentials
@@ -102,7 +114,7 @@ Todas las mutaciones requieren `X-Request-Id` e `Idempotency-Key`. Las correccio
 
 La incorporación de nuevas universidades ya no depende de crear scripts específicos por institución.
 
-La futura RAES Web utilizará:
+RAES Web consume los endpoints administrativos existentes:
 
 ```text
 GET  /api/v1/admin/institutions
@@ -134,7 +146,7 @@ pnpm --filter @raes/api bootstrap:superadmin
 
 El comando se bloquea automáticamente cuando RAES ya tiene un `SUPERADMIN` activo. Después del bootstrap, se recomienda retirar esas cuatro variables locales.
 
-A partir de ese momento, la administración normal debe hacerse por la API administrativa y, posteriormente, por RAES Web.
+A partir de ese momento, la administración normal debe hacerse por RAES Web y la API administrativa.
 
 ## Clientes de API no institucionales
 
@@ -148,4 +160,4 @@ POST /api/v1/persons/resolve
 GET  /api/v1/persons/{personId}/credentials
 ```
 
-Credenly utilizará `persons:resolve` y `credentials:read`.
+Credenly utiliza `persons:resolve` y `credentials:read`; no recibe acceso a RAES DB.

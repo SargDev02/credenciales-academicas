@@ -1,5 +1,31 @@
 # Progreso
 
+## Cierre técnico predespliegue — 2026-11-20
+
+PR #16/#17/#18 integrados; main base `6707547a51a96e37e4e40c689e1f5767d1381476`.
+El propietario confirmó que este cierre termina antes del despliegue. Rama de
+cierre `codex/pilot-completion`, únicamente documentación y evidencia; sin cambios
+runtime, migraciones remotas, cuentas, datos institucionales, rotaciones o correos.
+
+- [x] Copia limpia sin .env ni artefactos: frozen, secretos/historial, archivo DDL,
+  lint tipado, typecheck/typegen y 368/368 tests, cero omitidos.
+- [x] Audit producción cero vulnerabilidades; gate completo findings []; excepción
+  braces vencida conservada, sin ampliarla ni utilizarla para el PASS.
+- [x] Cinco builds, navegador principal 34/34 y académico 9/9; OCR sintético PASS.
+- [x] Cuatro esquemas, seguridad DB, composición DDL y restore WASM PASS; operador
+  --verify-completed --local y postcheck --local PASS, canonicalWrites:0.
+- [x] Configuración local de las cuatro aplicaciones válida y proyectos Auth/API
+  correctamente separados, comprobado sin red ni exposición de variables.
+- [x] A1-R previo: backups nativos cifrados, Auth e historial explícitos,
+  integridad/backup:verify, restore PostgreSQL17 y replay offline PASS.
+- [x] README/arranque local/RAES API actualizados, sin reescribir evidencia histórica.
+
+Cierre técnico del repositorio PASS para el alcance del prototipo/piloto cerrado
+sintético. Las dos migraciones productivas siguen sin aplicar. Activación alojada,
+correo, dominios, custodia externa, RPO/RTO y controles de operación siguen
+separados; no se declara listo para producción pública ni se falsea su aceptación.
+[Informe y evidencia](reports/predeployment-closeout-2026-11-20.md).
+
 ## Preparación del piloto cerrado 2026-11-19
 
 Main base `d48c772485d56e4d06696c4ce3b67f5a3761332d`, PR #16/#17 integrados.
