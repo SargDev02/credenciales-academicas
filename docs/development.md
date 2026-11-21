@@ -6,6 +6,79 @@
 - pnpm 12.8.1 (`packageManager`).
 - Acceso autorizado a los proyectos Supabase.
 
+## Arranque local completo
+
+Usar las versiones fijadas antes de instalar:
+
+```bash
+nvm use
+pnpm install --frozen-lockfile
+```
+
+Si no se usa nvm, instalar Node 24.22.0 por el gestor local y comprobar `node -v`;
+el repositorio fija pnpm 12.8.1. No actualizar el lockfile para arrancar el proyecto.
+
+Preparar los cuatro `.env.local` a partir de sus `.env.example` **solo cuando aún
+no existan**. Conservar cualquier configuración existente; no sobrescribirla:
+
+- `services/raes-api/.env.local`
+- `services/credenly-api/.env.local`
+- `apps/raes-web/.env.local`
+- `apps/credenly-web/.env.local`
+
+Completar cada uno según [variables de entorno](environment.md). Para uso local,
+APP_ENV debe ser `local` (o quedar sin definir con `next dev`); no reutilizar la
+configuración de despliegue ni copiar claves de otro producto. La API necesita su
+service role solo en servidor; la web usa la URL y publishable/anon de su proyecto
+Auth y la dirección de su propia API. Credenly API consume RAES API, nunca RAES DB.
+Las variables de ambos conectores se necesitan solo al ejecutarlos expresamente.
+
+Desde la raíz, ejecutar en cuatro terminales y en este orden:
+
+```bash
+pnpm --filter @raes/api dev
+```
+
+```bash
+pnpm --filter @credenly/api dev
+```
+
+```bash
+pnpm --filter @raes/web dev
+```
+
+```bash
+pnpm --filter @credenly/web dev
+```
+
+| Proceso | Dirección local | Comprobación |
+| --- | --- | --- |
+| RAES API | http://localhost:3001 | `/api/v1/health` y `/api/v1/health/ready` |
+| Credenly API | http://localhost:3002 | `/api/v1/health` y `/api/v1/health/ready` |
+| RAES Web | http://localhost:3000 | `/login` |
+| Credenly ciudadano | http://localhost:3003 | `/login` |
+| Credenly administrador | http://localhost:3003 | `/admin/login` |
+
+Health indica vida del proceso; ready consulta dependencias y puede fallar aunque
+la página cargue. No interpretar un GET de login 200 como validación de acceso a
+las bases. Las contraseñas son las de cada cuenta Supabase Auth; no hay contraseña
+por defecto compartida, ni deben confundirse con las contraseñas PostgreSQL.
+La recuperación disponible en cada acceso conserva separados ciudadano y admin.
+
+El funcionamiento integrado necesita proyectos Supabase activos y variables
+correctas. La galería `/design-system` y los tests aislados no los necesitan.
+Cerrar una terminal con Ctrl+C detiene ese proceso. Los comandos `start` están
+reservados al runtime productivo validado y no sustituyen estos comandos `dev`.
+
+Los conectores no se inician automáticamente: detectan cambios y presentan
+propuestas; una decisión administrativa es la que incorpora el cambio aprobado.
+Ver [revisión académica](academic-review.md). No ejecutar baseline, bootstrap,
+seeds ni operadores remotos para iniciar una instalación que ya tiene datos.
+
+Para probar desde otra máquina de la LAN, configurar únicamente sus hosts dev
+explícitos mediante las variables `*_WEB_ALLOWED_DEV_ORIGINS` documentadas. No
+permitir todos los orígenes ni tratar esta configuración como control de login.
+
 ## Secretos
 
 Los secretos nunca se confirman en Git.
@@ -197,9 +270,12 @@ El build no requiere .env ni contratos dist preexistentes. Next genera next-env.
 con `next typegen`; ahora se ignora, al igual que .next/dist/traineddata.
 
 CI se ejecuta en PR hacia main y push a main con acciones fijadas por SHA, permisos
-contents:read, lockfile estricto, sin secretos remotos. `pnpm audit` mantiene un
-HIGH dev visible; el gate aplica únicamente la excepción temporal aprobada y
-vence el 18-11-2026. Ver [dependencias](reports/predeploy-dependencies.md).
+contents:read, lockfile estricto y sin secretos remotos. Ejecutar también
+`pnpm audit --prod` y `pnpm test:academic-review:browser` en el cierre completo.
+El audit actual no presenta hallazgos. La excepción histórica de braces venció el
+18-11-2026, se conserva sin ampliar y no interviene en el PASS. Ver
+[remediación](reports/dependency-remediation-2026-11-10.md) y
+[cierre actualizado](reports/predeployment-closeout-2026-11-20.md).
 
 [Variables](environment.md), [reconstrucción](../supabase/bootstrap/README.md),
 [operación/retención/rotación](operations.md) y [gate pre-deploy](reports/predeploy-quality-gate.md).
