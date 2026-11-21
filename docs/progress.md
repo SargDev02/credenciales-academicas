@@ -4,8 +4,9 @@
 
 PR #16/#17/#18 integrados; main base `6707547a51a96e37e4e40c689e1f5767d1381476`.
 El propietario confirmó que este cierre termina antes del despliegue. Rama de
-cierre `codex/pilot-completion`, únicamente documentación y evidencia; sin cambios
-runtime, migraciones remotas, cuentas, datos institucionales, rotaciones o correos.
+cierre `codex/pilot-completion`: documentación/evidencia y actualización del
+instalador de CI a Node24, sin cambios del runtime del producto, migraciones
+remotas, cuentas, datos institucionales, rotaciones o correos.
 
 - [x] Copia limpia sin .env ni artefactos: frozen, secretos/historial, archivo DDL,
   lint tipado, typecheck/typegen y 368/368 tests, cero omitidos.
@@ -19,6 +20,8 @@ runtime, migraciones remotas, cuentas, datos institucionales, rotaciones o corre
 - [x] A1-R previo: backups nativos cifrados, Auth e historial explícitos,
   integridad/backup:verify, restore PostgreSQL17 y replay offline PASS.
 - [x] README/arranque local/RAES API actualizados, sin reescribir evidencia histórica.
+- [x] CI pnpm/action-setup v6.1.1 fijado por SHA con runtime Node24; verificación
+  explícita de Node/pnpm efectivos. El CI previo PASS con advertencia se conserva.
 
 Cierre técnico del repositorio PASS para el alcance del prototipo/piloto cerrado
 sintético. Las dos migraciones productivas siguen sin aplicar. Activación alojada,

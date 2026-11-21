@@ -6,14 +6,15 @@ es la calidad y reproducibilidad del repositorio del **piloto cerrado sintético
 No se afirma preparación operativa de una plataforma pública con personas reales.
 
 Base validada: main `6707547a51a96e37e4e40c689e1f5767d1381476`, PR #16/#17/#18
-integrados. Rama de cierre: `codex/pilot-completion`. Esta rama modifica únicamente
-documentación y evidencia saneada; el runtime validado es idéntico al de main.
+integrados. Rama de cierre: `codex/pilot-completion`. Esta rama modifica
+documentación, evidencia saneada y el instalador/validación de CI; el runtime del
+producto validado es idéntico al de main.
 
 ## Resultado
 
 **Cierre técnico predespliegue: PASS.** No quedan gates locales fallidos ni defectos
 funcionales identificados en esta comprobación. No se añadieron funcionalidades,
-dependencias, excepciones de seguridad, migraciones ni cambios de arquitectura.
+dependencias del producto, excepciones de seguridad, migraciones ni cambios de arquitectura.
 
 [Evidencia de gates y hashes de logs](evidence/predeployment-closeout-2026-11-20.json).
 Los logs completos y los backups están fuera del repositorio; no se suben a GitHub.
@@ -110,11 +111,27 @@ owner-inputs sigue intencionalmente bloqueada: no se atestiguan acciones no hech
 OCR no prueba identidad real: cualquier cambio futuro a datos/personas reales
 exige revisar esa garantía antes de ampliar el alcance aprobado.
 
+## Corrección adicional del runtime de CI
+
+El primer CI del cierre, [44840297868](https://github.com/SargDev02/credenciales-academicas/actions/runs/44840297868),
+terminó **success** sobre `704a3f76a0ad154164741ca97810c8d12e122030`; se conserva
+ese resultado. GitHub señaló una advertencia: pnpm/action-setup v4 declaraba Node20
+y el runner lo forzaba a Node24. No era un fallo del producto ni un test fallido.
+
+La [release oficial v6.1.1](https://github.com/pnpm/action-setup/releases/tag/v6.1.1)
+declara Node24 y permite seleccionar pnpm mediante packageManager. Se actualiza
+únicamente esa acción, fijada al SHA `73e46992e05b19abd31f2f3c20e0e7370d762115`.
+Se mantiene actions/setup-node, el caché existente, las versiones 24.22.0/12.8.1,
+permisos contents:read y todos los gates. Se añade una comprobación explícita de
+las versiones efectivas contra .nvmrc y package.json: un desajuste falla el job.
+No se migró a otra plataforma ni se modificó el lockfile. La regresión apropiada
+es ejecutar ese check localmente y volver a correr el workflow completo en GitHub.
+
 ## Git y CI
 
 El CI de main `6707547` terminó success:
 [run 44660764665](https://github.com/SargDev02/credenciales-academicas/actions/runs/44660764665).
 La rama de cierre se entrega en un PR Draft hacia main y su CI se consulta sobre
-el head publicado; no se hace merge ni despliegue. El commit de documentación no
-cambia la versión del runtime evaluado. Esta evidencia conserva los resultados
+el head publicado; no se hace merge ni despliegue. Los commits de cierre no
+cambian la versión del runtime del producto evaluado. Esta evidencia conserva los resultados
 locales y no sustituye las comprobaciones del PR en GitHub.

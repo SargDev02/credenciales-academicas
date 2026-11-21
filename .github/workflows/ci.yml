@@ -21,11 +21,24 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 25
-      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1; node24
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version-file: .nvmrc
           cache: pnpm
+      - name: Verify pinned Node and pnpm versions
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const expectedNode = readFileSync('.nvmrc', 'utf8').trim().replace(/^v/, '');
+          const expectedPnpm = JSON.parse(readFileSync('package.json', 'utf8')).packageManager.split('@').at(-1);
+          const actualPnpm = execFileSync('pnpm', ['--version'], { encoding: 'utf8' }).trim();
+          assert.equal(process.versions.node, expectedNode);
+          assert.equal(actualPnpm, expectedPnpm);
+          console.log(JSON.stringify({ node: process.versions.node, pnpm: actualPnpm }));
+          NODE
       - run: pnpm install --frozen-lockfile
       - run: pnpm security:scan
       - run: node scripts/verify-schema-archive.mjs

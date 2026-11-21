@@ -232,5 +232,19 @@
       "logSha256": "3293a249f40a12291ff5aeeb1c0cc66436300ac91ce42c8de73ee57f1cb54fbd"
     }
   ],
-  "externalActivationAcceptance": "BLOCKED intentionally until deployment is separately planned; not an unresolved code gate"
+  "externalActivationAcceptance": "BLOCKED intentionally until deployment is separately planned; not an unresolved code gate",
+  "ciMaintenance": {
+    "priorCloseoutRun": 44840297868,
+    "priorCloseoutHead": "704a3f76a0ad154164741ca97810c8d12e122030",
+    "priorConclusion": "success",
+    "priorWarning": "pnpm/action-setup v4 declares deprecated node20; GitHub forced node24",
+    "oldActionSha": "f40ffcd9367d9f12939873eb1018b921a783ffaa",
+    "newActionVersion": "v6.1.1",
+    "newActionSha": "73e46992e05b19abd31f2f3c20e0e7370d762115",
+    "newDeclaredActionRuntime": "node24",
+    "effectiveNodeAndPnpmChecked": true,
+    "applicationDependenciesChanged": false,
+    "securityGatesWeakened": false,
+    "verification": "Complete workflow on the published PR head; see GitHub checks"
+  }
 }
